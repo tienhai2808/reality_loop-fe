@@ -2,7 +2,7 @@ import { z } from "zod"
 
 export const authUserSchema = z.object({
   id: z.string(),
-  email: z.string().email().nullable(),
+  email: z.string().email(),
   firstName: z.string().nullable(),
   lastName: z.string().nullable(),
   avatarUrl: z.string().url().nullable(),
