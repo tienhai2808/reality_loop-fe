@@ -134,7 +134,7 @@ function isAllowedOrigin(request: NextRequest): boolean {
     return true
   }
 
-  return origin === new URL(request.url).origin
+  return origin === (process.env.APP_ORIGIN ?? new URL(request.url).origin)
 }
 
 async function readJson(request: NextRequest): Promise<unknown> {

@@ -101,6 +101,14 @@ When automated authentication tests are run, provider OAuth should be mocked. Re
 8. Reload the app and confirm the session restores.
 9. Open `/settings/sessions` and confirm current-session logout returns to sign-in.
 
+## AI Settings
+
+Open **Settings → AI** (`/settings/ai`) to connect a provider: enter your API key, explicitly load models, select one model, and create the connection. A display name is optional.
+
+Each connection uses exactly one model. Multiple connections for the same provider are supported. You can rename, enable/disable, replace a key, change a model, verify, or delete a connection later.
+
+API keys stay in temporary form memory and are never stored in browser storage. Close the form to discard the entered key. If a create result cannot be confirmed, retry from the same open form to reuse its pending request. Deleting a Reality Loop connection does not revoke the key at the provider.
+
 ## Default Validation
 
 For normal development tasks:

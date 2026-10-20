@@ -16,6 +16,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  allowedDevOrigins: ["my-client.tienhai.click"],
 };
 
 export default nextConfig;

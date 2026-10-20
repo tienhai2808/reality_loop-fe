@@ -2,6 +2,7 @@ import { Check, MonitorSmartphone } from "lucide-react"
 
 import type { AuthSession } from "@/features/auth/api/auth-schemas"
 import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
 import { cn } from "@/lib/utils"
 
 export function SessionRow({
@@ -19,14 +20,12 @@ export function SessionRow({
 }) {
   return (
     <div className="grid gap-3 border-t border-border py-4 md:grid-cols-[2rem_minmax(0,1fr)_auto] md:items-center">
-      <label className="flex items-center md:justify-center">
+      <label className="flex cursor-pointer items-center md:justify-center">
         <span className="sr-only">Select {session.deviceName}</span>
-        <input
-          type="checkbox"
+        <Checkbox
           checked={selected}
           disabled={disabled}
-          onChange={(event) => onSelectedChange(event.currentTarget.checked)}
-          className="size-4 rounded border-border accent-primary"
+          onCheckedChange={onSelectedChange}
         />
       </label>
       <div className="min-w-0">

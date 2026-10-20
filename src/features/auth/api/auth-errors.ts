@@ -137,7 +137,7 @@ export async function authErrorFromResponse(
   }
 }
 
-function parseRetryAfter(value: string | null): number | undefined {
+export function parseRetryAfter(value: string | null): number | undefined {
   if (!value) {
     return undefined
   }
@@ -155,7 +155,7 @@ function parseRetryAfter(value: string | null): number | undefined {
   return Math.max(0, Math.ceil((retryAt - Date.now()) / 1000))
 }
 
-async function readProblemDetails(response: Response) {
+export async function readProblemDetails(response: Response) {
   const contentType = response.headers.get("content-type")
 
   if (!contentType?.includes("application/problem+json") && !contentType?.includes("application/json")) {
