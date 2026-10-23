@@ -14,6 +14,16 @@ export default function SettingsPage() {
       </PageHeader>
       <div className="divide-y divide-border rounded-lg border border-border bg-surface">
         <Link
+          href="/settings/learning"
+          className="flex items-center justify-between gap-4 px-5 py-4 outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
+        >
+          <span className="text-sm font-medium">Learning</span>
+          <ChevronRight
+            className="size-4 text-muted-foreground"
+            aria-hidden="true"
+          />
+        </Link>
+        <Link
           href="/settings/ai"
           className="flex items-center justify-between gap-4 px-5 py-4 outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
         >
@@ -23,7 +33,7 @@ export default function SettingsPage() {
             aria-hidden="true"
           />
         </Link>
-        {["Learning", "Audio & microphone", "Language display", "Appearance"].map(
+        {["Audio & microphone", "Language display", "Appearance"].map(
           (section) => (
             <div key={section} className="flex items-center justify-between px-5 py-4">
               <span className="text-sm font-medium">{section}</span>

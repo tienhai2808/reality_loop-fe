@@ -109,6 +109,14 @@ Each connection uses exactly one model. Multiple connections for the same provid
 
 API keys stay in temporary form memory and are never stored in browser storage. Close the form to discard the entered key. If a create result cannot be confirmed, retry from the same open form to reuse its pending request. Deleting a Reality Loop connection does not revoke the key at the provider.
 
+## Learning Profiles
+
+After sign-in, users without a current learning profile are guided to `/onboarding` to create or select one. Manage profiles under **Settings → Learning** (`/settings/learning`).
+
+You can keep one profile per target language and select one current profile. Creation and selection are separate: onboarding explicitly selects the newly created profile using `PUT /learning-profiles/current`; adding a language in Settings leaves your current selection unchanged. Target language is immutable after creation; other preferences remain editable.
+
+Deleting the current profile leaves no current selection. Choose an existing profile or create a new one to continue. If profile creation has an unknown network result, refresh the profile list before trying again.
+
 ## Default Validation
 
 For normal development tasks:

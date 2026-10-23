@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 
 import { AuthProvider } from "@/features/auth/model/auth-context"
+import { CurrentLearningProfileProvider } from "@/features/learning-profile/hooks/use-current-learning-profile"
 import { ThemeProvider } from "@/components/shared/theme-provider"
 import { Toaster } from "@/components/ui/sonner"
 import { googleSansFlex, notoSansJP } from "@/styles/fonts"
@@ -32,7 +33,11 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+            <CurrentLearningProfileProvider>
+              {children}
+            </CurrentLearningProfileProvider>
+          </AuthProvider>
           <Toaster />
         </ThemeProvider>
       </body>
