@@ -117,6 +117,20 @@ You can keep one profile per target language and select one current profile. Cre
 
 Deleting the current profile leaves no current selection. Choose an existing profile or create a new one to continue. If profile creation has an unknown network result, refresh the profile list before trying again.
 
+## Language Foundations
+
+Open **Language Foundations** from the sidebar, user menu, or command palette (`/learn`). Browse the API-backed language catalog, or open **Writing systems** for your current Learning Profile (`/learn/writing-systems`). Catalog browsing doesn't change your profile.
+
+The current profile's target language and exact explanation-language tag drive catalog requests and translated metadata. Select a writing system to explore its character chart, open a character for all available readings, and move between characters with Previous/Next or the left/right arrow keys. Links can preserve the language and system using `?language=<code>&system=<code>`.
+
+Charts use backend coordinates, preserve gaps, and support additional pages. Target-language suggestions during profile creation also come from the catalog; native and explanation languages remain unrestricted by published content.
+
+**Pronunciation** sits beside Writing Systems (`/learn/pronunciation`). It lists API-provided rules and loads the selected rule's explanation, usage note, and examples in parallel. Direct links use `?rule=<code>` with an optional catalog `language=<code>`. Rules use the current LearningProfile's target language and exact explanation locale; example text and transcription are displayed exactly as returned.
+
+Kana chart cells and character readings share the same Play/Stop audio control as pronunciation examples. Playback uses only the exact public HTTPS URL returned by the backend, starts on demand, and stops the previous clip. Kana audio availability depends on backend initialization; environments returning null remain usable without audio. Pronunciation examples initially have no audio and never borrow a Kana clip to represent a word or sentence.
+
+All educational content comes from backend APIs. Pronunciation scoring, exercises, progress, handwriting, stroke order, recording, and AI/TTS are not part of this experience.
+
 ## Default Validation
 
 For normal development tasks:

@@ -177,7 +177,10 @@ export function LearningProfilesManager({
           </p>
         ) : null}
         {profiles.status === "loading" ? (
-          <div role="status" className="space-y-3 border-y border-border py-5">
+          <div
+            role="status"
+            className="space-y-3 border-y border-border py-5 animate-pulse"
+          >
             <span className="sr-only">Loading learning profiles...</span>
             <div className="h-4 w-1/3 rounded-sm bg-muted" />
             <div className="h-3 w-1/2 rounded-sm bg-muted" />

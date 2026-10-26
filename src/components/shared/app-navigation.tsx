@@ -5,6 +5,7 @@ import Image from "next/image"
 import { usePathname } from "next/navigation"
 import {
   BookOpenText,
+  BookOpen,
   Bug,
   LineChart,
   ListChecks,
@@ -29,6 +30,7 @@ const primaryNavigation = [
 ] as const
 
 const secondaryNavigation = [
+  { href: "/learn", label: "Language Foundations", icon: BookOpen },
   { href: "/library", label: "Library", icon: BookOpenText },
   { href: "/settings", label: "Settings", icon: Settings },
 ] as const

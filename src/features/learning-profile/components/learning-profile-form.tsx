@@ -4,6 +4,7 @@ import { Controller, useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Save } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Textarea } from "@/components/ui/textarea"
 import { normalizeLearningProfileError } from "../api/learning-profile-errors"
 import {
   learningProfileFormSchema,
@@ -25,6 +26,7 @@ import {
 } from "@/components/ui/select"
 import { useLearningRequest } from "../hooks/use-learning-request"
 import { LanguageField } from "./language-field"
+import { TargetLanguageField } from "@/features/language-foundations/components/target-language-field"
 import { LearningFeedback } from "./learning-feedback"
 
 type Props = {
@@ -56,7 +58,7 @@ export function LearningProfileForm({
   } = useForm<LearningProfileFormValues>({
     resolver: zodResolver(learningProfileFormSchema),
     defaultValues: {
-      targetLanguage: profile?.targetLanguage ?? "ja",
+      targetLanguage: profile?.targetLanguage ?? "",
       nativeLanguage: profile?.nativeLanguage ?? "",
       explanationLanguage: profile?.explanationLanguage ?? "",
       proficiencyLevel:
@@ -67,6 +69,7 @@ export function LearningProfileForm({
   })
   const request = useLearningRequest()
   const goal = useWatch({ control, name: "primaryGoal" })
+  const explanationLanguage = useWatch({ control, name: "explanationLanguage" })
   async function submit(values: LearningProfileFormValues) {
     if (
       !options.proficiencyLevels.includes(values.proficiencyLevel) ||
@@ -105,7 +108,8 @@ export function LearningProfileForm({
           name="targetLanguage"
           control={control}
           render={({ field }) => (
-            <LanguageField
+            <TargetLanguageField
+              locale={explanationLanguage || "en"}
               id="learning-target"
               label="Language to learn"
               {...field}
@@ -227,13 +231,12 @@ export function LearningProfileForm({
           {goal === "Other" ? "Tell us about your goal" : "Anything specific?"}{" "}
           <span className="font-normal text-muted-foreground">(optional)</span>
         </label>
-        <textarea
+        <Textarea
           id="learning-note"
           {...register("goalNote")}
           rows={3}
           maxLength={500}
           disabled={request.pending}
-          className="w-full resize-y rounded-md border border-input bg-surface px-3 py-2 text-base outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/15 disabled:opacity-50 aria-invalid:border-destructive sm:text-sm"
           aria-invalid={Boolean(errors.goalNote)}
           aria-describedby={errors.goalNote ? "learning-note-error" : undefined}
         />

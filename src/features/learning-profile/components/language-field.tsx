@@ -19,6 +19,7 @@ export function LanguageField({
   onBlur,
   disabled,
   error,
+  options = languageOptions,
 }: {
   id: string
   label: string
@@ -28,9 +29,10 @@ export function LanguageField({
   inputRef?: unknown
   disabled: boolean
   error?: string
+  options?: readonly { value: string; label: string }[]
 }) {
   const [custom, setCustom] = useState(() =>
-    Boolean(value && !languageOptions.some((option) => option.value === value))
+    Boolean(value && !options.some((option) => option.value === value))
   )
   return (
     <div className="space-y-2">
@@ -55,7 +57,7 @@ export function LanguageField({
           <SelectValue placeholder="Choose a language" />
         </SelectTrigger>
         <SelectContent>
-          {languageOptions.map((option) => (
+          {options.map((option) => (
             <SelectItem key={option.value} value={option.value}>
               {option.label}
             </SelectItem>

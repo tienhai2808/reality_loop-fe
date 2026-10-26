@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react"
 import {
   BookOpenText,
+  BookOpen,
   Bug,
   CornerDownLeft,
   LineChart,
@@ -20,6 +21,13 @@ import {
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 
 const commands = [
+  {
+    href: "/learn",
+    label: "Language Foundations",
+    description: "Explore languages and writing systems",
+    icon: BookOpen,
+    group: "Navigate",
+  },
   {
     href: "/missions/new?intent=Order%20ramen",
     label: "Order ramen",

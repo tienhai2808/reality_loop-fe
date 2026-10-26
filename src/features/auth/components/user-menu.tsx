@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { LogOut, MonitorSmartphone, Settings } from "lucide-react"
+import { BookOpen, LogOut, MonitorSmartphone, Settings } from "lucide-react"
 import { useState } from "react"
 
 import {
@@ -64,6 +64,10 @@ export function UserMenu() {
           ) : null}
         </div>
         <MenuSeparator className="my-1 h-px bg-border" />
+        <MenuLinkItem render={<Link href="/learn" />}>
+          <BookOpen className="size-4 text-muted-foreground" aria-hidden="true" />
+          Language Foundations
+        </MenuLinkItem>
         <MenuLinkItem render={<Link href="/settings" />}>
           <Settings className="size-4 text-muted-foreground" aria-hidden="true" />
           Settings
