@@ -3,8 +3,13 @@
 import Link from "next/link"
 import { useCallback, useState } from "react"
 import { useSearchParams } from "next/navigation"
+import { History } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useCurrentLearningProfile } from "@/features/learning-profile/hooks/use-current-learning-profile"
+import { useAuth } from "@/features/auth/hooks/use-auth"
+import { useProgressOverview } from "@/features/learning-progress/hooks/use-progress-overview"
+import { WritingSystemProgressSummaryView } from "@/features/learning-progress/components/writing-system-progress-summary"
+import type { WritingSystemProgressSummary } from "@/features/learning-progress/api/learning-progress-schemas"
 import {
   getWritingSystem,
   listWritingSystems,
@@ -18,17 +23,21 @@ import {
 } from "./catalog-feedback"
 import { WritingSystemCharacters } from "./writing-system-characters"
 import { FoundationsLanguageShell } from "./foundations-language-shell"
+import { StartPracticeDialog } from "@/features/writing-system-practice/components/start-practice-dialog"
+import { practiceHistoryHref } from "@/features/writing-system-practice/model/practice-handoff"
 
 export function WritingSystemViewer() {
   const { state } = useCurrentLearningProfile()
+  const { state: auth } = useAuth()
   const search = useSearchParams()
   const profile = state.current?.profile
-  if (!profile) return null
+  if (!profile || auth.status !== "authenticated") return null
   const languageCode = search.get("language") ?? profile.targetLanguage
   const systemCode = search.get("system")
   return (
     <LanguageWritingSystems
-      key={`${profile.id}:${profile.targetLanguage}:${languageCode}`}
+      key={`${auth.user.id}:${auth.sessionId}:${profile.id}:${profile.targetLanguage}:${languageCode}`}
+      profileId={languageCode === profile.targetLanguage ? profile.id : null}
       languageCode={languageCode}
       locale={profile.explanationLanguage}
       systemCode={systemCode}
@@ -38,11 +47,13 @@ export function WritingSystemViewer() {
 }
 
 function LanguageWritingSystems({
+  profileId,
   languageCode,
   locale,
   systemCode,
   browsingCatalog,
 }: {
+  profileId: string | null
   languageCode: string
   locale: string
   systemCode: string | null
@@ -63,6 +74,7 @@ function LanguageWritingSystems({
     systemLoader
   )
   const selectedCode = systemCode ?? defaultSystem
+  const overview = useProgressOverview(profileId)
 
   return (
     <FoundationsLanguageShell
@@ -71,7 +83,34 @@ function LanguageWritingSystems({
       browsingCatalog={browsingCatalog}
       section="writing-systems"
     >
-      <h2 className="text-lg font-semibold">Writing systems</h2>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="text-lg font-semibold">Writing systems</h2>
+        <Link
+          href={practiceHistoryHref()}
+          className="inline-flex min-h-8 items-center gap-1.5 rounded-sm text-xs font-medium text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <History className="size-3.5" aria-hidden="true" />
+          Practice history
+        </Link>
+      </div>
+      {profileId ? (
+        <>
+          {overview.status === "loading" ? (
+            <p role="status" className="text-sm text-muted-foreground">
+              Loading learning progress...
+            </p>
+          ) : null}
+          <CatalogFeedback
+            error={overview.error}
+            onRetry={() => void overview.reload()}
+          />
+        </>
+      ) : (
+        <p className="text-sm text-muted-foreground">
+          Explore this language freely. Progress is available for the target
+          language of your current learning profile.
+        </p>
+      )}
       {systems.status === "loading" ? (
         <CatalogLoading label="Loading writing systems..." />
       ) : null}
@@ -100,23 +139,42 @@ function LanguageWritingSystems({
           aria-label="Writing systems"
           className="flex flex-wrap gap-2 border-b border-border pb-4"
         >
-          {systems.data.items.map((system) => (
-            <Link
-              key={system.id}
-              href={`/learn/writing-systems?${new URLSearchParams({ ...(browsingCatalog ? { language: languageCode } : {}), system: system.code })}`}
-              scroll={false}
-              aria-current={selectedCode === system.code ? "page" : undefined}
-              className={cn(
-                "inline-flex min-h-10 items-center rounded-sm border border-transparent px-3 py-2 text-sm font-medium outline-none transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring",
-                selectedCode === system.code
-                  ? "border-border bg-surface text-foreground"
-                  : "text-muted-foreground"
-              )}
-              lang={system.translationLocale ?? languageCode}
-            >
-              {system.name}
-            </Link>
-          ))}
+          {systems.data.items.map((system) => {
+            const summary = overview.data?.writingSystems.find(
+              (entry) =>
+                entry.writingSystemId === system.id ||
+                entry.systemCode === system.code
+            )
+            return (
+              <Link
+                key={system.id}
+                href={`/learn/writing-systems?${new URLSearchParams({ ...(browsingCatalog ? { language: languageCode } : {}), system: system.code })}`}
+                scroll={false}
+                aria-current={selectedCode === system.code ? "page" : undefined}
+                className={cn(
+                  "inline-flex min-h-10 items-center gap-2 rounded-sm border border-transparent px-3 py-2 text-sm font-medium outline-none transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring",
+                  selectedCode === system.code
+                    ? "border-border bg-surface text-foreground shadow-xs"
+                    : "text-muted-foreground"
+                )}
+                lang={system.translationLocale ?? languageCode}
+              >
+                <span>{system.name}</span>
+                {summary ? (
+                  <span
+                    className={cn(
+                      "rounded-full px-2 py-0.5 text-xs font-normal tabular-nums",
+                      selectedCode === system.code
+                        ? "bg-muted text-foreground"
+                        : "bg-surface-subtle text-muted-foreground"
+                    )}
+                  >
+                    {summary.completionPercentage}%
+                  </span>
+                ) : null}
+              </Link>
+            )
+          })}
           {systems.data.nextCursor && !systems.error ? (
             <Button
               variant="ghost"
@@ -135,6 +193,11 @@ function LanguageWritingSystems({
           languageCode={languageCode}
           systemCode={selectedCode}
           locale={locale}
+          profileId={profileId}
+          summary={overview.data?.writingSystems.find(
+            (entry) => entry.systemCode === selectedCode
+          )}
+          onProgressChanged={overview.refresh}
         />
       ) : null}
     </FoundationsLanguageShell>
@@ -142,10 +205,16 @@ function LanguageWritingSystems({
 }
 
 function SelectedWritingSystem({
+  profileId,
+  summary,
+  onProgressChanged,
   languageCode,
   systemCode,
   locale,
 }: {
+  profileId: string | null
+  summary: WritingSystemProgressSummary | undefined
+  onProgressChanged: () => void
   languageCode: string
   systemCode: string
   locale: string
@@ -181,12 +250,22 @@ function SelectedWritingSystem({
       />
       {system.data ? (
         <header className="space-y-1">
-          <h3
-            lang={system.data.translationLocale ?? languageCode}
-            className="text-lg font-semibold"
-          >
-            {system.data.name}
-          </h3>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h3
+              lang={system.data.translationLocale ?? languageCode}
+              className="text-lg font-semibold"
+            >
+              {system.data.name}
+            </h3>
+            {profileId ? (
+              <StartPracticeDialog
+                key={`${profileId}:${system.data.id}`}
+                profileId={profileId}
+                systemCode={system.data.code}
+                systemName={system.data.name}
+              />
+            ) : null}
+          </div>
           <p lang={languageCode} className="text-sm text-muted-foreground">
             {system.data.nativeName}
           </p>
@@ -198,12 +277,19 @@ function SelectedWritingSystem({
               {system.data.description}
             </p>
           ) : null}
+          {summary ? (
+            <div className="max-w-sm pt-3">
+              <WritingSystemProgressSummaryView summary={summary} />
+            </div>
+          ) : null}
         </header>
       ) : null}
       <WritingSystemCharacters
         languageCode={languageCode}
         systemCode={systemCode}
         systemName={system.data?.name ?? "Writing system"}
+        profileId={profileId}
+        onProgressChanged={onProgressChanged}
       />
     </section>
   )

@@ -1,6 +1,8 @@
 "use client"
 
-import { Check } from "lucide-react"
+import { Circle, CircleDot, CircleCheck } from "lucide-react"
+import type { WritingSystemItemProgress } from "@/features/learning-progress/api/learning-progress-schemas"
+import type { ItemOperation } from "@/features/learning-progress/hooks/use-writing-progress"
 import { DialogTrigger } from "@/components/ui/dialog"
 import { cn } from "@/lib/utils"
 import type { WritingSystemItemDto } from "../api/language-foundations-schemas"
@@ -11,11 +13,15 @@ export function CharacterChart({
   languageCode,
   selectedId,
   onSelect,
+  progress,
+  operations,
 }: {
   items: WritingSystemItemDto[]
   languageCode: string
   selectedId: string | null
   onSelect: (item: WritingSystemItemDto) => void
+  progress?: ReadonlyMap<string, WritingSystemItemProgress>
+  operations?: ReadonlyMap<string, ItemOperation>
 }) {
   const cells = new Map<
     string,
@@ -52,6 +58,9 @@ export function CharacterChart({
         selected={selectedId === item.id}
         playbackScope={selectedId ?? "chart"}
         onSelect={() => onSelect(item)}
+        progress={progress?.get(item.id)}
+        tracking={progress !== undefined}
+        uncertain={operations?.get(item.id)?.requiresRead === true}
       />
     )
   }
@@ -104,30 +113,66 @@ function CharacterCell({
   selected,
   playbackScope,
   onSelect,
+  progress,
+  tracking,
+  uncertain,
 }: {
   item: WritingSystemItemDto
   languageCode: string
   selected: boolean
   playbackScope: string
   onSelect: () => void
+  progress: WritingSystemItemProgress | undefined
+  tracking: boolean
+  uncertain: boolean
 }) {
+  const progressLabel = uncertain
+    ? "Progress needs refreshing"
+    : progress?.status === "Completed"
+      ? "Learned through"
+      : progress?.status === "Learning"
+        ? "Learning"
+        : progress?.status === "NotStarted"
+          ? "Not started"
+          : "Progress not loaded"
+  const StatusIcon =
+    progress?.status === "Completed"
+      ? CircleCheck
+      : progress?.status === "Learning"
+        ? CircleDot
+        : Circle
+  const statusColor =
+    progress?.status === "Completed"
+      ? "text-success"
+      : progress?.status === "Learning"
+        ? "text-primary"
+        : "text-muted-foreground/50"
   return (
     <div className="flex min-w-0 flex-1 flex-col gap-1">
       <DialogTrigger
         render={<button type="button" />}
         onClick={onSelect}
-        aria-label={`${item.symbol}${item.primaryReading ? `, ${item.primaryReading.transcription}` : ""}`}
+        aria-label={`${item.symbol}${item.primaryReading ? `, ${item.primaryReading.transcription}` : ""}${tracking ? `, ${progressLabel}` : ""}`}
         aria-pressed={selected}
         className={cn(
           "relative flex min-h-22 w-full flex-1 flex-col items-center justify-center gap-1.5 rounded-sm border border-border bg-surface p-2 text-foreground outline-none transition-colors hover:border-border-strong hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:transition-none",
           selected && "border-primary bg-muted ring-1 ring-primary"
         )}
       >
-        {selected ? (
-          <Check
-            className="absolute right-1.5 top-1.5 size-3.5 text-primary"
-            aria-hidden="true"
-          />
+        {tracking ? (
+          <span
+            className={cn("absolute left-1.5 top-1.5 transition-colors", statusColor)}
+            title={progressLabel}
+          >
+            {progress && !uncertain ? (
+              <StatusIcon className="size-3.5" aria-hidden="true" />
+            ) : (
+              <span className="text-xs text-muted-foreground" aria-hidden="true">
+                …
+              </span>
+            )}
+            <span className="sr-only">{progressLabel}</span>
+          </span>
         ) : null}
         <span
           lang={languageCode}

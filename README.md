@@ -129,7 +129,25 @@ Charts use backend coordinates, preserve gaps, and support additional pages. Tar
 
 Kana chart cells and character readings share the same Play/Stop audio control as pronunciation examples. Playback uses only the exact public HTTPS URL returned by the backend, starts on demand, and stops the previous clip. Kana audio availability depends on backend initialization; environments returning null remain usable without audio. Pronunciation examples initially have no audio and never borrow a Kana clip to represent a word or sentence.
 
-All educational content comes from backend APIs. Pronunciation scoring, exercises, progress, handwriting, stroke order, recording, and AI/TTS are not part of this experience.
+All educational content comes from backend APIs. Pronunciation scoring, handwriting, stroke order, recording, and AI/TTS are not part of this experience.
+
+### Writing System Learning Progress
+
+Writing Systems shows backend totals and a small per-character progress indicator for the current LearningProfile. Progress is separate for each profile; browsing another catalog language does not change your profile or record progress against it.
+
+`NotStarted` means no saved progress, `Learning` means studying has started, and `Completed` means the learner explicitly marked the character as learned through—not memorized or mastered. Open a character to explicitly Study, Complete, or Restart learning. Studying a completed character keeps it completed; Restart is a separate action. Viewing characters and playing audio never record progress automatically.
+
+Actions use the progress DTO's server version, independently of the profile version. Conflicts and unknown network results reload the affected character before another explicit action; they never blindly repeat a mutation. Overview totals are refreshed from the backend, and catalog/progress pagination remain independent.
+
+### Writing System Practice
+
+Choose **Practice** in a writing-system header to recognize characters and select their readings. Sessions support 1–20 questions (default 10); the backend generates questions, keeps unanswered readings hidden, grades submissions, and completes sessions automatically.
+
+Saved sessions have stable URLs at `/learn/practice/{profileId}/{sessionId}`. Reloading restores the server snapshot and resumes at the first unanswered question. **Practice history** (`/learn/practice/history`) supports status/writing-system filters, multiple unfinished sessions, and opaque `before` cursor pagination. Completed and ended sessions retain submitted-answer review; unanswered questions never reveal their correct readings.
+
+Answers and explicit **End practice** actions share one session-level lock and use the latest server session version. Conflicts and uncertain outcomes reconcile through GET, without resubmitting mutations. Creation has no idempotency key: an uncertain start checks history before another explicit start. Simply leaving never abandons a session.
+
+Practice is independent of manually tracked Writing System Learning Progress and never updates it. No AI, audio clues, or client-side grading are used.
 
 ## Default Validation
 

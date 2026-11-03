@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback } from "react"
+import { useCallback, type ReactNode } from "react"
 import { ArrowLeft, ArrowRight, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -26,6 +26,7 @@ export function CharacterDetailPanel({
   previous,
   next,
   onNavigate,
+  progressControls,
 }: {
   item: WritingSystemItemDto
   languageCode: string
@@ -35,6 +36,7 @@ export function CharacterDetailPanel({
   previous: WritingSystemItemDto | null
   next: WritingSystemItemDto | null
   onNavigate: (item: WritingSystemItemDto) => void
+  progressControls?: ReactNode
 }) {
   const loader = useCallback(
     (after: string | null, signal: AbortSignal) =>
@@ -120,19 +122,25 @@ export function CharacterDetailPanel({
         {readings.data?.items.length ? (
           <ul className="divide-y divide-border border-y border-border">
             {readings.data.items.map((reading) => (
-              <li key={reading.id} className="space-y-2 py-3">
-                <p className="break-words text-xl font-medium">
-                  {reading.transcription}
-                </p>
-                <p className="break-words text-xs text-muted-foreground">
-                  {reading.transcriptionSystem}
-                </p>
+              <li
+                key={reading.id}
+                className="flex items-center justify-between gap-3 py-3"
+              >
+                <div className="min-w-0 space-y-0.5">
+                  <p className="break-words text-xl font-semibold">
+                    {reading.transcription}
+                  </p>
+                  <p className="break-words text-xs text-muted-foreground">
+                    {reading.transcriptionSystem}
+                  </p>
+                </div>
                 {reading.audioUrl ? (
                   <PronunciationAudioButton
                     key={`${item.id}:${reading.id}`}
                     url={reading.audioUrl}
                     label={reading.transcription}
                     scope={`character:${item.id}`}
+                    compact
                   />
                 ) : null}
               </li>
@@ -152,6 +160,7 @@ export function CharacterDetailPanel({
           </Button>
         ) : null}
       </section>
+      {progressControls}
       <div className="flex justify-between gap-3 border-t border-border pt-4">
         <Button
           variant="outline"

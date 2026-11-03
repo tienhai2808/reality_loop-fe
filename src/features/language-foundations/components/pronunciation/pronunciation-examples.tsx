@@ -57,7 +57,7 @@ export function PronunciationExamples({
               <div className="min-w-0 flex-1 space-y-2">
                 <p
                   lang={languageCode}
-                  className="whitespace-pre-line break-words text-2xl leading-relaxed"
+                  className="font-ja whitespace-pre-line break-words text-2xl leading-relaxed"
                 >
                   {example.text}
                 </p>

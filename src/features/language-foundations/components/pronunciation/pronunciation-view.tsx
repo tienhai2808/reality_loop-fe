@@ -3,7 +3,6 @@
 import { useCallback } from "react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
-import { Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useCurrentLearningProfile } from "@/features/learning-profile/hooks/use-current-learning-profile"
 import { cn } from "@/lib/utils"
@@ -100,11 +99,13 @@ function LanguagePronunciation({
                       scroll={false}
                       aria-current={ruleCode === rule.code ? "page" : undefined}
                       className={cn(
-                        "flex min-h-12 items-center justify-between gap-2 rounded-sm border border-transparent px-3 py-3 outline-none transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring",
-                        ruleCode === rule.code && "border-border bg-surface"
+                        "flex min-h-12 items-center justify-between gap-2 rounded-sm border px-3 py-2.5 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring",
+                        ruleCode === rule.code
+                          ? "border-border bg-surface font-medium text-foreground shadow-xs"
+                          : "border-transparent text-muted-foreground hover:bg-muted hover:text-foreground"
                       )}
                     >
-                      <span className="min-w-0 space-y-1">
+                      <span className="min-w-0 space-y-0.5">
                         <span
                           lang={rule.translationLocale ?? languageCode}
                           className="block break-words text-sm font-medium"
@@ -120,12 +121,6 @@ function LanguagePronunciation({
                           </span>
                         ) : null}
                       </span>
-                      {ruleCode === rule.code ? (
-                        <Check
-                          className="size-4 shrink-0 text-primary"
-                          aria-hidden="true"
-                        />
-                      ) : null}
                     </Link>
                   </li>
                 ))}
