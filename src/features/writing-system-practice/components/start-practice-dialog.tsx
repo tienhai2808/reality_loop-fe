@@ -90,7 +90,7 @@ export function StartPracticeDialog({
 
 const QUESTION_COUNT_OPTIONS = Array.from({ length: 20 }, (_, index) => ({
   value: String(index + 1),
-  label: `${index + 1}`,
+  label: index === 0 ? "1 question" : `${index + 1} questions`,
 }))
 
 function StartPracticeForm({

@@ -2,7 +2,13 @@
 
 import Link from "next/link"
 import { useCallback } from "react"
-import { ArrowRight, BookOpen, History, Volume2 } from "lucide-react"
+import {
+  ArrowRight,
+  BookOpen,
+  BookOpenText,
+  History,
+  Volume2,
+} from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useCurrentLearningProfile } from "@/features/learning-profile/hooks/use-current-learning-profile"
 import { languageLabel } from "@/features/learning-profile/lib/language-options"
@@ -82,6 +88,24 @@ function LanguageCatalogContent({
           <ArrowRight className="size-4" aria-hidden="true" />
         </Link>
         <Link
+          href="/learn/vocabulary"
+          className="flex flex-wrap items-center justify-between gap-4 py-5 outline-none hover:text-primary focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <span className="flex min-w-0 items-center gap-3">
+            <BookOpenText
+              className="size-5 shrink-0 text-muted-foreground"
+              aria-hidden="true"
+            />
+            <span>
+              <span className="block text-sm font-semibold">Vocabulary</span>
+              <span className="mt-1 block text-sm text-muted-foreground">
+                {languageLabel(targetLanguage)} · Words, readings, and meanings
+              </span>
+            </span>
+          </span>
+          <ArrowRight className="size-4" aria-hidden="true" />
+        </Link>
+        <Link
           href="/learn/practice/history"
           className="flex flex-wrap items-center justify-between gap-4 py-5 outline-none hover:text-primary focus-visible:ring-2 focus-visible:ring-ring"
         >
@@ -91,7 +115,9 @@ function LanguageCatalogContent({
               aria-hidden="true"
             />
             <span>
-              <span className="block text-sm font-semibold">Practice history</span>
+              <span className="block text-sm font-semibold">
+                Practice history
+              </span>
               <span className="mt-1 block text-sm text-muted-foreground">
                 Review and continue saved practice sessions
               </span>

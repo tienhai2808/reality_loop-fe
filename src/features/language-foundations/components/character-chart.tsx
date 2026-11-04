@@ -176,7 +176,7 @@ function CharacterCell({
         ) : null}
         <span
           lang={languageCode}
-          className="w-full break-all text-center text-3xl font-medium leading-none tracking-normal"
+          className="font-ja w-full break-all text-center text-3xl font-medium leading-none tracking-normal"
         >
           {item.symbol}
         </span>

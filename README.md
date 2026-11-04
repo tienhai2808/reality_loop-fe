@@ -129,7 +129,7 @@ Charts use backend coordinates, preserve gaps, and support additional pages. Tar
 
 Kana chart cells and character readings share the same Play/Stop audio control as pronunciation examples. Playback uses only the exact public HTTPS URL returned by the backend, starts on demand, and stops the previous clip. Kana audio availability depends on backend initialization; environments returning null remain usable without audio. Pronunciation examples initially have no audio and never borrow a Kana clip to represent a word or sentence.
 
-All educational content comes from backend APIs. Pronunciation scoring, handwriting, stroke order, recording, and AI/TTS are not part of this experience.
+All educational content comes from backend APIs. Pronunciation scoring, recording, and AI/TTS are not part of this experience.
 
 ### Writing System Learning Progress
 
@@ -148,6 +148,26 @@ Saved sessions have stable URLs at `/learn/practice/{profileId}/{sessionId}`. Re
 Answers and explicit **End practice** actions share one session-level lock and use the latest server session version. Conflicts and uncertain outcomes reconcile through GET, without resubmitting mutations. Creation has no idempotency key: an uncertain start checks history before another explicit start. Simply leaving never abandons a session.
 
 Practice is independent of manually tracked Writing System Learning Progress and never updates it. No AI, audio clues, or client-side grading are used.
+
+### Handwriting Practice
+
+Choose **Handwriting** in a writing-system header (`/learn/handwriting?system=<code>`). Only published templates are selectable; the current backend seed includes Hiragana あ, お, ぬ, and め. Systems without templates show an unavailable-content state.
+
+Select up to the server policy's character limit, including repeated characters. Each position has a square mouse/touch/stylus canvas, optional ordered reference guide, Undo, and Clear. Pointer Events capture ordered normalized `{ x, y }` points in `[0,1]`; canvas resizing and display pixel density do not change saved coordinates. Drawing requires a pointer-capable input method. Input limits come from the published policy; oversized strokes are visibly rejected rather than silently truncated.
+
+**Check handwriting** submits only template IDs and stroke arrays for synchronous server evaluation. Results use the returned pass/fail, geometry match score, general issues, and stroke-level feedback. Editing invalidates the displayed result. Uncertain submissions check recent history without automatically repeating POST; template conflicts preserve drawings and require explicit template confirmation/reselection.
+
+History (`/learn/handwriting/{profileId}/history`) filters by writing system/result and uses opaque `before` cursors. Saved attempts (`/learn/handwriting/{profileId}/attempts/{attemptId}`) retain their original profile scope, points, feedback, and algorithm version. Replay shows the exact saved stroke points; unpublished references do not block saved drawings. Template catalogs use `after` cursors.
+
+Stroke-source attribution, revision, and license links come from the backend and remain visible in practice and review. Handwriting has no AI/OCR, image uploads, browser-side grading, or automatic Learning Progress changes.
+
+## Vocabulary
+
+Open **Learn → Vocabulary** (`/learn/vocabulary`) to browse the current LearningProfile's target language. Requests use the exact explanation-language tag for meanings, without stripping region or script subtags. Part-of-speech filters run on the backend and are preserved in the URL; lists use opaque `after` cursors and a Load more action.
+
+Open a word at `/learn/vocabulary/{entryCode}` for its stored reading, all published senses, and usage notes. Entry metadata and senses load in parallel. Each sense keeps the backend's translation and fallback locale independently; missing translations remain visible without invented meanings. Changing the explanation language reloads meanings while retaining the word metadata.
+
+Audio uses the shared on-demand pronunciation player only when the backend supplies a valid HTTPS URL. Initial vocabulary content has no audio. Vocabulary is read-only: there is no vocabulary progress, saving/favorites, review, exercises, search, or AI dependency.
 
 ## Default Validation
 

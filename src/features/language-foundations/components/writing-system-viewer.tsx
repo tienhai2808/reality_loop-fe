@@ -25,6 +25,7 @@ import { WritingSystemCharacters } from "./writing-system-characters"
 import { FoundationsLanguageShell } from "./foundations-language-shell"
 import { StartPracticeDialog } from "@/features/writing-system-practice/components/start-practice-dialog"
 import { practiceHistoryHref } from "@/features/writing-system-practice/model/practice-handoff"
+import { handwritingWorkspaceHref } from "@/features/handwriting/lib/handwriting-labels"
 
 export function WritingSystemViewer() {
   const { state } = useCurrentLearningProfile()
@@ -258,12 +259,20 @@ function SelectedWritingSystem({
               {system.data.name}
             </h3>
             {profileId ? (
-              <StartPracticeDialog
-                key={`${profileId}:${system.data.id}`}
-                profileId={profileId}
-                systemCode={system.data.code}
-                systemName={system.data.name}
-              />
+              <div className="flex flex-wrap items-center gap-2">
+                <StartPracticeDialog
+                  key={`${profileId}:${system.data.id}`}
+                  profileId={profileId}
+                  systemCode={system.data.code}
+                  systemName={system.data.name}
+                />
+                <Link
+                  href={handwritingWorkspaceHref(system.data.code)}
+                  className="inline-flex min-h-10 items-center rounded-md border border-border bg-surface px-3 text-sm font-medium outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  Handwriting
+                </Link>
+              </div>
             ) : null}
           </div>
           <p lang={languageCode} className="text-sm text-muted-foreground">

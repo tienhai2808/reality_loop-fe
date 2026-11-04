@@ -9,7 +9,7 @@ export default function LearnPage() {
       <PageHeader>
         <PageHeader.Title>Language Foundations</PageHeader.Title>
         <PageHeader.Description>
-          Explore the characters and sounds behind a language.
+          Explore the characters, sounds, and words behind a language.
         </PageHeader.Description>
       </PageHeader>
       <LanguageCatalog />

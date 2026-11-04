@@ -77,7 +77,7 @@ export function CharacterDetailPanel({
         <div className="min-w-0 space-y-1">
           <DialogTitle
             lang={languageCode}
-            className="break-all text-5xl leading-relaxed font-normal"
+            className="font-ja break-all text-5xl leading-relaxed font-normal"
           >
             {item.symbol}
           </DialogTitle>
