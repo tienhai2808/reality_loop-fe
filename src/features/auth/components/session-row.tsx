@@ -21,7 +21,7 @@ export function SessionRow({
   return (
     <div className="grid gap-3 border-t border-border py-4 md:grid-cols-[2rem_minmax(0,1fr)_auto] md:items-center">
       <label className="flex cursor-pointer items-center md:justify-center">
-        <span className="sr-only">Select {session.deviceName}</span>
+        <span className="sr-only">Chọn {session.deviceName}</span>
         <Checkbox
           checked={selected}
           disabled={disabled}
@@ -35,7 +35,7 @@ export function SessionRow({
           {session.isCurrent ? (
             <span className="inline-flex items-center gap-1 rounded-full bg-success-subtle px-2 py-0.5 text-xs font-medium text-success">
               <Check className="size-3" aria-hidden="true" />
-              Current
+              Đang dùng
             </span>
           ) : null}
         </div>
@@ -51,7 +51,7 @@ export function SessionRow({
         onClick={onSignOut}
         className={cn("justify-self-start md:justify-self-end")}
       >
-        Sign out
+        Đăng xuất
       </Button>
     </div>
   )
@@ -89,7 +89,7 @@ function formatSessionDate(value: string | null): string {
     return `${Math.floor(deltaMs / day)} days ago`
   }
 
-  return new Intl.DateTimeFormat("en", {
+  return new Intl.DateTimeFormat("vi-VN", {
     month: "short",
     day: "numeric",
   }).format(new Date(timestamp))

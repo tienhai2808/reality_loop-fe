@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation"
 import { HandwritingAttemptDetailView } from "@/features/handwriting/components/handwriting-attempt-detail"
 
-export const metadata = { title: "Saved handwriting attempt" }
+export const metadata = { title: "Bài viết đã lưu" }
 export default async function HandwritingAttemptPage({
   params,
 }: {

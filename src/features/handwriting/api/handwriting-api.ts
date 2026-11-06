@@ -44,18 +44,18 @@ async function request<T>(
       const problem = await readProblemDetails(response)
       const retry = parseRetryAfter(response.headers.get("retry-after"))
       const messages: Record<number, string> = {
-        400: "This drawing or content request couldn't be accepted. Check the selected templates and drawing limits, or refresh the page of results.",
-        401: "Your session expired. Please sign in again.",
-        403: "Handwriting practice isn't accessible right now.",
-        404: "This handwriting template, profile, or attempt isn't available.",
-        409: "The available templates changed. Review and confirm each character's template before submitting again.",
-        413: "This drawing is too large to submit. Undo strokes or clear and redraw with fewer points.",
-        415: "The drawing couldn't be submitted in the expected format. Reopen handwriting practice and try again.",
-        429: "Too many handwriting requests. Please wait before trying again.",
+        400: "Kiểm tra mẫu chữ và giới hạn nét, hoặc tải lại kết quả.",
+        401: "Phiên đã hết hạn. Hãy đăng nhập lại.",
+        403: "Hiện không thể mở luyện viết.",
+        404: "Không tìm thấy mẫu chữ, hồ sơ hoặc bài viết.",
+        409: "Mẫu chữ đã thay đổi. Hãy xác nhận mẫu cho từng ô trước khi gửi lại.",
+        413: "Bài viết quá lớn. Hãy hoàn tác hoặc viết lại với ít nét hơn.",
+        415: "Định dạng bài viết không hợp lệ. Hãy mở lại luyện viết rồi thử lại.",
+        429: "Bạn đã thao tác quá nhanh. Hãy đợi rồi thử lại.",
       }
       throw new FoundationsError(
         messages[response.status] ??
-          "We couldn't confirm the handwriting request. Check your connection and try again.",
+          "Chưa xác nhận được yêu cầu luyện viết. Hãy kiểm tra kết nối.",
         response.status,
         retry !== undefined
           ? Date.now() + retry * 1000
@@ -69,7 +69,7 @@ async function request<T>(
     const parsed = schema.safeParse(value)
     if (!parsed.success)
       throw new FoundationsError(
-        "The handwriting response couldn't be confirmed. Please check saved attempts."
+        "Chưa xác nhận được kết quả. Hãy kiểm tra bài đã lưu."
       )
     return parsed.data
   } catch (error) {

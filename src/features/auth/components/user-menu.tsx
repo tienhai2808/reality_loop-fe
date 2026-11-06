@@ -41,7 +41,7 @@ export function UserMenu() {
   return (
     <Menu>
       <MenuTrigger className="grid size-9 place-items-center rounded-full border border-border bg-surface text-xs font-medium outline-none transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
-        <span className="sr-only">Open user menu</span>
+        <span className="sr-only">Mở menu tài khoản</span>
         {avatarUrl ? (
           <Image
             src={avatarUrl}
@@ -66,23 +66,23 @@ export function UserMenu() {
         <MenuSeparator className="my-1 h-px bg-border" />
         <MenuLinkItem render={<Link href="/learn" />}>
           <BookOpen className="size-4 text-muted-foreground" aria-hidden="true" />
-          Language Foundations
+          Học
         </MenuLinkItem>
         <MenuLinkItem render={<Link href="/settings" />}>
           <Settings className="size-4 text-muted-foreground" aria-hidden="true" />
-          Settings
+          Cài đặt
         </MenuLinkItem>
         <MenuLinkItem render={<Link href="/settings/sessions" />}>
           <MonitorSmartphone
             className="size-4 text-muted-foreground"
             aria-hidden="true"
           />
-          Active sessions
+          Phiên đăng nhập
         </MenuLinkItem>
         <MenuSeparator className="my-1 h-px bg-border" />
         <MenuItem onClick={() => void signOut()}>
           <LogOut className="size-4 text-muted-foreground" aria-hidden="true" />
-          Sign out
+          Đăng xuất
         </MenuItem>
       </MenuContent>
     </Menu>

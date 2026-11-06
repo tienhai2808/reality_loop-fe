@@ -4,21 +4,21 @@ import type {
 } from "../api/learning-profile-schemas"
 
 export const languageOptions = [
-  { value: "ja", label: "Japanese" },
-  { value: "vi", label: "Vietnamese" },
-  { value: "en", label: "English" },
-  { value: "ko", label: "Korean" },
-  { value: "zh", label: "Chinese" },
-  { value: "zh-hant", label: "Chinese (Traditional)" },
-  { value: "en-us", label: "English (United States)" },
-  { value: "fr", label: "French" },
-  { value: "de", label: "German" },
-  { value: "es", label: "Spanish" },
-  { value: "pt", label: "Portuguese" },
-  { value: "it", label: "Italian" },
-  { value: "th", label: "Thai" },
-  { value: "id", label: "Indonesian" },
-  { value: "ar", label: "Arabic" },
+  { value: "ja", label: "Tiếng Nhật" },
+  { value: "vi", label: "Tiếng Việt" },
+  { value: "en", label: "Tiếng Anh" },
+  { value: "ko", label: "Tiếng Hàn" },
+  { value: "zh", label: "Tiếng Trung" },
+  { value: "zh-hant", label: "Tiếng Trung phồn thể" },
+  { value: "en-us", label: "Tiếng Anh (Hoa Kỳ)" },
+  { value: "fr", label: "Tiếng Pháp" },
+  { value: "de", label: "Tiếng Đức" },
+  { value: "es", label: "Tiếng Tây Ban Nha" },
+  { value: "pt", label: "Tiếng Bồ Đào Nha" },
+  { value: "it", label: "Tiếng Ý" },
+  { value: "th", label: "Tiếng Thái" },
+  { value: "id", label: "Tiếng Indonesia" },
+  { value: "ar", label: "Tiếng Ả Rập" },
 ] as const
 
 export function languageLabel(tag: string): string {
@@ -27,26 +27,26 @@ export function languageLabel(tag: string): string {
   )
   if (known) return known.label
   try {
-    return new Intl.DisplayNames(["en"], { type: "language" }).of(tag) ?? tag
+    return new Intl.DisplayNames(["vi"], { type: "language" }).of(tag) ?? tag
   } catch {
     return tag
   }
 }
 
 export const proficiencyLabels: Record<ProficiencyLevel, string> = {
-  Beginner: "Beginner",
-  Elementary: "Elementary",
-  Intermediate: "Intermediate",
-  UpperIntermediate: "Upper intermediate",
-  Advanced: "Advanced",
+  Beginner: "Mới bắt đầu",
+  Elementary: "Sơ cấp",
+  Intermediate: "Trung cấp",
+  UpperIntermediate: "Trung cấp cao",
+  Advanced: "Nâng cao",
 }
 export const learningGoalLabels: Record<LearningGoal, string> = {
-  Travel: "Travel",
-  Work: "Work",
-  Study: "Study",
-  DailyLife: "Daily life",
-  Social: "Social",
-  Media: "Movies, music & media",
-  Relocation: "Living abroad",
-  Other: "Other",
+  Travel: "Du lịch",
+  Work: "Công việc",
+  Study: "Học tập",
+  DailyLife: "Đời sống",
+  Social: "Giao tiếp",
+  Media: "Phim, nhạc và truyền thông",
+  Relocation: "Sống ở nước ngoài",
+  Other: "Khác",
 }

@@ -44,7 +44,7 @@ async function read<T>(response: Response, schema: z.ZodType<T>): Promise<T> {
     /* An interrupted response has an unknown result. */
   }
   throw new LearningProfileError(
-    "The server response couldn't be confirmed. Please refresh your profiles."
+    "Chưa xác nhận được phản hồi. Hãy tải lại hồ sơ."
   )
 }
 

@@ -19,7 +19,7 @@ export function ThemeToggle() {
       <TooltipTrigger
         render={
           <Button
-            aria-label="Toggle theme"
+            aria-label="Đổi giao diện sáng tối"
             size="icon"
             variant="ghost"
             onClick={() => setTheme(isDark ? "light" : "dark")}
@@ -28,7 +28,7 @@ export function ThemeToggle() {
       >
         {isDark ? <Sun aria-hidden="true" /> : <Moon aria-hidden="true" />}
       </TooltipTrigger>
-      <TooltipContent>{isDark ? "Use light theme" : "Use dark theme"}</TooltipContent>
+      <TooltipContent>{isDark ? "Dùng giao diện sáng" : "Dùng giao diện tối"}</TooltipContent>
     </Tooltip>
   )
 }

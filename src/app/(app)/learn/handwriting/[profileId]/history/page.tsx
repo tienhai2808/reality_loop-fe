@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation"
 import { HandwritingHistory } from "@/features/handwriting/components/handwriting-history"
 
-export const metadata = { title: "Handwriting history" }
+export const metadata = { title: "Lịch sử luyện viết" }
 export default async function HandwritingHistoryPage({
   params,
 }: {

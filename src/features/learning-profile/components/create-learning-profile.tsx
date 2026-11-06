@@ -63,7 +63,7 @@ export function CreateLearningProfile({
           setPhase({ kind: "saved", profile: existing, recovered: true })
         else {
           setNotice(
-            "This learning profile is no longer available. Choose a language to create a new one."
+            "Hồ sơ hiện không có. Chọn ngôn ngữ để tạo hồ sơ mới."
           )
           setPhase({ kind: "editing" })
         }
@@ -93,7 +93,7 @@ export function CreateLearningProfile({
           setPhase({ kind: "saved", profile: existing, recovered: true })
         else {
           setNotice(
-            "Your profiles have been refreshed. No profile for this language was found; you can try creating it again."
+            "Đã tải lại hồ sơ. Chưa có hồ sơ cho ngôn ngữ này, bạn có thể tạo lại."
           )
           throw error
         }
@@ -126,7 +126,7 @@ export function CreateLearningProfile({
         setPhase({ kind: "saved", profile: existing, recovered: true })
       else {
         setNotice(
-          "Your profiles have been refreshed. You can try creating a profile again."
+          "Đã tải lại hồ sơ. Bạn có thể tạo hồ sơ."
         )
         setPhase({ kind: "editing" })
       }
@@ -137,14 +137,13 @@ export function CreateLearningProfile({
     return (
       <div className="space-y-4">
         <p className="text-sm leading-6">
-          The create result is unknown. Refresh your profiles before creating
-          another profile for {languageLabel(phase.language)}.
+          Chưa xác nhận được hồ sơ vừa tạo. Hãy tải lại danh sách trước khi tạo hồ sơ khác cho {languageLabel(phase.language)}.
         </p>
         <LearningFeedback
           error={request.error ?? phase.error}
           onRetry={() => void reconcile(phase.language)}
           pending={request.pending}
-          retryLabel="Refresh profiles"
+          retryLabel="Tải lại hồ sơ"
         />
         <div className="flex flex-wrap justify-end gap-2">
           {onCancel ? (
@@ -153,7 +152,7 @@ export function CreateLearningProfile({
               disabled={request.pending}
               onClick={onCancel}
             >
-              Cancel
+              Hủy
             </Button>
           ) : null}
         </div>
@@ -165,8 +164,8 @@ export function CreateLearningProfile({
       <div className="space-y-4">
         <p role="status" className="text-sm leading-6">
           {phase.recovered
-            ? "A profile for this language is already saved. Review it before continuing."
-            : "Your learning profile is saved. Select it to continue."}
+            ? "Ngôn ngữ này đã có hồ sơ. Hãy xem lại trước khi tiếp tục."
+            : "Đã lưu hồ sơ học. Chọn hồ sơ để tiếp tục."}
         </p>
         <div className="space-y-1 border-y border-border py-4">
           <h2 className="text-base font-semibold">
@@ -177,7 +176,7 @@ export function CreateLearningProfile({
             {learningGoalLabels[phase.profile.primaryGoal]}
           </p>
           <p className="text-sm text-muted-foreground">
-            Explanations in {languageLabel(phase.profile.explanationLanguage)}
+            Giải thích bằng {languageLabel(phase.profile.explanationLanguage)}
           </p>
           {phase.profile.goalNote ? (
             <p className="break-words text-sm">{phase.profile.goalNote}</p>
@@ -192,10 +191,10 @@ export function CreateLearningProfile({
               onClick={() => void activate(phase.profile)}
             >
               <Check aria-hidden="true" />
-              {request.pending ? "Selecting profile..." : "Use this profile"}
+              {request.pending ? "Đang chọn hồ sơ…" : "Dùng hồ sơ này"}
             </Button>
           ) : (
-            <Button onClick={onCancel}>Back to profiles</Button>
+            <Button onClick={onCancel}>Về danh sách hồ sơ</Button>
           )}
         </div>
       </div>
@@ -211,7 +210,7 @@ export function CreateLearningProfile({
       <LearningProfileForm
         options={options}
         submitLabel={
-          onboarding ? "Create profile & continue" : "Create learning profile"
+          onboarding ? "Tạo hồ sơ và bắt đầu" : "Tạo hồ sơ học"
         }
         onSubmit={create}
         onCancel={onCancel}

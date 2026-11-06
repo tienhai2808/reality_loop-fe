@@ -5,7 +5,7 @@ import { getSafeInternalPath } from "@/features/auth/api/auth-api"
 import { OAuthSignInButton } from "@/features/auth/components/oauth-sign-in-button"
 
 export const metadata: Metadata = {
-  title: "Sign in",
+  title: "Đăng nhập",
 }
 
 export default async function SignInPage({
@@ -33,10 +33,10 @@ export default async function SignInPage({
           </div>
           <div className="space-y-3">
             <h1 className="text-[2rem] font-semibold leading-9 text-balance">
-              Practice for real life.
+              Luyện ngôn ngữ cho đời sống
             </h1>
             <p className="text-sm leading-6 text-muted-foreground">
-              Turn the situations you actually need into language you can use.
+              Học chữ, nghe cách đọc và ôn từ theo nhịp của bạn.
             </p>
           </div>
         </div>
@@ -46,7 +46,7 @@ export default async function SignInPage({
           <OAuthSignInButton provider="facebook" nextPath={nextPath} />
         </div>
         <p className="text-xs leading-5 text-muted-foreground">
-          By continuing, you agree to use Reality Loop for your own language practice.
+          Khi tiếp tục, bạn đồng ý dùng Reality Loop để luyện ngôn ngữ cá nhân.
         </p>
       </section>
     </main>

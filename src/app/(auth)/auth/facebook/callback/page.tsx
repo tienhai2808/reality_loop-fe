@@ -5,13 +5,13 @@ import { AuthBootstrap } from "@/features/auth/components/auth-bootstrap"
 import { OAuthCallbackClient } from "@/features/auth/components/oauth-callback-client"
 
 export const metadata: Metadata = {
-  title: "Signing in",
+  title: "Đang đăng nhập",
   referrer: "no-referrer",
 }
 
 export default function FacebookCallbackPage() {
   return (
-    <Suspense fallback={<AuthBootstrap label="Validating callback" />}>
+    <Suspense fallback={<AuthBootstrap label="Đang xác minh đăng nhập" />}>
       <OAuthCallbackClient provider="facebook" />
     </Suspense>
   )

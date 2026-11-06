@@ -34,7 +34,7 @@ export async function getFoundationContent<T>(
     const parsed = schema.safeParse(value)
     if (!parsed.success)
       throw new FoundationsError(
-        "The content response couldn't be read. Please try again."
+        "Không đọc được nội dung trả về. Hãy thử lại."
       )
     return parsed.data
   } catch (error) {

@@ -14,15 +14,15 @@ export function AiConnectionStatus({
     status === "Ready" ? Check : status === "CoolingDown" ? Clock3 : CircleAlert
   const label =
     status === "Ready"
-      ? "Ready"
+      ? "Sẵn sàng"
       : status === "CoolingDown"
-        ? "Temporarily unavailable"
-        : "Needs attention"
+        ? "Tạm thời gián đoạn"
+        : "Cần kiểm tra"
   return (
     <div className="space-y-1 text-xs">
       <div className="flex flex-wrap items-center gap-2">
         <span className="font-medium text-muted-foreground">
-          {isEnabled ? "Enabled" : "Disabled"}
+          {isEnabled ? "Đã bật" : "Đã tắt"}
         </span>
         <span
           className={cn(
@@ -41,7 +41,7 @@ export function AiConnectionStatus({
       ) : null}
       {status === "CoolingDown" && retryAfterAt ? (
         <p className="text-muted-foreground">
-          Retry available{" "}
+          Có thể thử lại{" "}
           <time dateTime={retryAfterAt}>{formatAiTime(retryAfterAt)}</time>
         </p>
       ) : null}
@@ -50,7 +50,7 @@ export function AiConnectionStatus({
 }
 
 export function formatAiTime(value: string | number) {
-  return new Intl.DateTimeFormat("en", {
+  return new Intl.DateTimeFormat("vi-VN", {
     month: "short",
     day: "numeric",
     hour: "numeric",

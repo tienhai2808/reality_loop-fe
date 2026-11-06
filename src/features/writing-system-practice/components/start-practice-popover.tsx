@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useEffect, useRef, useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Loader2, Play } from "lucide-react"
 import { Button, buttonVariants } from "@/components/ui/button"
 import {
@@ -12,14 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
+import { Popover } from "@base-ui/react/popover"
 import { CatalogFeedback } from "@/features/language-foundations/components/catalog-feedback"
 import {
   FoundationsError,
@@ -36,11 +29,11 @@ import {
   usePracticeHandoff,
 } from "../model/practice-handoff"
 
-export function StartPracticeDialog({
+export function StartPracticePopover({
   profileId,
   systemCode,
   systemName,
-  label = "Practice",
+  label = "Luyện nhận diện",
 }: {
   profileId: string
   systemCode: string
@@ -50,47 +43,50 @@ export function StartPracticeDialog({
   const [open, setOpen] = useState(false)
   const [pending, setPending] = useState(false)
   return (
-    <Dialog
+    <Popover.Root
       open={open}
       onOpenChange={(value) => {
         if (!pending) setOpen(value)
       }}
     >
-      <DialogTrigger
-        render={
-          <Button variant="outline" size="sm" className="gap-1.5" />
-        }
+      <Popover.Trigger
+        render={<Button className="min-h-11 gap-1.5 sm:min-h-9" />}
       >
         <Play className="size-3.5 fill-current" aria-hidden="true" />
         {label}
-      </DialogTrigger>
-      <DialogContent className="max-h-[calc(100dvh-2rem)] max-w-md overflow-y-auto p-5 sm:p-6">
-        <DialogTitle className="text-lg font-semibold">
-          Practice {systemName}
-        </DialogTitle>
-        <DialogDescription className="text-sm leading-6 text-muted-foreground">
-          See a character and choose its reading. Your answers are saved as you
-          go.
-        </DialogDescription>
-        {open ? (
-          <StartPracticeForm
-            profileId={profileId}
-            systemCode={systemCode}
-            onPending={setPending}
-            onClose={() => setOpen(false)}
-          />
-        ) : null}
-        <DialogClose render={<Button variant="ghost" disabled={pending} />}>
-          Cancel
-        </DialogClose>
-      </DialogContent>
-    </Dialog>
+      </Popover.Trigger>
+      <Popover.Portal>
+        <Popover.Positioner align="end" sideOffset={6} className="z-50">
+          <Popover.Popup className="grid max-h-[min(32rem,var(--available-height))] w-[min(22rem,calc(100vw-2rem))] gap-3 overflow-y-auto rounded-lg border border-border bg-popover p-3 text-popover-foreground shadow-lg">
+            <Popover.Title className="text-lg font-semibold">
+              Luyện nhận diện {systemName}
+            </Popover.Title>
+            <Popover.Description className="text-sm leading-6 text-muted-foreground">
+              Chọn cách đọc của từng chữ. Câu trả lời được lưu sau mỗi câu.
+            </Popover.Description>
+            {open ? (
+              <StartPracticeForm
+                profileId={profileId}
+                systemCode={systemCode}
+                onPending={setPending}
+                onClose={() => setOpen(false)}
+              />
+            ) : null}
+            <Popover.Close
+              render={<Button variant="ghost" disabled={pending} />}
+            >
+              Hủy
+            </Popover.Close>
+          </Popover.Popup>
+        </Popover.Positioner>
+      </Popover.Portal>
+    </Popover.Root>
   )
 }
 
 const QUESTION_COUNT_OPTIONS = Array.from({ length: 20 }, (_, index) => ({
   value: String(index + 1),
-  label: index === 0 ? "1 question" : `${index + 1} questions`,
+  label: `${index + 1} câu`,
 }))
 
 function StartPracticeForm({
@@ -115,6 +111,8 @@ function StartPracticeForm({
   )
   const active = useRef<AbortController | null>(null)
   const router = useRouter()
+  const search = useSearchParams()
+  const character = search.get("character")
   const { remember } = usePracticeHandoff()
   useEffect(
     () => () => {
@@ -172,14 +170,14 @@ function StartPracticeForm({
       if (controller.signal.aborted) return
       remember(detail)
       onClose()
-      router.push(practiceSessionHref(profileId, detail.session.id))
+      router.push(practiceSessionHref(profileId, detail.session.id, character))
     } catch (value) {
       if (controller.signal.aborted) return
       const problem = normalizeFoundationsError(value)
       if (problem.status === null || problem.status >= 500) {
         setError(
           new FoundationsError(
-            "We couldn't confirm whether practice started. Check your saved sessions before starting another one.",
+            "Chưa xác nhận được bài đã tạo. Hãy kiểm tra lịch sử trước khi bắt đầu bài mới.",
             problem.status,
             problem.retryAt,
             problem.traceId
@@ -205,7 +203,7 @@ function StartPracticeForm({
         </p>
         {phase === "recovering" ? (
           <p role="status" className="text-sm text-muted-foreground">
-            Checking saved practice sessions...
+            Đang kiểm tra các bài đã lưu…
           </p>
         ) : null}
         <CatalogFeedback
@@ -214,11 +212,11 @@ function StartPracticeForm({
         />
         {history ? (
           <div className="space-y-3">
-            <p className="text-sm font-medium">Recent practice</p>
+            <p className="text-sm font-medium">Bài luyện gần đây</p>
             {!history.length ? (
               <p className="text-sm text-muted-foreground">
-                No sessions have appeared yet. You can check history again or
-                explicitly start a new practice.
+                Chưa thấy bài vừa tạo. Bạn có thể kiểm tra lại lịch sử hoặc chọn
+                bắt đầu bài mới.
               </p>
             ) : (
               <ul className="divide-y divide-border">
@@ -229,11 +227,11 @@ function StartPracticeForm({
                   >
                     <div className="min-w-0">
                       <p className="font-medium text-foreground">
-                        {session.questionCount} questions
+                        {session.questionCount} câu
                       </p>
                       <p className="text-xs text-muted-foreground">
                         <time dateTime={session.createdAt}>
-                          {new Intl.DateTimeFormat("en", {
+                          {new Intl.DateTimeFormat("vi-VN", {
                             dateStyle: "medium",
                             timeStyle: "short",
                           }).format(new Date(session.createdAt))}
@@ -251,8 +249,8 @@ function StartPracticeForm({
                       href={practiceSessionHref(profileId, session.id)}
                     >
                       {session.status === "InProgress"
-                        ? "Continue"
-                        : "View results"}
+                        ? "Tiếp tục"
+                        : "Xem kết quả"}
                     </Link>
                   </li>
                 ))}
@@ -267,14 +265,14 @@ function StartPracticeForm({
               disabled={phase === "recovering"}
               onClick={() => void reloadHistory()}
             >
-              Check history again
+              Kiểm tra lại lịch sử
             </Button>
           ) : null}
           <Link
             href={practiceHistoryHref(systemCode)}
             className={buttonVariants({ variant: "ghost" })}
           >
-            All practice history
+            Toàn bộ lịch sử
           </Link>
           {history ? (
             <Button
@@ -286,7 +284,7 @@ function StartPracticeForm({
                 setPhase("idle")
               }}
             >
-              Start a new practice instead
+              Bắt đầu bài mới
             </Button>
           ) : null}
         </div>
@@ -306,7 +304,7 @@ function StartPracticeForm({
           htmlFor="practice-question-count"
           className="text-sm font-medium"
         >
-          How many questions?
+          Số câu
         </label>
         <Select
           items={QUESTION_COUNT_OPTIONS}
@@ -317,7 +315,7 @@ function StartPracticeForm({
           disabled={phase === "starting"}
         >
           <SelectTrigger id="practice-question-count">
-            <SelectValue placeholder="Choose number of questions" />
+            <SelectValue placeholder="Chọn số câu" />
           </SelectTrigger>
           <SelectContent>
             {QUESTION_COUNT_OPTIONS.map((option) => (
@@ -338,10 +336,10 @@ function StartPracticeForm({
         {phase === "starting" ? (
           <>
             <Loader2 className="size-4 animate-spin" aria-hidden="true" />
-            Starting practice...
+            Đang tạo bài…
           </>
         ) : (
-          "Start practice"
+          "Bắt đầu luyện"
         )}
       </Button>
     </form>

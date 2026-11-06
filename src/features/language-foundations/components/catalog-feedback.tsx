@@ -38,8 +38,8 @@ export function CatalogFeedback({
         <p>{error.message}</p>
         {error.retryAt ? (
           <p>
-            Try again after{" "}
-            {new Intl.DateTimeFormat("en", {
+            Thử lại sau{" "}
+            {new Intl.DateTimeFormat("vi-VN", {
               hour: "numeric",
               minute: "2-digit",
               second: "2-digit",
@@ -54,7 +54,7 @@ export function CatalogFeedback({
         disabled={waiting}
         onClick={onRetry}
       >
-        Try again
+        Thử lại
       </Button>
     </div>
   )

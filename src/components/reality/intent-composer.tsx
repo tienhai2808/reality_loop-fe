@@ -7,7 +7,7 @@ import { ArrowUpRight, Mic } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
-const examples = ["Order ramen", "Ask for directions", "Buy clothes"] as const
+const examples = ["Gọi mì ramen", "Hỏi đường", "Mua quần áo"] as const
 
 export function IntentComposer() {
   const router = useRouter()
@@ -19,7 +19,7 @@ export function IntentComposer() {
     const value = String(formData.get("intent") ?? "").trim()
 
     if (!value) {
-      setError("Describe one real situation you want to handle.")
+      setError("Nhập một tình huống bạn muốn luyện.")
       return
     }
 
@@ -30,18 +30,18 @@ export function IntentComposer() {
   return (
     <section aria-labelledby="intent-heading" className="space-y-4">
       <div className="space-y-2">
-        <p className="text-sm font-medium text-muted-foreground">Good evening.</p>
+        <p className="text-sm font-medium text-muted-foreground">Chào bạn.</p>
         <h1
           id="intent-heading"
           className="max-w-2xl text-[2.5rem] font-semibold leading-[2.75rem] text-balance md:text-[3rem] md:leading-[3.25rem]"
         >
-          What do you want to do in Japanese today?
+          Hôm nay bạn muốn làm gì bằng tiếng Nhật?
         </h1>
       </div>
 
       <form action={submitIntent} ref={formRef} className="space-y-3">
         <label className="sr-only" htmlFor="mission-intent">
-          Mission intent
+          Tình huống muốn luyện
         </label>
         <div
           className={cn(
@@ -68,13 +68,13 @@ export function IntentComposer() {
                 formRef.current?.requestSubmit()
               }
             }}
-            placeholder="I want to order ramen."
+            placeholder="Mình muốn gọi mì ramen."
             className="max-h-32 min-h-11 flex-1 resize-none bg-transparent px-2 py-3 text-base leading-6 text-foreground outline-none placeholder:text-muted-foreground"
           />
-          <Button type="button" aria-label="Use voice input" variant="ghost" size="icon">
+          <Button type="button" aria-label="Nhập bằng giọng nói" variant="ghost" size="icon">
             <Mic aria-hidden="true" />
           </Button>
-          <Button type="submit" aria-label="Start mission from intent" size="icon">
+          <Button type="submit" aria-label="Bắt đầu luyện tình huống" size="icon">
             <ArrowUpRight aria-hidden="true" />
           </Button>
         </div>
@@ -85,14 +85,14 @@ export function IntentComposer() {
         ) : null}
       </form>
 
-      <div className="flex flex-wrap gap-2" aria-label="Suggested intents">
+      <div className="flex flex-wrap gap-2" aria-label="Tình huống gợi ý">
         {examples.map((example) => (
           <Button
             key={example}
             type="button"
             variant="outline"
             size="sm"
-            onClick={() => setIntent(`I want to ${example.toLowerCase()}.`)}
+            onClick={() => setIntent(`Mình muốn ${example.toLowerCase()}.`)}
           >
             {example}
           </Button>

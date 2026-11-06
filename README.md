@@ -167,7 +167,25 @@ Open **Learn → Vocabulary** (`/learn/vocabulary`) to browse the current Learni
 
 Open a word at `/learn/vocabulary/{entryCode}` for its stored reading, all published senses, and usage notes. Entry metadata and senses load in parallel. Each sense keeps the backend's translation and fallback locale independently; missing translations remain visible without invented meanings. Changing the explanation language reloads meanings while retaining the word metadata.
 
-Audio uses the shared on-demand pronunciation player only when the backend supplies a valid HTTPS URL. Initial vocabulary content has no audio. Vocabulary is read-only: there is no vocabulary progress, saving/favorites, review, exercises, search, or AI dependency.
+Audio uses the shared on-demand pronunciation player only when the backend supplies a valid HTTPS URL. Initial vocabulary content has no audio. Dictionary content remains read-only; it has no favorites, search, generated examples, or AI dependency.
+
+### Vocabulary Learning & Review
+
+Open a word and choose **Add to learning** for an individual meaning. The body-free PUT creates that sense's card or returns its existing schedule unchanged; it never adds the word's other meanings implicitly.
+
+**Learn → Review** (`/learn/review`) loads the server summary and due queue in parallel. Reveal a card's meaning before choosing Again, Hard, Good, or Easy. Counts, scheduling states, and next-review times come from the backend's simple heuristic scheduler; they are not mastery levels. No browser clock or client scheduling algorithm determines which cards are due.
+
+Each explicit rating captures one UUID, progress version, and rating. Uncertain outcomes retry that exact payload, including across navigation within Learn while the app remains open; pending requests are held only in memory and cleared on sign-out. A full browser reload loses that memory, so reopening fetches current server state. Conflicts reload the card and require a new explicit confirmation. Successful adds/reviews invalidate lists, summary, and card/history views; queues restart at page one. Receipts never overwrite newer card progress.
+
+Browse all cards and optional scheduling-state filters at `/learn/review/saved`. Original-profile card details and review history use `/learn/review/cards/{profileId}/{progressId}`. Queue pagination uses opaque `after` cursors carrying the server's `asOf`; history uses `before`. History records ratings and schedules, not old meaning snapshots. Exact profile explanation locales and per-sense translation fallbacks are preserved.
+
+Vocabulary learning is independent of Writing System Progress and Handwriting, and needs no AI provider. There are no unsupported Delete, Reset, Suspend, or mastery actions.
+
+## Grammar
+
+Open **Learn → Grammar** (`/learn/grammar`) to browse API-provided sentence patterns, then open `/learn/grammar/{pointCode}?language={languageCode}` for explanations and optional usage notes. Detail links retain their language context across profile changes.
+
+Requests use the current LearningProfile's target language by default and its exact explanation-language tag. Backend translation fallback is displayed as returned, including missing explanations. Lists preserve server ordering and use opaque `after` cursors with Load more. Grammar is read-only and independent of AI.
 
 ## Default Validation
 

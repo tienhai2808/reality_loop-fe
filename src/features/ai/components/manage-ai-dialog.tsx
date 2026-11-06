@@ -101,7 +101,7 @@ export function ManageAiDialog({
   async function loadModels() {
     if (!getValues("apiKey")) {
       setError("apiKey", {
-        message: "Enter your provider API key to load models.",
+        message: "Nhập khóa API để tải danh sách mô hình.",
       })
       return
     }
@@ -127,7 +127,7 @@ export function ManageAiDialog({
   async function save(values: ManageAiForm) {
     if (editingCredentials && !values.apiKey) {
       setError("apiKey", {
-        message: "Enter a replacement API key, or cancel the key change.",
+        message: "Nhập khóa API mới hoặc hủy đổi khóa.",
       })
       return
     }
@@ -136,7 +136,7 @@ export function ManageAiDialog({
       !catalog.items.some((model) => model.id === values.modelId)
     ) {
       setError("modelId", {
-        message: "Choose a model from the loaded catalog.",
+        message: "Chọn một mô hình từ danh sách đã tải.",
       })
       return
     }
@@ -199,11 +199,10 @@ export function ManageAiDialog({
     return (
       <>
         <DialogTitle className="text-lg font-semibold">
-          Delete AI connection?
+          Xóa kết nối AI?
         </DialogTitle>
         <DialogDescription className="text-sm leading-6 text-muted-foreground">
-          This removes {connection.displayName} from Reality Loop. It does not
-          revoke the API key at {connection.provider}.
+          Thao tác này sẽ xóa {connection.displayName} khỏi Reality Loop. Khóa API vẫn có hiệu lực tại {connection.provider}.
         </DialogDescription>
         <AiRequestFeedback error={request.error} />
         <div className="flex flex-wrap justify-end gap-2">
@@ -212,7 +211,7 @@ export function ManageAiDialog({
             disabled={request.pending}
             onClick={() => setConfirmDelete(false)}
           >
-            Keep connection
+            Giữ kết nối
           </Button>
           <Button
             variant="destructive"
@@ -221,7 +220,7 @@ export function ManageAiDialog({
             onClick={() => void remove()}
           >
             <Trash2 aria-hidden="true" />
-            {request.pending ? "Deleting..." : "Delete connection"}
+            {request.pending ? "Đang xóa…" : "Xóa kết nối"}
           </Button>
         </div>
       </>
@@ -231,7 +230,7 @@ export function ManageAiDialog({
     <>
       <div>
         <DialogTitle className="text-lg font-semibold">
-          Manage connection
+          Quản lý kết nối
         </DialogTitle>
         <DialogDescription className="mt-1 break-words text-sm leading-6 text-muted-foreground">
           {connection.provider} / {connection.modelId}
@@ -241,7 +240,7 @@ export function ManageAiDialog({
       <form className="space-y-5" onSubmit={handleSubmit(save)}>
         <div className="space-y-2">
           <label htmlFor="manage-name" className="text-sm font-medium">
-            Display name
+            Tên hiển thị
           </label>
           <Input
             id="manage-name"
@@ -271,16 +270,16 @@ export function ManageAiDialog({
                 onCheckedChange={field.onChange}
                 disabled={request.pending}
               />
-              Enabled
+              Bật kết nối
             </label>
           )}
         />
         <section
           className="space-y-3 border-t border-border pt-4"
-          aria-label="Key and model"
+          aria-label="Khóa và mô hình"
         >
           <p className="break-all text-sm text-muted-foreground">
-            Saved API key: **** {connection.apiKeyLast4}
+            Khóa API đã lưu: **** {connection.apiKeyLast4}
           </p>
           {!editingCredentials ? (
             <Button
@@ -291,14 +290,12 @@ export function ManageAiDialog({
               className="h-auto min-h-10 whitespace-normal py-2"
             >
               <Pencil aria-hidden="true" />
-              Replace key or change model
+              Đổi khóa hoặc mô hình
             </Button>
           ) : (
             <>
               <p className="text-sm leading-6 text-muted-foreground">
-                The key you enter will replace the saved key when you save. Load
-                models to also choose a different model, or keep the current
-                model.
+                Khóa mới sẽ thay khóa cũ khi lưu. Tải danh sách nếu muốn chọn mô hình khác.
               </p>
               <AiCredentialFields
                 prefix="manage"
@@ -333,7 +330,7 @@ export function ManageAiDialog({
                   setEditingCredentials(false)
                 }}
               >
-                Cancel key change
+                Hủy đổi khóa
               </Button>
             </>
           )}
@@ -341,7 +338,7 @@ export function ManageAiDialog({
         <AiRequestFeedback error={request.error} />
         <div className="flex flex-wrap justify-end gap-2 border-t border-border pt-4">
           <Button type="button" variant="ghost" onClick={onClose}>
-            Cancel
+            Hủy
           </Button>
           <Button
             type="submit"
@@ -354,8 +351,8 @@ export function ManageAiDialog({
           >
             <Save aria-hidden="true" />
             {request.pending && action === "save"
-              ? "Saving..."
-              : "Save changes"}
+              ? "Đang lưu…"
+              : "Lưu thay đổi"}
           </Button>
         </div>
       </form>
@@ -374,8 +371,8 @@ export function ManageAiDialog({
             <Check aria-hidden="true" />
           )}
           {request.pending && action === "verify"
-            ? "Verifying..."
-            : "Verify connection"}
+            ? "Đang xác minh…"
+            : "Xác minh kết nối"}
         </Button>
         <Button
           variant="destructive"
@@ -388,12 +385,12 @@ export function ManageAiDialog({
           }}
         >
           <Trash2 aria-hidden="true" />
-          Delete
+          Xóa
         </Button>
       </div>
       {isDirty || editingCredentials ? (
         <p className="text-xs text-muted-foreground">
-          Save or cancel your changes before verifying.
+          Lưu hoặc hủy thay đổi trước khi xác minh.
         </p>
       ) : null}
     </>

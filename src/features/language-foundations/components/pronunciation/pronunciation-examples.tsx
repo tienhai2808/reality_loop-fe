@@ -25,14 +25,14 @@ export function PronunciationExamples({
   )
 
   return (
-    <section className="min-w-0 space-y-3" aria-label="Examples">
-      <h4 className="text-sm font-medium">Examples</h4>
+    <section className="min-w-0 space-y-3" aria-label="Ví dụ">
+      <h4 className="text-sm font-medium">Ví dụ</h4>
       {examples.status === "loading" ? (
-        <CatalogLoading label="Loading examples..." />
+        <CatalogLoading label="Đang tải ví dụ…" />
       ) : null}
       {examples.error?.status === 404 ? (
         <p className="text-sm leading-6 text-muted-foreground">
-          Examples aren&apos;t available for this rule.
+          Quy tắc này chưa có ví dụ.
         </p>
       ) : (
         <CatalogFeedback
@@ -44,7 +44,7 @@ export function PronunciationExamples({
       )}
       {examples.status === "ready" && !examples.data.items.length ? (
         <p className="text-sm leading-6 text-muted-foreground">
-          No examples have been published for this rule yet.
+          Quy tắc này chưa có ví dụ.
         </p>
       ) : null}
       {examples.data?.items.length ? (
@@ -84,7 +84,7 @@ export function PronunciationExamples({
           aria-busy={examples.loadingMore}
           onClick={() => void examples.loadMore()}
         >
-          {examples.loadingMore ? "Loading examples..." : "Load more examples"}
+          {examples.loadingMore ? "Đang tải ví dụ…" : "Xem thêm ví dụ"}
         </Button>
       ) : null}
     </section>

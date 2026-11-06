@@ -7,7 +7,7 @@ import { useLearningRetryWait } from "../hooks/use-learning-request"
 export function LearningFeedback({
   error,
   onRetry,
-  retryLabel = "Try again",
+  retryLabel = "Thử lại",
   pending = false,
 }: {
   error: LearningProfileError | null
@@ -26,8 +26,8 @@ export function LearningFeedback({
         <p>{error.message}</p>
         {error.retryAt ? (
           <p>
-            Try again after{" "}
-            {new Intl.DateTimeFormat("en", {
+            Thử lại sau{" "}
+            {new Intl.DateTimeFormat("vi-VN", {
               hour: "numeric",
               minute: "2-digit",
               second: "2-digit",
@@ -43,7 +43,7 @@ export function LearningFeedback({
           aria-busy={pending}
           onClick={onRetry}
         >
-          {pending ? "Refreshing..." : retryLabel}
+          {pending ? "Đang tải lại…" : retryLabel}
         </Button>
       ) : null}
     </div>

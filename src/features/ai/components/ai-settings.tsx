@@ -38,7 +38,7 @@ export function AiSettings() {
     replace(connection)
     if (action === "save") {
       setDialog(null)
-      toast.success("Connection updated")
+      toast.success("Đã cập nhật kết nối")
     } else if (connection.status === "Ready") {
       toast.success("Verification complete: Ready")
     } else {
@@ -55,10 +55,10 @@ export function AiSettings() {
     const refreshed = await reload()
     toast(
       missing
-        ? "This AI connection is no longer available."
+        ? "Kết nối AI này hiện không có."
         : refreshed
-          ? "This AI connection changed in another session. We refreshed the latest version."
-          : "This AI connection changed in another session. Refresh the list before trying again."
+          ? "Kết nối đã thay đổi ở phiên khác. Danh sách đã được cập nhật."
+          : "Kết nối đã thay đổi ở phiên khác. Hãy tải lại danh sách trước khi thử lại."
     )
   }
 
@@ -73,7 +73,7 @@ export function AiSettings() {
         <div className="space-y-3">
           {providers.status === "loading" ? (
             <p role="status" className="text-sm text-muted-foreground">
-              Loading providers...
+              Đang tải nhà cung cấp…
             </p>
           ) : null}
           {providers.status === "error" ? (
@@ -84,13 +84,13 @@ export function AiSettings() {
                 disabled={waitingProviders}
                 onClick={() => void reloadProviders()}
               >
-                Retry providers
+                Tải lại nhà cung cấp
               </Button>
             </div>
           ) : null}
           {providers.status === "loaded" && !providers.data.length ? (
             <p className="text-sm text-muted-foreground">
-              No AI providers are currently available.
+              Hiện chưa có nhà cung cấp AI.
             </p>
           ) : null}
           <DialogTrigger
@@ -106,20 +106,20 @@ export function AiSettings() {
             onClick={() => setDialog({ kind: "connect" })}
           >
             <Plug aria-hidden="true" />
-            Connect AI
+            Kết nối AI
           </DialogTrigger>
         </div>
 
         <section aria-labelledby="ai-connections-heading" className="space-y-3">
           <h2 id="ai-connections-heading" className="text-sm font-semibold">
-            Connections
+            Kết nối
           </h2>
           {connections.status === "loading" ? (
             <div
               role="status"
               className="space-y-3 border-y border-border py-5"
             >
-              <span className="sr-only">Loading connections...</span>
+              <span className="sr-only">Đang tải kết nối…</span>
               <div className="h-4 w-1/3 rounded-sm bg-muted" />
               <div className="h-3 w-2/3 rounded-sm bg-muted" />
               <div className="h-3 w-1/4 rounded-sm bg-muted" />
@@ -133,18 +133,17 @@ export function AiSettings() {
                 disabled={waitingConnections}
                 onClick={() => void reload()}
               >
-                Refresh connections
+                Tải lại kết nối
               </Button>
             </div>
           ) : null}
           {connections.status === "loaded" && !connections.data.items.length ? (
             <div className="space-y-2 border-y border-border py-6">
               <p className="text-sm font-medium">
-                Connect an AI provider to use AI-powered Reality Loop features.
+                Kết nối nhà cung cấp để dùng tính năng AI.
               </p>
               <p className="max-w-xl text-sm leading-6 text-muted-foreground">
-                Your API key is stored securely by the backend and is never
-                returned to the browser after setup.
+                Khóa API được lưu trên máy chủ và được ẩn sau khi thiết lập.
               </p>
             </div>
           ) : null}
@@ -169,7 +168,7 @@ export function AiSettings() {
                         {connection.modelId}
                       </p>
                       <p className="mt-1 text-xs text-muted-foreground">
-                        <span className="sr-only">API key ending in </span>
+                        <span className="sr-only">Đuôi khóa API </span>
                         <span aria-hidden="true">**** </span>
                         {connection.apiKeyLast4}
                       </p>
@@ -184,7 +183,7 @@ export function AiSettings() {
                         disabled={
                           loadingMore || connections.status !== "loaded"
                         }
-                        aria-label={`Manage ${connection.displayName}`}
+                        aria-label={`Quản lý ${connection.displayName}`}
                       />
                     }
                     onClick={() =>
@@ -192,7 +191,7 @@ export function AiSettings() {
                     }
                   >
                     <Settings2 aria-hidden="true" />
-                    Manage
+                    Quản lý
                   </DialogTrigger>
                 </li>
               ))}
@@ -205,7 +204,7 @@ export function AiSettings() {
               aria-busy={loadingMore}
               onClick={() => void loadMore()}
             >
-              {loadingMore ? "Loading more..." : "Load more"}
+              {loadingMore ? "Đang tải thêm…" : "Xem thêm"}
             </Button>
           ) : null}
         </section>
@@ -218,7 +217,7 @@ export function AiSettings() {
             onClose={() => setDialog(null)}
             onCreated={() => {
               setDialog(null)
-              toast.success("AI connected")
+              toast.success("Đã kết nối AI")
               void reload()
             }}
           />
@@ -232,7 +231,7 @@ export function AiSettings() {
             onStale={stale}
             onDeleted={() => {
               setDialog(null)
-              toast.success("Connection deleted")
+              toast.success("Đã xóa kết nối")
               void reload()
             }}
           />

@@ -120,7 +120,7 @@ function AudioPlaybackButton({
   }
 
   const running = state === "loading" || state === "playing"
-  const title = `${running ? "Stop pronunciation" : "Play pronunciation"}: ${label}`
+  const title = `${running ? "Dừng nghe" : "Nghe phát âm"}: ${label}`
   return (
     <div className={cn("min-w-0", compact ? "self-center" : "space-y-2")}>
       <Button
@@ -150,20 +150,20 @@ function AudioPlaybackButton({
         {!compact ? (
           <span>
             {state === "loading"
-              ? "Stop loading"
+              ? "Dừng tải"
               : state === "playing"
-                ? "Stop pronunciation"
+                ? "Dừng nghe"
                 : state === "error"
-                  ? "Retry audio"
-                  : "Play pronunciation"}
+                  ? "Phát lại"
+                  : "Nghe phát âm"}
           </span>
         ) : null}
       </Button>
       <span role="status" className="sr-only">
         {state === "loading"
-          ? `Loading pronunciation of ${label}. Activate again to stop.`
+          ? `Đang tải cách đọc ${label}. Activate again to stop.`
           : state === "playing"
-            ? `Playing pronunciation of ${label}.`
+            ? `Đang phát cách đọc ${label}.`
             : ""}
       </span>
       {state === "error" ? (
@@ -172,7 +172,7 @@ function AudioPlaybackButton({
           role="alert"
           className="mt-1 break-words text-xs leading-5 text-destructive"
         >
-          Audio couldn&apos;t be played.
+          Không phát được âm thanh.
           {compact ? " Try again." : " Check your connection and try again."}
         </p>
       ) : null}

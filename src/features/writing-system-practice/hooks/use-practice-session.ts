@@ -203,14 +203,14 @@ export function usePracticeSession(
               detail,
               action.kind === "answer" ? action.questionId : undefined,
               error.status === 409
-                ? "This session changed in another tab or device. The latest saved state is shown. Review it before continuing."
-                : "The request's result was uncertain. The latest saved session is shown; no action was automatically repeated."
+                ? "Bài luyện đã đổi ở tab hoặc thiết bị khác. Hãy xem bản mới nhất trước khi tiếp tục."
+                : "Chưa xác nhận được thao tác. Bên dưới là bài đã lưu mới nhất."
             )
           } catch (readError) {
             if (controller.signal.aborted) return false
             const latestError = normalizeFoundationsError(readError)
             const problem = new FoundationsError(
-              "We couldn't confirm the saved session. Refresh it before submitting another answer or ending practice.",
+              "Chưa xác nhận được bài đã lưu. Hãy tải lại trước khi trả lời hoặc kết thúc.",
               latestError.status,
               latestError.retryAt,
               latestError.traceId

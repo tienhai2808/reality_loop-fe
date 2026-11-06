@@ -1,6 +1,6 @@
 import { WritingSystemViewer } from "@/features/language-foundations/components/writing-system-viewer"
 
-export const metadata = { title: "Writing systems" }
+export const metadata = { title: "Bảng chữ" }
 
 export default function WritingSystemsPage() {
   return (

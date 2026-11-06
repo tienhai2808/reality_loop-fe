@@ -9,11 +9,11 @@ import { problemDetailsSchema } from "@/features/auth/api/auth-schemas"
 import type { AiFailureCode } from "./ai-schemas"
 
 export const aiFailureMessages: Record<AiFailureCode, string> = {
-  InvalidApiKey: "The API key is invalid, expired, or revoked.",
-  QuotaExceeded: "This provider account currently has no available quota.",
-  RateLimited: "The provider is currently rate limiting this connection.",
-  ProviderUnavailable: "The provider is temporarily unavailable.",
-  ModelUnavailable: "The selected model is unavailable.",
+  InvalidApiKey: "Khóa API không hợp lệ, đã hết hạn hoặc bị thu hồi.",
+  QuotaExceeded: "Tài khoản nhà cung cấp đã hết hạn mức.",
+  RateLimited: "Nhà cung cấp đang giới hạn lượt yêu cầu.",
+  ProviderUnavailable: "Nhà cung cấp đang tạm gián đoạn.",
+  ModelUnavailable: "Mô hình đã chọn hiện không khả dụng.",
 }
 
 const aiProblemSchema = problemDetailsSchema.extend({
@@ -49,39 +49,39 @@ export async function aiErrorFromResponse(
       Number.isFinite(providerRetry) ? providerRetry : 0
     ) || undefined
   const code = problem?.code
-  let message = "We couldn't complete this request. Please try again."
+  let message = "Không hoàn tất được yêu cầu. Hãy thử lại."
   switch (response.status) {
     case 400:
-      message = "Check the connection details and try again."
+      message = "Kiểm tra thông tin kết nối rồi thử lại."
       break
     case 401:
-      message = "Your session expired. Please sign in again."
+      message = "Phiên đã hết hạn. Hãy đăng nhập lại."
       break
     case 403:
-      message = "You don't have permission to manage AI connections."
+      message = "Bạn không có quyền quản lý kết nối AI."
       break
     case 404:
-      message = "This AI connection is no longer available. Refresh the list."
+      message = "Kết nối AI này hiện không có. Hãy tải lại danh sách."
       break
     case 409:
       message =
         code === "CreationInProgress"
-          ? "This connection is still being saved. Wait a moment, then retry."
-          : "This AI connection changed in another session. Review the latest version before trying again."
+          ? "Kết nối đang được lưu. Hãy đợi rồi thử lại."
+          : "Kết nối đã thay đổi ở phiên khác. Hãy xem bản mới nhất."
       break
     case 422:
       message =
         failureMessage(code) ??
-        "Check your API key, model access, and provider account quota."
+        "Kiểm tra khóa API, quyền dùng mô hình và hạn mức."
       break
     case 429:
-      message = "Too many setup requests. Please wait before trying again."
+      message = "Bạn đã gửi quá nhiều yêu cầu. Hãy đợi rồi thử lại."
       break
     case 502:
     case 504:
       message =
         failureMessage(code) ??
-        "The provider is unavailable or took too long to respond. Please try again later."
+        "Nhà cung cấp gián đoạn hoặc phản hồi quá chậm. Hãy thử lại sau."
       break
   }
   // Only known, local guidance is displayed: provider payloads may echo secrets.
@@ -89,13 +89,13 @@ export async function aiErrorFromResponse(
   for (const field of Object.keys(problem?.errors ?? {})) {
     const normalized = field.replace(/^\$\./, "").toLowerCase()
     if (normalized === "apikey")
-      fieldErrors.apiKey = "Check the API key and provider permissions."
+      fieldErrors.apiKey = "Kiểm tra khóa API và quyền của nhà cung cấp."
     if (normalized === "modelid")
-      fieldErrors.modelId = "Choose an available model."
+      fieldErrors.modelId = "Chọn mô hình có sẵn."
     if (normalized === "displayname")
-      fieldErrors.displayName = "Use a name of 150 characters or fewer."
+      fieldErrors.displayName = "Tên tối đa 150 ký tự."
     if (normalized === "provider")
-      fieldErrors.provider = "Choose an available provider."
+      fieldErrors.provider = "Chọn nhà cung cấp có sẵn."
   }
   return new AiRequestError(
     message,
@@ -120,7 +120,7 @@ export function normalizeAiError(error: unknown): AiRequestError {
   if (isAuthRequestError(error))
     return new AiRequestError(error.authError.message, 401)
   return new AiRequestError(
-    "We couldn't reach the server or confirm the response. Check your connection and try again."
+    "Không xác nhận được phản hồi. Hãy kiểm tra kết nối rồi thử lại."
   )
 }
 

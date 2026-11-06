@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     default: "Reality Loop",
     template: "%s · Reality Loop",
   },
-  description: "Practice the language you need for real life.",
+  description: "Luyện ngôn ngữ để dùng trong đời sống.",
 }
 
 export default function RootLayout({
@@ -22,7 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="vi"
       suppressHydrationWarning
       className={`${googleSansFlex.variable} ${notoSansJP.variable} h-full`}
     >

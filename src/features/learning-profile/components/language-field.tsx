@@ -54,7 +54,7 @@ export function LanguageField({
           aria-describedby={error ? `${id}-error` : undefined}
           onBlur={onBlur}
         >
-          <SelectValue placeholder="Choose a language" />
+          <SelectValue placeholder="Chọn ngôn ngữ" />
         </SelectTrigger>
         <SelectContent>
           {options.map((option) => (
@@ -62,13 +62,13 @@ export function LanguageField({
               {option.label}
             </SelectItem>
           ))}
-          <SelectItem value="custom">Another language or region...</SelectItem>
+          <SelectItem value="custom">Ngôn ngữ hoặc khu vực khác…</SelectItem>
         </SelectContent>
       </Select>
       {custom ? (
         <>
           <label htmlFor={`${id}-tag`} className="text-sm">
-            Language tag
+            Mã ngôn ngữ
           </label>
           <Input
             id={`${id}-tag`}
@@ -77,7 +77,7 @@ export function LanguageField({
             onBlur={onBlur}
             onChange={(event) => onChange(event.currentTarget.value)}
             maxLength={35}
-            placeholder="e.g. en-gb"
+            placeholder="Ví dụ en-gb"
             autoCapitalize="none"
             spellCheck={false}
             aria-invalid={Boolean(error)}
@@ -87,7 +87,7 @@ export function LanguageField({
             id={`${id}-hint`}
             className="text-xs leading-5 text-muted-foreground"
           >
-            Use a language tag with hyphens, such as en-gb or zh-hant.
+            Dùng mã ngôn ngữ có dấu gạch nối, chẳng hạn en-gb hoặc zh-hant.
           </p>
         </>
       ) : null}

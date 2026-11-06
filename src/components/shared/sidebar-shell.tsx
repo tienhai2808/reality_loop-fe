@@ -70,7 +70,7 @@ export function SidebarShell({
             <UserMenu />
           </div>
         </header>
-        <main className="mx-auto w-full max-w-[1180px] px-4 pb-28 pt-8 md:px-6 lg:px-8 lg:pb-12">
+        <main className="mx-auto w-full max-w-[1180px] px-4 pb-24 pt-4 md:px-6 lg:px-8 lg:pb-8">
           {children}
         </main>
       </div>

@@ -5,7 +5,7 @@ const bugs = [
   {
     id: "BUG-021",
     pattern: "〜てもらえますか",
-    category: "Polite requests",
+    category: "Nhờ vả lịch sự",
     context: "Restaurant",
     encounters: 3,
     status: "open",
@@ -13,7 +13,7 @@ const bugs = [
   {
     id: "BUG-019",
     pattern: "〜抜き",
-    category: "Excluding something",
+    category: "Yêu cầu bỏ một thứ",
     context: "Shopping",
     encounters: 2,
     status: "practicing",
@@ -21,7 +21,7 @@ const bugs = [
   {
     id: "BUG-009",
     pattern: "どこですか",
-    category: "Location questions",
+    category: "Câu hỏi vị trí",
     context: "Station",
     encounters: 4,
     status: "recovered",
@@ -32,10 +32,10 @@ export default function BugsPage() {
   return (
     <div className="space-y-8">
       <PageHeader>
-        <PageHeader.Title>Language Bugs</PageHeader.Title>
+        <PageHeader.Title>Lỗi ngôn ngữ</PageHeader.Title>
         <PageHeader.Description>12 open · 7 recovered this month</PageHeader.Description>
       </PageHeader>
-      <section className="border-b border-border" aria-label="Language bug list">
+      <section className="border-b border-border" aria-label="Danh sách lỗi ngôn ngữ">
         {bugs.map((bug) => (
           <LanguageBugRow key={bug.id} {...bug} />
         ))}

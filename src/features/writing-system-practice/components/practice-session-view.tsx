@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { useSearchParams } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 import { ArrowLeft, History } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -65,6 +66,7 @@ function SessionContent({
   initial: WritingPracticeDetail | null
   clearHandoff: () => void
 }) {
+  const search = useSearchParams()
   const session = usePracticeSession(profileId, sessionId, initial)
   const { profile, systems } = usePracticeCatalog(profileId)
   const { state: current } = useCurrentLearningProfile()
@@ -82,6 +84,15 @@ function SessionContent({
   const system = systems.data?.items.find(
     (entry) => entry.id === detail?.session.writingSystemId
   )
+  const returnQuery = new URLSearchParams()
+  if (system) returnQuery.set("system", system.code)
+  const character = search.get("character")
+  if (character) returnQuery.set("character", character)
+  const returnHref = `/learn/writing-systems${returnQuery.size ? `?${returnQuery}` : ""}`
+  const historyHref =
+    current.current?.profile.id === profileId
+      ? `/learn/writing-systems?${new URLSearchParams({ ...Object.fromEntries(returnQuery), history: "recognition" })}`
+      : practiceHistoryHref()
   const items = [...(detail?.items ?? [])].sort(
     (a, b) => a.position - b.position
   )
@@ -103,36 +114,34 @@ function SessionContent({
     if (nextQuestion) session.navigate(nextQuestion.id)
   }
   return (
-    <div className="mx-auto min-w-0 max-w-xl space-y-6">
+    <div className="mx-auto min-w-0 max-w-xl space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Link
-          href="/learn/writing-systems"
+          href={returnHref}
           className="inline-flex min-h-8 items-center gap-1.5 rounded-sm text-sm text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
         >
           <ArrowLeft className="size-4" aria-hidden="true" />
-          Back to Writing Systems
+          Về bảng chữ
         </Link>
         <Link
-          href={practiceHistoryHref()}
+          href={historyHref}
           className="inline-flex min-h-8 items-center gap-1.5 rounded-sm text-xs font-medium text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
         >
           <History className="size-3.5" aria-hidden="true" />
-          Practice history
+          Lịch sử luyện nhận diện
         </Link>
       </div>
       {current.current?.profile.id !== profileId ? (
         <p className="border-y border-border py-3 text-sm leading-6 text-muted-foreground">
-          This saved session belongs to another learning profile. Continuing it
-          won&apos;t change your current profile.
+          Bài luyện này thuộc hồ sơ học khác.
         </p>
       ) : null}
       {session.status === "loading" ? (
-        <CatalogLoading label="Loading saved practice..." />
+        <CatalogLoading label="Đang tải bài luyện đã lưu…" />
       ) : null}
       {session.error?.status === 404 ? (
-        <ContentUnavailable title="Practice session unavailable">
-          This session is no longer available. Open practice history to choose
-          another saved session.
+        <ContentUnavailable title="Không tìm thấy bài luyện">
+          Bài luyện này hiện không có. Mở lịch sử để chọn bài khác.
         </ContentUnavailable>
       ) : (
         <CatalogFeedback
@@ -148,15 +157,14 @@ function SessionContent({
       {session.status === "saving" || session.status === "recovering" ? (
         <p role="status" className="text-sm text-muted-foreground">
           {session.status === "saving"
-            ? "Saving your practice..."
-            : "Checking the latest saved session..."}
+            ? "Đang lưu bài…"
+            : "Đang kiểm tra bài đã lưu…"}
         </p>
       ) : null}
       {detail && session.error?.status !== 404 ? (
         !items.length ? (
-          <ContentUnavailable title="No questions available">
-            This saved session has no questions to display. Return to Writing
-            Systems or choose another practice session.
+          <ContentUnavailable title="Không có câu hỏi">
+            Về Bảng chữ hoặc chọn bài khác trong lịch sử.
           </ContentUnavailable>
         ) : ended ? (
           <div
@@ -169,22 +177,26 @@ function SessionContent({
               languageCode={profile.data?.targetLanguage}
               system={system}
               allowPracticeAgain={!busy}
+              returnHref={returnHref}
+              historyHref={historyHref}
             />
           </div>
         ) : (
           <>
             <header className="space-y-3">
               <h1 className="text-xl font-semibold tracking-tight">
-                {system ? `${system.name} practice` : "Writing system practice"}
+                {system
+                  ? `Luyện nhận diện ${system.name}`
+                  : "Luyện nhận diện chữ"}
               </h1>
               <p className="text-sm text-muted-foreground">
-                {detail.session.answeredCount} of {detail.session.questionCount}{" "}
-                answered
+                Đã trả lời {detail.session.answeredCount}/
+                {detail.session.questionCount} câu
               </p>
               <div
                 className="h-1.5 w-full overflow-hidden rounded-full bg-muted"
                 role="progressbar"
-                aria-label="Practice questions answered"
+                aria-label="Số câu đã trả lời"
                 aria-valuenow={detail.session.answeredCount}
                 aria-valuemin={0}
                 aria-valuemax={detail.session.questionCount}
@@ -217,14 +229,14 @@ function SessionContent({
                 }
               />
             ) : (
-              <ContentUnavailable title="No unanswered questions">
-                Refresh the saved session to check its latest status.
+              <ContentUnavailable title="Đã trả lời hết">
+                Tải lại bài để kiểm tra kết quả mới nhất.
                 <Button
                   variant="outline"
                   disabled={busy}
                   onClick={() => void session.reload()}
                 >
-                  Refresh session
+                  Tải lại bài
                 </Button>
               </ContentUnavailable>
             )}
@@ -238,22 +250,21 @@ function SessionContent({
                 <DialogTrigger
                   render={<Button variant="ghost" disabled={busy} />}
                 >
-                  End practice
+                  Kết thúc bài
                 </DialogTrigger>
                 <DialogContent className="max-w-md p-5 sm:p-6">
                   <DialogTitle className="text-lg font-semibold">
-                    End this practice session?
+                    Kết thúc bài luyện?
                   </DialogTitle>
                   <DialogDescription className="text-sm leading-6 text-muted-foreground">
-                    Your submitted answers will remain saved. Unanswered
-                    questions will stay unanswered. Leaving this page without
-                    ending practice lets you continue later.
+                    Câu đã trả lời vẫn được lưu. Nếu muốn làm tiếp sau, hãy quay
+                    về Bảng chữ.
                   </DialogDescription>
                   <div className="flex flex-wrap justify-end gap-2">
                     <DialogClose
                       render={<Button variant="outline" disabled={busy} />}
                     >
-                      Keep practicing
+                      Luyện tiếp
                     </DialogClose>
                     <Button
                       variant="destructive"
@@ -263,7 +274,7 @@ function SessionContent({
                         void session.mutate({ kind: "abandon" })
                       }}
                     >
-                      End practice
+                      Kết thúc bài
                     </Button>
                   </div>
                 </DialogContent>

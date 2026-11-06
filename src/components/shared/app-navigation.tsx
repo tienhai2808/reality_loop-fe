@@ -23,16 +23,16 @@ import {
 import { cn } from "@/lib/utils"
 
 const primaryNavigation = [
-  { href: "/", label: "Today", icon: Target },
-  { href: "/missions", label: "Missions", icon: ListChecks },
-  { href: "/bugs", label: "Bugs", icon: Bug, badge: "12" },
-  { href: "/progress", label: "Progress", icon: LineChart },
+  { href: "/", label: "Hôm nay", icon: Target },
+  { href: "/learn", label: "Học", icon: BookOpen },
+  { href: "/missions", label: "Tình huống", icon: ListChecks },
+  { href: "/bugs", label: "Lỗi", icon: Bug, badge: "12" },
+  { href: "/progress", label: "Tiến độ", icon: LineChart },
 ] as const
 
 const secondaryNavigation = [
-  { href: "/learn", label: "Language Foundations", icon: BookOpen },
-  { href: "/library", label: "Library", icon: BookOpenText },
-  { href: "/settings", label: "Settings", icon: Settings },
+  { href: "/library", label: "Thư viện", icon: BookOpenText },
+  { href: "/settings", label: "Cài đặt", icon: Settings },
 ] as const
 
 function isActive(pathname: string, href: string) {
@@ -93,7 +93,7 @@ export function AppNavigation({
               render={
                 <button
                   type="button"
-                  aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+                  aria-label={collapsed ? "Mở thanh điều hướng" : "Thu gọn thanh điều hướng"}
                   onClick={() => onCollapsedChange(!collapsed)}
                   className="grid size-8 place-items-center rounded-sm text-muted-foreground outline-none transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:bg-sidebar-accent focus-visible:text-sidebar-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-sidebar"
                 >
@@ -102,11 +102,11 @@ export function AppNavigation({
               }
             />
             <TooltipContent>
-              {collapsed ? "Expand sidebar" : "Collapse sidebar"}
+              {collapsed ? "Mở thanh điều hướng" : "Thu gọn thanh điều hướng"}
             </TooltipContent>
           </Tooltip>
         </div>
-        <nav aria-label="Primary navigation" className="flex flex-1 flex-col gap-6">
+        <nav aria-label="Điều hướng chính" className="flex flex-1 flex-col gap-6">
           <div className="space-y-1">
             {primaryNavigation.map((item) => (
               <NavigationLink
@@ -131,10 +131,10 @@ export function AppNavigation({
       </aside>
 
       <nav
-        aria-label="Mobile navigation"
+        aria-label="Điều hướng chính"
         className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-surface/96 px-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] pt-2 backdrop-blur lg:hidden"
       >
-        <div className="grid grid-cols-4 gap-1">
+        <div className="grid grid-cols-5 gap-1">
           {primaryNavigation.map((item) => {
             const Icon = item.icon
             const active = isActive(pathname, item.href)
@@ -144,12 +144,12 @@ export function AppNavigation({
                 href={item.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "flex min-h-12 flex-col items-center justify-center gap-1 rounded-sm px-1 text-[0.75rem] font-medium text-muted-foreground transition-colors",
+                  "flex min-h-12 flex-col items-center justify-center gap-1 rounded-sm px-1 text-[0.6875rem] leading-4 font-medium text-muted-foreground transition-colors",
                   active && "bg-muted text-foreground"
                 )}
               >
                 <Icon className="size-4" aria-hidden="true" />
-                <span>{item.label === "Progress" ? "Prog." : item.label}</span>
+                <span className="whitespace-nowrap">{item.label}</span>
               </Link>
             )
           })}

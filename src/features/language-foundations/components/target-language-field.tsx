@@ -29,7 +29,7 @@ export function TargetLanguageField({
       <LanguageField {...props} options={options} />
       {catalog.status === "loading" ? (
         <p role="status" className="text-xs text-muted-foreground">
-          Loading available languages...
+          Đang tải ngôn ngữ…
         </p>
       ) : null}
       <CatalogFeedback
@@ -40,8 +40,8 @@ export function TargetLanguageField({
       />
       {catalog.status === "ready" && !options.length ? (
         <p className="text-xs leading-5 text-muted-foreground">
-          No languages have published foundations yet. You can still set up a
-          profile using a language tag.
+          Chưa có nội dung học được xuất bản. Bạn có thể tạo hồ sơ bằng mã ngôn
+          ngữ.
         </p>
       ) : null}
       {catalog.data?.nextCursor && !catalog.error ? (
@@ -52,7 +52,7 @@ export function TargetLanguageField({
           disabled={catalog.loadingMore}
           onClick={() => void catalog.loadMore()}
         >
-          {catalog.loadingMore ? "Loading languages..." : "More languages"}
+          {catalog.loadingMore ? "Đang tải ngôn ngữ…" : "Xem thêm ngôn ngữ"}
         </Button>
       ) : null}
     </div>

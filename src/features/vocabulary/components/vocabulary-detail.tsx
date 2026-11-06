@@ -1,13 +1,7 @@
 "use client"
 
-import Link from "next/link"
 import { useCallback } from "react"
-import { useSearchParams } from "next/navigation"
-import { ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { useAuth } from "@/features/auth/hooks/use-auth"
-import { useCurrentLearningProfile } from "@/features/learning-profile/hooks/use-current-learning-profile"
-import { languageLabel } from "@/features/learning-profile/lib/language-options"
 import {
   useCatalogPage,
   useCatalogResource,
@@ -19,55 +13,16 @@ import {
 } from "@/features/language-foundations/components/catalog-feedback"
 import { PronunciationAudioButton } from "@/features/language-foundations/components/audio/pronunciation-audio-button"
 import { getVocabularyEntry, listVocabularySenses } from "../api/vocabulary-api"
-import { partOfSpeechSchema } from "../api/vocabulary-schemas"
-import { vocabularyListHref } from "../lib/vocabulary-labels"
 import { VocabularySenseItem } from "./vocabulary-sense"
+import { AddVocabularySenseButton } from "@/features/vocabulary-learning/components/add-vocabulary-sense-button"
 
-export function VocabularyDetail({ entryCode }: { entryCode: string }) {
-  const { state } = useCurrentLearningProfile()
-  const { state: auth } = useAuth()
-  const search = useSearchParams()
-  const filter = partOfSpeechSchema.safeParse(search.get("partOfSpeech"))
-  const profile = state.current?.profile
-  if (!profile || auth.status !== "authenticated") return null
-  return (
-    <div className="min-w-0 max-w-3xl space-y-6">
-      <nav
-        aria-label="Vocabulary navigation"
-        className="flex flex-wrap items-center justify-between gap-3"
-      >
-        <Link
-          href={vocabularyListHref(filter.success ? filter.data : undefined)}
-          className="inline-flex min-h-8 items-center gap-1.5 rounded-sm text-sm text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          <ArrowLeft className="size-4" aria-hidden="true" />
-          Vocabulary
-        </Link>
-        <Link
-          href="/learn"
-          className="inline-flex min-h-8 items-center gap-1.5 rounded-sm text-sm text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          Language Foundations
-        </Link>
-      </nav>
-      <p className="text-sm text-muted-foreground">
-        {languageLabel(profile.targetLanguage)}
-      </p>
-      <VocabularyDetailContent
-        key={`${auth.user.id}:${auth.sessionId}:${profile.id}:${profile.targetLanguage}:${entryCode}`}
-        languageCode={profile.targetLanguage}
-        locale={profile.explanationLanguage}
-        entryCode={entryCode}
-      />
-    </div>
-  )
-}
-
-function VocabularyDetailContent({
+export function VocabularyDetailContent({
+  profileId,
   languageCode,
   locale,
   entryCode,
 }: {
+  profileId: string
   languageCode: string
   locale: string
   entryCode: string
@@ -94,28 +49,27 @@ function VocabularyDetailContent({
 
   if (entry.error?.status === 404)
     return (
-      <ContentUnavailable title="Word unavailable">
-        This word hasn&apos;t been published or is no longer available for your
-        learning language. Return to Vocabulary to explore other words.
+      <ContentUnavailable title="Không tìm thấy từ">
+        Từ này hiện không có trong ngôn ngữ đang học. Hãy chọn một từ khác.
       </ContentUnavailable>
     )
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-4">
       {entry.status === "loading" ? (
-        <CatalogLoading label="Loading word..." />
+        <CatalogLoading label="Đang tải từ…" />
       ) : null}
       <CatalogFeedback
         error={entry.error}
         onRetry={() => void entry.reload()}
       />
-      <header className="space-y-3">
-        <h1
+      <header className="space-y-1">
+        <h2
           lang={entry.data?.languageCode}
-          className="font-ja break-words text-4xl font-medium leading-relaxed sm:text-5xl"
+          className="font-ja break-words text-3xl font-medium leading-relaxed"
         >
-          {entry.data?.term ?? "Word details"}
-        </h1>
+          {entry.data?.term ?? "Chi tiết từ"}
+        </h2>
         {entry.data?.reading !== null && entry.data?.reading !== undefined ? (
           <p
             lang={entry.data.languageCode}
@@ -133,18 +87,18 @@ function VocabularyDetailContent({
         ) : null}
       </header>
       <section
-        className="space-y-4"
+        className="space-y-2"
         aria-labelledby="vocabulary-meanings-heading"
       >
         <h2 id="vocabulary-meanings-heading" className="text-lg font-semibold">
-          Meanings
+          Các nghĩa
         </h2>
         {senses.status === "loading" ? (
-          <CatalogLoading label="Loading meanings..." />
+          <CatalogLoading label="Đang tải nghĩa…" />
         ) : null}
         {senses.error?.status === 404 ? (
-          <ContentUnavailable title="Meanings aren't available">
-            No published meanings are available for this word right now.
+          <ContentUnavailable title="Chưa có nghĩa">
+            Từ này chưa có nghĩa được xuất bản.
           </ContentUnavailable>
         ) : (
           <CatalogFeedback
@@ -157,14 +111,23 @@ function VocabularyDetailContent({
           />
         )}
         {senses.status === "ready" && !senses.data.items.length ? (
-          <ContentUnavailable title="Meanings are coming">
-            Meanings aren&apos;t available for this word yet.
+          <ContentUnavailable title="Chưa có nghĩa">
+            Từ này chưa có nghĩa được xuất bản.
           </ContentUnavailable>
         ) : null}
         {senses.data?.items.length && senses.error?.status !== 404 ? (
           <ol className="list-decimal divide-y divide-border border-y border-border pl-5">
             {senses.data.items.map((sense) => (
-              <VocabularySenseItem key={sense.id} sense={sense} />
+              <VocabularySenseItem
+                key={sense.id}
+                sense={sense}
+                actions={
+                  <AddVocabularySenseButton
+                    profileId={profileId}
+                    senseId={sense.id}
+                  />
+                }
+              />
             ))}
           </ol>
         ) : null}
@@ -175,7 +138,7 @@ function VocabularyDetailContent({
             aria-busy={senses.loadingMore}
             onClick={() => void senses.loadMore()}
           >
-            {senses.loadingMore ? "Loading meanings..." : "Load more meanings"}
+            {senses.loadingMore ? "Đang tải nghĩa…" : "Xem thêm nghĩa"}
           </Button>
         ) : null}
       </section>

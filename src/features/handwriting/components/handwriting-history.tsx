@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useCallback } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { ArrowLeft } from "lucide-react"
 import { Button, buttonVariants } from "@/components/ui/button"
 import {
@@ -26,7 +26,13 @@ import { usePracticeCatalog } from "@/features/writing-system-practice/hooks/use
 import { listHandwritingAttempts } from "../api/handwriting-api"
 import { handwritingAttemptHref } from "../lib/handwriting-labels"
 
-export function HandwritingHistory({ profileId }: { profileId: string }) {
+export function HandwritingHistory({
+  profileId,
+  embedded = false,
+}: {
+  profileId: string
+  embedded?: boolean
+}) {
   const { state } = useAuth()
   const { state: current } = useCurrentLearningProfile()
   if (state.status !== "authenticated") return null
@@ -34,6 +40,7 @@ export function HandwritingHistory({ profileId }: { profileId: string }) {
     <HistoryContent
       key={`${state.user.id}:${state.sessionId}:${profileId}:${current.current?.profile.id}`}
       profileId={profileId}
+      embedded={embedded}
       otherProfile={current.current?.profile.id !== profileId}
     />
   )
@@ -41,13 +48,17 @@ export function HandwritingHistory({ profileId }: { profileId: string }) {
 function HistoryContent({
   profileId,
   otherProfile,
+  embedded,
 }: {
   profileId: string
   otherProfile: boolean
+  embedded: boolean
 }) {
   const search = useSearchParams()
   const router = useRouter()
-  const systemCode = search.get("system") || undefined
+  const pathname = usePathname()
+  const systemCode =
+    search.get(embedded ? "historySystem" : "system") || undefined
   const passed =
     search.get("passed") === "true"
       ? true
@@ -70,26 +81,24 @@ function HistoryContent({
     loader
   )
   function filter(key: "system" | "passed", value: string) {
-    const query = new URLSearchParams()
-    if (systemCode) query.set("system", systemCode)
-    if (passed !== undefined) query.set("passed", String(passed))
-    if (value) query.set(key, value)
-    else query.delete(key)
-    router.push(
-      `/learn/handwriting/${encodeURIComponent(profileId)}/history${query.size ? `?${query}` : ""}`,
-      { scroll: false }
-    )
+    const query = new URLSearchParams(search)
+    const param = embedded && key === "system" ? "historySystem" : key
+    if (value) query.set(param, value)
+    else query.delete(param)
+    router.replace(`${pathname}${query.size ? `?${query}` : ""}`, {
+      scroll: false,
+    })
   }
   const resultOptions = [
-    { value: "all", label: "All results" },
-    { value: "true", label: "Passed" },
-    { value: "false", label: "Needs improvement" },
+    { value: "all", label: "Tất cả kết quả" },
+    { value: "true", label: "Đạt" },
+    { value: "false", label: "Cần sửa" },
   ] as const
   const systemOptions = [
-    { value: "all", label: "All writing systems" },
+    { value: "all", label: embedded ? "Tất cả" : "Tất cả bảng chữ" },
     ...(systemCode &&
     !systems.data?.items.some((system) => system.code === systemCode)
-      ? [{ value: systemCode, label: "Selected writing system" }]
+      ? [{ value: systemCode, label: "Bảng chữ đã chọn" }]
       : []),
     ...(systems.data?.items.map((system) => ({
       value: system.code,
@@ -97,47 +106,57 @@ function HistoryContent({
     })) ?? []),
   ]
   return (
-    <div className="min-w-0 max-w-3xl space-y-6">
-      <Link
-        href="/learn/writing-systems"
-        className="inline-flex min-h-8 items-center gap-1.5 rounded-sm text-sm text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+    <div className="min-w-0 max-w-3xl space-y-3">
+      {!embedded ? (
+        <>
+          <Link
+            href="/learn/writing-systems"
+            className="inline-flex min-h-8 items-center gap-1.5 rounded-sm text-sm text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <ArrowLeft className="size-4" aria-hidden="true" />
+            Về bảng chữ
+          </Link>
+          <header className="space-y-2">
+            <h1 className="text-2xl font-semibold tracking-tight">
+              Lịch sử luyện viết
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              {profile.data
+                ? `${languageLabel(profile.data.targetLanguage)} · `
+                : ""}
+              Xem bài viết đã gửi và nhận xét từng nét.
+            </p>
+            {otherProfile ? (
+              <p className="text-sm leading-6 text-muted-foreground">
+                Đang xem bài viết của hồ sơ học khác.
+              </p>
+            ) : null}
+          </header>
+        </>
+      ) : null}
+      <div
+        className={cn(
+          "grid gap-4 sm:grid-cols-2",
+          embedded &&
+            "sticky top-0 z-10 grid-cols-2 gap-2 border-b border-border bg-popover py-2"
+        )}
       >
-        <ArrowLeft className="size-4" aria-hidden="true" />
-        Back to Writing Systems
-      </Link>
-      <header className="space-y-2">
-        <h1 className="text-2xl font-semibold tracking-tight">
-          Handwriting history
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          {profile.data
-            ? `${languageLabel(profile.data.targetLanguage)} · `
-            : ""}
-          Review your submitted drawings and saved feedback.
-        </p>
-        {otherProfile ? (
-          <p className="text-sm leading-6 text-muted-foreground">
-            Showing saved handwriting history for a different learning profile.
-          </p>
-        ) : null}
-      </header>
-      <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
           <label
             htmlFor="handwriting-history-passed"
             className="text-sm font-medium"
           >
-            Result
+            Kết quả
           </label>
           <Select
             items={resultOptions}
             value={passed === undefined ? "all" : String(passed)}
             onValueChange={(val) =>
-              filter("passed", val === "all" ? "" : val ?? "")
+              filter("passed", val === "all" ? "" : (val ?? ""))
             }
           >
             <SelectTrigger id="handwriting-history-passed">
-              <SelectValue placeholder="All results" />
+              <SelectValue placeholder="Tất cả kết quả" />
             </SelectTrigger>
             <SelectContent>
               {resultOptions.map((option) => (
@@ -153,17 +172,17 @@ function HistoryContent({
             htmlFor="handwriting-history-system"
             className="text-sm font-medium"
           >
-            Writing system
+            Bảng chữ
           </label>
           <Select
             items={systemOptions}
             value={systemCode ?? "all"}
             onValueChange={(val) =>
-              filter("system", val === "all" ? "" : val ?? "")
+              filter("system", val === "all" ? "" : (val ?? ""))
             }
           >
             <SelectTrigger id="handwriting-history-system">
-              <SelectValue placeholder="All writing systems" />
+              <SelectValue placeholder="Tất cả bảng chữ" />
             </SelectTrigger>
             <SelectContent>
               {systemOptions.map((option) => (
@@ -181,15 +200,15 @@ function HistoryContent({
           disabled={systems.loadingMore}
           onClick={() => void systems.loadMore()}
         >
-          More writing systems
+          Xem thêm bảng chữ
         </Button>
       ) : null}
       {history.status === "loading" ? (
-        <CatalogLoading label="Loading handwriting attempts..." />
+        <CatalogLoading label="Đang tải bài viết…" />
       ) : null}
       {history.error?.status === 404 ? (
-        <ContentUnavailable title="Handwriting history unavailable">
-          This profile or its saved attempts are no longer available.
+        <ContentUnavailable title="Không tải được lịch sử luyện viết">
+          Hồ sơ hoặc bài viết đã lưu hiện không có.
         </ContentUnavailable>
       ) : (
         <CatalogFeedback
@@ -202,17 +221,24 @@ function HistoryContent({
         />
       )}
       {history.status === "ready" && !history.data.items.length ? (
-        <ContentUnavailable title="No handwriting attempts here yet">
-          Try a character from Writing Systems, or change the filters to see
-          other attempts.
+        <ContentUnavailable title="Chưa có bài viết">
+          Luyện một chữ hoặc đổi bộ lọc để xem bài khác.
         </ContentUnavailable>
       ) : null}
       {history.data?.items.length && history.error?.status !== 404 ? (
-        <ul className="divide-y divide-border border-y border-border">
+        <ul
+          className={cn(
+            "divide-y divide-border border-b border-border",
+            !embedded && "border-t"
+          )}
+        >
           {history.data.items.map((attempt) => (
             <li
               key={attempt.id}
-              className="flex flex-wrap items-center justify-between gap-4 py-4"
+              className={cn(
+                "flex flex-wrap items-center justify-between",
+                embedded ? "gap-2 py-2.5" : "gap-4 py-4"
+              )}
             >
               <div className="min-w-0 space-y-1">
                 <div className="flex flex-wrap items-center gap-2">
@@ -230,18 +256,18 @@ function HistoryContent({
                         : "bg-warning-subtle text-warning"
                     )}
                   >
-                    {attempt.passed ? "Passed" : "Needs improvement"}
+                    {attempt.passed ? "Đạt" : "Cần sửa"}
                   </span>
                 </div>
                 <p className="text-xs text-muted-foreground">
                   {systems.data?.items.find(
                     (system) => system.id === attempt.writingSystemId
-                  )?.name ?? "Writing system"}{" "}
-                  · Shape match {attempt.matchScore} / 100
+                  )?.name ?? "Bảng chữ"}{" "}
+                  · Độ giống mẫu {attempt.matchScore} / 100
                 </p>
                 <p className="text-xs text-muted-foreground">
                   <time dateTime={attempt.createdAt}>
-                    {new Intl.DateTimeFormat("en", {
+                    {new Intl.DateTimeFormat("vi-VN", {
                       dateStyle: "medium",
                       timeStyle: "short",
                     }).format(new Date(attempt.createdAt))}
@@ -252,7 +278,7 @@ function HistoryContent({
                 href={handwritingAttemptHref(profileId, attempt.id)}
                 className={buttonVariants({ variant: "outline", size: "sm" })}
               >
-                View drawing
+                Xem bài viết
               </Link>
             </li>
           ))}
@@ -265,7 +291,7 @@ function HistoryContent({
           aria-busy={history.loadingMore}
           onClick={() => void history.loadMore()}
         >
-          {history.loadingMore ? "Loading attempts..." : "Load more attempts"}
+          {history.loadingMore ? "Đang tải bài viết…" : "Xem thêm bài viết"}
         </Button>
       ) : null}
     </div>

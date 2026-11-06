@@ -7,16 +7,16 @@ const attentionBugs = [
   {
     id: "BUG-021",
     pattern: "〜てもらえますか",
-    category: "Polite requests",
-    context: "Restaurant",
+    category: "Nhờ vả lịch sự",
+    context: "Nhà hàng",
     encounters: 3,
     status: "open",
   },
   {
     id: "BUG-019",
     pattern: "〜抜き",
-    category: "Excluding something",
-    context: "Shopping",
+    category: "Yêu cầu bỏ một thứ",
+    context: "Mua sắm",
     encounters: 2,
     status: "practicing",
   },
@@ -30,11 +30,11 @@ export default function TodayPage() {
 
         <section aria-labelledby="continue-heading" className="space-y-3">
           <h2 id="continue-heading" className="text-sm font-semibold">
-            Continue
+            Tiếp tục
           </h2>
           <MissionCard
-            title="Buy clothes"
-            context="Shopping"
+            title="Mua quần áo"
+            context="Mua sắm"
             bugs={3}
             progress={76}
             href="/mission/buy-clothes"
@@ -44,10 +44,10 @@ export default function TodayPage() {
         <section aria-labelledby="attention-heading" className="space-y-3">
           <div className="flex items-end justify-between gap-4">
             <h2 id="attention-heading" className="text-sm font-semibold">
-              Needs attention
+              Cần luyện thêm
             </h2>
             <a href="/bugs" className="text-sm font-medium text-primary">
-              View all
+              Xem tất cả
             </a>
           </div>
           <div className="border-b border-border">
@@ -62,16 +62,16 @@ export default function TodayPage() {
         <section aria-labelledby="capability-heading" className="space-y-4">
           <div>
             <h2 id="capability-heading" className="text-sm font-semibold">
-              Current capability
+              Khả năng hiện tại
             </h2>
             <p className="mt-1 text-sm leading-6 text-muted-foreground">
-              Real-world contexts you can handle with less hesitation.
+              Các tình huống bạn có thể xử lý tự tin hơn.
             </p>
           </div>
           <div className="space-y-4 rounded-lg border border-border bg-surface p-4">
-            <CapabilityBar label="Restaurant" value={81} />
-            <CapabilityBar label="Shopping" value={64} />
-            <CapabilityBar label="Conversation recovery" value={44} />
+            <CapabilityBar label="Nhà hàng" value={81} />
+            <CapabilityBar label="Mua sắm" value={64} />
+            <CapabilityBar label="Xử lý khi hội thoại gián đoạn" value={44} />
           </div>
         </section>
       </aside>

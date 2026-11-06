@@ -2,16 +2,9 @@
 
 import Link from "next/link"
 import { useCallback } from "react"
-import {
-  ArrowRight,
-  BookOpen,
-  BookOpenText,
-  History,
-  Volume2,
-} from "lucide-react"
+import { ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useCurrentLearningProfile } from "@/features/learning-profile/hooks/use-current-learning-profile"
-import { languageLabel } from "@/features/learning-profile/lib/language-options"
 import { listLanguages } from "../api/language-foundations-api"
 import { useCatalogPage } from "../hooks/use-catalog"
 import {
@@ -28,18 +21,11 @@ export function LanguageCatalog() {
     <LanguageCatalogContent
       key={profile.id}
       locale={profile.explanationLanguage}
-      targetLanguage={profile.targetLanguage}
     />
   )
 }
 
-function LanguageCatalogContent({
-  locale,
-  targetLanguage,
-}: {
-  locale: string
-  targetLanguage: string
-}) {
+function LanguageCatalogContent({ locale }: { locale: string }) {
   const loader = useCallback(
     (after: string | null, signal: AbortSignal) =>
       listLanguages(locale, after, signal),
@@ -48,90 +34,12 @@ function LanguageCatalogContent({
   const catalog = useCatalogPage(`languages:${locale}`, loader)
   return (
     <div className="space-y-8">
-      <div className="divide-y divide-border border-y border-border">
-        <Link
-          href="/learn/writing-systems"
-          className="flex flex-wrap items-center justify-between gap-4 py-5 outline-none hover:text-primary focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          <span className="flex min-w-0 items-center gap-3">
-            <BookOpen
-              className="size-5 shrink-0 text-muted-foreground"
-              aria-hidden="true"
-            />
-            <span>
-              <span className="block text-sm font-semibold">
-                Writing systems
-              </span>
-              <span className="mt-1 block text-sm text-muted-foreground">
-                {languageLabel(targetLanguage)} · Your current language
-              </span>
-            </span>
-          </span>
-          <ArrowRight className="size-4" aria-hidden="true" />
-        </Link>
-        <Link
-          href="/learn/pronunciation"
-          className="flex flex-wrap items-center justify-between gap-4 py-5 outline-none hover:text-primary focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          <span className="flex min-w-0 items-center gap-3">
-            <Volume2
-              className="size-5 shrink-0 text-muted-foreground"
-              aria-hidden="true"
-            />
-            <span>
-              <span className="block text-sm font-semibold">Pronunciation</span>
-              <span className="mt-1 block text-sm text-muted-foreground">
-                {languageLabel(targetLanguage)} · Reading rules and examples
-              </span>
-            </span>
-          </span>
-          <ArrowRight className="size-4" aria-hidden="true" />
-        </Link>
-        <Link
-          href="/learn/vocabulary"
-          className="flex flex-wrap items-center justify-between gap-4 py-5 outline-none hover:text-primary focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          <span className="flex min-w-0 items-center gap-3">
-            <BookOpenText
-              className="size-5 shrink-0 text-muted-foreground"
-              aria-hidden="true"
-            />
-            <span>
-              <span className="block text-sm font-semibold">Vocabulary</span>
-              <span className="mt-1 block text-sm text-muted-foreground">
-                {languageLabel(targetLanguage)} · Words, readings, and meanings
-              </span>
-            </span>
-          </span>
-          <ArrowRight className="size-4" aria-hidden="true" />
-        </Link>
-        <Link
-          href="/learn/practice/history"
-          className="flex flex-wrap items-center justify-between gap-4 py-5 outline-none hover:text-primary focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          <span className="flex min-w-0 items-center gap-3">
-            <History
-              className="size-5 shrink-0 text-muted-foreground"
-              aria-hidden="true"
-            />
-            <span>
-              <span className="block text-sm font-semibold">
-                Practice history
-              </span>
-              <span className="mt-1 block text-sm text-muted-foreground">
-                Review and continue saved practice sessions
-              </span>
-            </span>
-          </span>
-          <ArrowRight className="size-4" aria-hidden="true" />
-        </Link>
-      </div>
       <section className="space-y-4" aria-labelledby="language-catalog-heading">
         <h2 id="language-catalog-heading" className="text-base font-semibold">
-          Explore languages
+          Khám phá ngôn ngữ
         </h2>
         {catalog.status === "loading" ? (
-          <CatalogLoading label="Loading languages..." />
+          <CatalogLoading label="Đang tải ngôn ngữ…" />
         ) : null}
         <CatalogFeedback
           error={catalog.error}
@@ -140,9 +48,8 @@ function LanguageCatalogContent({
           }
         />
         {catalog.status === "ready" && !catalog.data.items.length ? (
-          <ContentUnavailable title="Languages are on their way">
-            No languages are currently available in Language Foundations. Please
-            check back later.
+          <ContentUnavailable title="Chưa có ngôn ngữ">
+            Hiện chưa có ngôn ngữ được xuất bản.
           </ContentUnavailable>
         ) : null}
         {catalog.data?.items.length ? (
@@ -191,9 +98,7 @@ function LanguageCatalogContent({
             aria-busy={catalog.loadingMore}
             onClick={() => void catalog.loadMore()}
           >
-            {catalog.loadingMore
-              ? "Loading languages..."
-              : "Load more languages"}
+            {catalog.loadingMore ? "Đang tải ngôn ngữ…" : "Xem thêm ngôn ngữ"}
           </Button>
         ) : null}
       </section>

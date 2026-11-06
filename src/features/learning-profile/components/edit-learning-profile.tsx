@@ -59,7 +59,7 @@ export function EditLearningProfile({
       setBlocked(false)
       setConfirming(false)
       setNotice(
-        "This learning profile changed in another session. We've loaded the latest version. Review your preferences before saving again."
+        "Hồ sơ đã đổi ở phiên khác. Hãy xem tùy chọn mới nhất trước khi lưu."
       )
     } catch (value) {
       if (signal.aborted) return
@@ -125,17 +125,16 @@ export function EditLearningProfile({
     return (
       <div className="space-y-4">
         <p className="text-sm leading-6">
-          This profile changed elsewhere. Load its latest preferences before
-          making changes.
+          Hồ sơ đã thay đổi. Hãy tải bản mới nhất trước khi sửa.
         </p>
         <LearningFeedback
           error={request.error ?? blockedError}
           onRetry={() => void request.run(loadLatest)}
           pending={request.pending}
-          retryLabel="Load latest profile"
+          retryLabel="Tải hồ sơ mới nhất"
         />
         <Button variant="ghost" onClick={onCancel}>
-          Cancel
+          Hủy
         </Button>
       </div>
     )
@@ -144,7 +143,7 @@ export function EditLearningProfile({
     return (
       <div className="space-y-4">
         <p className="text-sm leading-6">
-          Delete your {languageLabel(profile.targetLanguage)} learning profile?
+          Xóa hồ sơ học {languageLabel(profile.targetLanguage)} ?
           {isCurrent
             ? " This also removes your current selection. You'll need to select another profile or create one before continuing."
             : " Its learning preferences will be removed."}
@@ -156,7 +155,7 @@ export function EditLearningProfile({
             disabled={request.pending}
             onClick={() => setConfirming(false)}
           >
-            Keep profile
+            Giữ hồ sơ
           </Button>
           <Button
             variant="destructive"
@@ -165,7 +164,7 @@ export function EditLearningProfile({
             onClick={() => void remove()}
           >
             <Trash2 aria-hidden="true" />
-            {request.pending ? "Deleting..." : "Delete profile"}
+            {request.pending ? "Đang xóa…" : "Xóa hồ sơ"}
           </Button>
         </div>
       </div>
@@ -182,7 +181,7 @@ export function EditLearningProfile({
         key={`${profile.id}:${profile.version}`}
         options={options}
         profile={profile}
-        submitLabel="Save preferences"
+        submitLabel="Lưu tùy chọn"
         onSubmit={save}
         onCancel={onCancel}
         footer={
@@ -192,7 +191,7 @@ export function EditLearningProfile({
             onClick={() => setConfirming(true)}
           >
             <Trash2 aria-hidden="true" />
-            Delete profile
+            Xóa hồ sơ
           </Button>
         }
       />

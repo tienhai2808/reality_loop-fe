@@ -48,17 +48,17 @@ async function request<T>(
       const messages: Record<number, string> = {
         400:
           problem?.detail ??
-          "This practice request couldn't be accepted. Check your selection or try fewer questions; some writing systems may not have enough eligible characters.",
-        401: "Your session expired. Please sign in again.",
-        403: "Practice isn't accessible right now. Please try again later.",
-        404: "This practice session or writing system isn't available.",
-        409: "This practice session changed. Please review the latest saved state.",
-        413: "This request is too large. Reopen practice and try again.",
-        429: "Too many practice requests. Please wait before trying again.",
+          "Kiểm tra bảng chữ đã chọn hoặc giảm số câu rồi thử lại.",
+        401: "Phiên đã hết hạn. Hãy đăng nhập lại.",
+        403: "Hiện không thể mở bài luyện. Hãy thử lại sau.",
+        404: "Không tìm thấy bài luyện hoặc bảng chữ.",
+        409: "Bài luyện đã thay đổi. Hãy xem bản đã lưu mới nhất.",
+        413: "Yêu cầu quá lớn. Hãy mở lại bài luyện rồi thử lại.",
+        429: "Bạn đã thao tác quá nhanh. Hãy đợi rồi thử lại.",
       }
       throw new FoundationsError(
         messages[response.status] ??
-          "We couldn't confirm the practice request. Check your connection and refresh the saved session.",
+          "Chưa xác nhận được thao tác. Hãy kiểm tra kết nối rồi tải lại bài đã lưu.",
         response.status,
         retry !== undefined
           ? Date.now() + retry * 1000
@@ -72,7 +72,7 @@ async function request<T>(
     const parsed = schema.safeParse(value)
     if (!parsed.success)
       throw new FoundationsError(
-        "The saved practice response couldn't be confirmed. Please refresh it."
+        "Chưa xác nhận được bài đã lưu. Hãy tải lại."
       )
     return parsed.data
   } catch (error) {

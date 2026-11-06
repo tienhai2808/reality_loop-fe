@@ -110,7 +110,7 @@ export async function persistRefreshToken(
 
   if (!response.ok) {
     throw new AuthRequestError(
-      await authErrorFromResponse(response, "The browser session could not be established.")
+      await authErrorFromResponse(response, "Không tạo được phiên trình duyệt.")
     )
   }
 }
@@ -125,7 +125,7 @@ export async function refreshBrowserSession(
 
   if (!response.ok) {
     throw new AuthRequestError(
-      await authErrorFromResponse(response, "Your session could not be restored.")
+      await authErrorFromResponse(response, "Không khôi phục được phiên đăng nhập.")
     )
   }
 
@@ -158,7 +158,7 @@ export async function logoutBrowserSession({
 
   if (!response.ok) {
     throw new AuthRequestError(
-      await authErrorFromResponse(response, "Sign out could not be completed.")
+      await authErrorFromResponse(response, "Không thể đăng xuất.")
     )
   }
 }
@@ -388,7 +388,7 @@ async function parseJsonResponse<T>(
   if (!parsed.success) {
     const validationError: AppAuthError = {
       kind: "server",
-      message: "The authentication server returned an unexpected response.",
+      message: "Phản hồi đăng nhập không hợp lệ.",
     }
     throw new AuthRequestError(validationError)
   }

@@ -69,43 +69,54 @@ export function HandwritingCharacterEditor({
   return (
     <section
       className="min-w-0 space-y-3"
-      aria-label={`Character position ${position + 1}: ${detail.template.reference.symbol}`}
+      aria-label={`Ô viết ${position + 1}: ${detail.template.reference.symbol}`}
     >
-      <header className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <p className="text-xs text-muted-foreground">
-            Character {position + 1}
-          </p>
-          <h2
+      <header className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex min-w-0 items-center gap-2">
+          <h3
             lang={languageCode}
-            className="font-ja break-all text-4xl leading-relaxed"
+            className="font-ja break-all text-2xl leading-relaxed"
           >
             {detail.template.reference.symbol}
-          </h2>
+          </h3>
           <p className="text-xs text-muted-foreground">
-            {detail.strokeCount} reference strokes · {drawing.length} drawn
+            {drawing.length}/{detail.strokeCount} nét
           </p>
         </div>
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          disabled={controlsDisabled}
-          onClick={onRemove}
-        >
-          Remove
-        </Button>
+        <div className="flex flex-wrap items-center gap-1">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            aria-pressed={guide}
+            disabled={controlsDisabled}
+            onClick={() => setGuide(!guide)}
+            className="min-h-11 sm:min-h-8"
+          >
+            {guide ? "Ẩn nét mẫu" : "Hiện nét mẫu"}
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            disabled={controlsDisabled}
+            onClick={onRemove}
+            className="min-h-11 sm:min-h-8"
+          >
+            Bỏ chữ
+          </Button>
+        </div>
       </header>
       {!confirmed ? (
         <div className="space-y-2 border-y border-border py-3">
           <p className="text-sm text-muted-foreground">
-            Review this template before submitting. Your drawing has been kept.
+            Kiểm tra lại mẫu trước khi gửi. Bài viết của bạn vẫn còn.
           </p>
           <label
             className="block text-sm font-medium"
             htmlFor={`${id}-template`}
           >
-            Choose a current template
+            Chọn mẫu hiện có
           </label>
           {(() => {
             const templateOptions = [
@@ -116,7 +127,7 @@ export function HandwritingCharacterEditor({
                 ? [
                     {
                       value: detail.template.reference.id,
-                      label: "Previous template — choose again",
+                      label: "Mẫu cũ · chọn lại",
                     },
                   ]
                 : []),
@@ -135,7 +146,7 @@ export function HandwritingCharacterEditor({
                 disabled={controlsDisabled}
               >
                 <SelectTrigger id={`${id}-template`} className="font-ja">
-                  <SelectValue placeholder="Choose a template" />
+                  <SelectValue placeholder="Chọn mẫu" />
                 </SelectTrigger>
                 <SelectContent>
                   {templateOptions.map((option) => (
@@ -156,20 +167,10 @@ export function HandwritingCharacterEditor({
             disabled={controlsDisabled}
             onClick={onConfirm}
           >
-            Confirm selected template
+            Xác nhận mẫu
           </Button>
         </div>
       ) : null}
-      <Button
-        type="button"
-        variant="ghost"
-        size="sm"
-        aria-pressed={guide}
-        disabled={controlsDisabled}
-        onClick={() => setGuide(!guide)}
-      >
-        {guide ? "Hide guide" : "Show guide"}
-      </Button>
       <div className="relative aspect-square w-full max-w-sm overflow-hidden rounded-md border border-border bg-surface">
         <svg
           className="pointer-events-none absolute inset-0 size-full stroke-border"
@@ -186,7 +187,7 @@ export function HandwritingCharacterEditor({
         {guide ? (
           <StrokeViewer
             strokes={detail.strokes}
-            label="Stroke guide"
+            label="Hướng dẫn nét"
             reference
             overlay
           />
@@ -195,17 +196,14 @@ export function HandwritingCharacterEditor({
           ref={canvasRef}
           {...handlers}
           className="absolute inset-0 block size-full touch-none text-foreground"
-          aria-label={`Draw ${detail.template.reference.symbol}, character ${position + 1}`}
+          aria-label={`Viết chữ ${detail.template.reference.symbol}, ô ${position + 1}`}
           aria-describedby={`${id}-instructions`}
           aria-disabled={disabled}
         />
       </div>
-      <p
-        id={`${id}-instructions`}
-        className="text-xs leading-5 text-muted-foreground"
-      >
-        Use a mouse, touch, or stylus to draw. Freehand drawing requires a
-        pointer input. Guide numbers show stroke starts; arrows show direction.
+      <p id={`${id}-instructions`} className="sr-only">
+        Viết bằng chuột, cảm ứng hoặc bút. Số chỉ điểm bắt đầu, mũi tên chỉ
+        hướng nét.
       </p>
       {message ? (
         <p role="alert" className="text-sm leading-6 text-muted-foreground">
@@ -219,7 +217,7 @@ export function HandwritingCharacterEditor({
           disabled={controlsDisabled || !drawing.length}
           onClick={() => onChange(drawing.slice(0, -1))}
         >
-          Undo stroke
+          Hoàn tác nét
         </Button>
         <Button
           type="button"
@@ -227,7 +225,7 @@ export function HandwritingCharacterEditor({
           disabled={controlsDisabled || !drawing.length}
           onClick={() => onChange([])}
         >
-          Clear
+          Xóa nét
         </Button>
       </div>
       <HandwritingSourceCredit source={detail.template.reference.source} />

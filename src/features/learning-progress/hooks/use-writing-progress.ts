@@ -97,7 +97,7 @@ export function useWritingProgress(
         if (controller.signal.aborted) return
         if (result.nextCursor && result.nextCursor === after)
           throw new FoundationsError(
-            "The next progress page couldn't be loaded. Refresh progress to try again."
+            "Không tải được trang tiến độ kế tiếp. Hãy tải lại để thử lại."
           )
         for (const progress of result.items) {
           // A late catalog-aligned page must not overwrite an in-flight item action.
@@ -201,7 +201,7 @@ export function useWritingProgress(
         updateOperation(itemId, {
           status: "idle",
           error: null,
-          notice: "Learning progress saved.",
+          notice: "Đã lưu tiến độ.",
         })
         onChanged()
       } catch (value) {
@@ -227,8 +227,8 @@ export function useWritingProgress(
               error: null,
               notice:
                 error.status === 409
-                  ? "Progress changed in another session. The latest saved state is shown; review it before choosing another action."
-                  : "The action's result couldn't be confirmed. The latest saved progress is shown; review it before trying again.",
+                  ? "Tiến độ đã đổi ở phiên khác. Hãy xem bản mới nhất trước khi thao tác."
+                  : "Chưa xác nhận được thao tác. Hãy xem tiến độ đã lưu mới nhất trước khi thử lại.",
             })
             onChanged()
           } catch (readError) {
@@ -238,7 +238,7 @@ export function useWritingProgress(
                 status: "idle",
                 requiresRead: true,
                 error: new FoundationsError(
-                  "We couldn't confirm the latest progress. Refresh it before recording another learning action.",
+                  "Chưa xác nhận được tiến độ. Hãy tải lại trước khi ghi thêm lượt học.",
                   latestError.status,
                   latestError.retryAt,
                   latestError.traceId

@@ -1,13 +1,8 @@
 "use client"
 
 import { useCallback, type ReactNode } from "react"
-import { ArrowLeft, ArrowRight, X } from "lucide-react"
+import { ArrowLeft, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import {
-  DialogClose,
-  DialogDescription,
-  DialogTitle,
-} from "@/components/ui/dialog"
 import { listItemReadings } from "../api/language-foundations-api"
 import type {
   WritingSystemItemDto,
@@ -51,7 +46,7 @@ export function CharacterDetailPanel({
 
   return (
     <div
-      className="space-y-5"
+      className="space-y-3"
       onKeyDown={(event) => {
         if (
           event.target instanceof HTMLAudioElement ||
@@ -75,36 +70,25 @@ export function CharacterDetailPanel({
     >
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0 space-y-1">
-          <DialogTitle
+          <h2
             lang={languageCode}
             className="font-ja break-all text-5xl leading-relaxed font-normal"
           >
             {item.symbol}
-          </DialogTitle>
-          <DialogDescription className="break-words text-sm text-muted-foreground">
+          </h2>
+          <p className="break-words text-sm text-muted-foreground">
             {systemName}
-          </DialogDescription>
+          </p>
         </div>
-        <DialogClose
-          render={
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label="Close character details"
-            />
-          }
-        >
-          <X aria-hidden="true" />
-        </DialogClose>
       </div>
-      <section className="space-y-3" aria-label="Readings">
-        <h2 className="text-sm font-medium">Readings</h2>
+      <section className="space-y-3" aria-label="Cách đọc">
+        <h2 className="text-sm font-medium">Cách đọc</h2>
         {readings.status === "loading" ? (
-          <CatalogLoading label="Loading readings..." />
+          <CatalogLoading label="Đang tải cách đọc…" />
         ) : null}
         {readings.error?.status === 404 ? (
           <p className="text-sm leading-6 text-muted-foreground">
-            Reading information is not available for this character.
+            Chữ này chưa có cách đọc.
           </p>
         ) : (
           <CatalogFeedback
@@ -116,7 +100,7 @@ export function CharacterDetailPanel({
         )}
         {readings.status === "ready" && !readings.data.items.length ? (
           <p className="text-sm leading-6 text-muted-foreground">
-            Reading information is not available for this character yet.
+            Chữ này chưa có cách đọc.
           </p>
         ) : null}
         {readings.data?.items.length ? (
@@ -154,9 +138,7 @@ export function CharacterDetailPanel({
             aria-busy={readings.loadingMore}
             onClick={() => void readings.loadMore()}
           >
-            {readings.loadingMore
-              ? "Loading readings..."
-              : "Load more readings"}
+            {readings.loadingMore ? "Đang tải cách đọc…" : "Xem thêm cách đọc"}
           </Button>
         ) : null}
       </section>
@@ -168,14 +150,14 @@ export function CharacterDetailPanel({
           onClick={() => previous && onNavigate(previous)}
         >
           <ArrowLeft aria-hidden="true" />
-          Previous
+          Chữ trước
         </Button>
         <Button
           variant="outline"
           disabled={!next}
           onClick={() => next && onNavigate(next)}
         >
-          Next
+          Chữ tiếp
           <ArrowRight aria-hidden="true" />
         </Button>
       </div>

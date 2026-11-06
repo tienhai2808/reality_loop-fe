@@ -38,18 +38,18 @@ export function CharacterProgressActions({
   return (
     <section
       className="space-y-3 border-t border-border pt-4"
-      aria-label="Learning progress"
+      aria-label="Tiến độ học"
       aria-busy={pending}
     >
-      <h2 className="text-sm font-medium">Learning progress</h2>
+      <h2 className="text-sm font-medium">Tiến độ học</h2>
       {!progress && !operation?.error ? (
-        <CatalogLoading label="Loading character progress..." />
+        <CatalogLoading label="Đang tải tiến độ…" />
       ) : null}
       {progress ? (
         <div className="space-y-2.5 rounded-lg border border-border bg-surface-subtle p-3.5">
           <div className="flex items-center justify-between gap-2">
             <span className="text-xs font-medium text-muted-foreground">
-              Status
+              Trạng thái
             </span>
             <span
               className={cn(
@@ -67,23 +67,23 @@ export function CharacterProgressActions({
                 <Circle className="size-3.5" aria-hidden="true" />
               )}
               {status === "Completed"
-                ? "Learned through"
+                ? "Đã học"
                 : status === "Learning"
-                  ? "Learning"
-                  : "Not started"}
+                  ? "Đang học"
+                  : "Chưa học"}
             </span>
           </div>
           {progress.completedAt || progress.lastStudiedAt ? (
             <div className="space-y-1 border-t border-border/60 pt-2 text-xs text-muted-foreground">
               {progress.completedAt ? (
                 <div className="flex items-center justify-between gap-2">
-                  <span>Learned through</span>
+                  <span>Đã học</span>
                   <ProgressTime value={progress.completedAt} />
                 </div>
               ) : null}
               {progress.lastStudiedAt ? (
                 <div className="flex items-center justify-between gap-2">
-                  <span>Last studied</span>
+                  <span>Lần học gần nhất</span>
                   <ProgressTime value={progress.lastStudiedAt} />
                 </div>
               ) : null}
@@ -105,10 +105,10 @@ export function CharacterProgressActions({
             <Loader2 className="size-4 animate-spin" aria-hidden="true" />
           ) : null}
           {status === "Completed"
-            ? "Record another study"
+            ? "Ghi thêm lượt học"
             : status === "Learning"
-              ? "Record study"
-              : "Start learning"}
+              ? "Ghi lượt học"
+              : "Bắt đầu học"}
         </Button>
         {status === "Completed" ? (
           <Button
@@ -119,7 +119,7 @@ export function CharacterProgressActions({
             {isSaving ? (
               <Loader2 className="size-4 animate-spin" aria-hidden="true" />
             ) : null}
-            Restart learning
+            Học lại
           </Button>
         ) : (
           <Button
@@ -129,17 +129,17 @@ export function CharacterProgressActions({
             {isSaving ? (
               <Loader2 className="size-4 animate-spin" aria-hidden="true" />
             ) : null}
-            Mark as learned
+            Đánh dấu đã học
           </Button>
         )}
       </div>
       <p role="status" className="text-xs leading-5 text-muted-foreground">
         {operation?.status === "saving"
-          ? "Saving progress..."
+          ? "Đang lưu tiến độ…"
           : operation?.status === "reading"
-            ? "Checking latest progress..."
+            ? "Đang kiểm tra tiến độ…"
             : (operation?.notice ??
-              "Learned through means you've chosen to mark this character as learned, not a measure of memorization.")}
+              "Bạn tự đánh dấu các chữ đã học.")}
       </p>
     </section>
   )
@@ -148,7 +148,7 @@ export function CharacterProgressActions({
 function ProgressTime({ value }: { value: string }) {
   return (
     <time dateTime={value}>
-      {new Intl.DateTimeFormat("en", {
+      {new Intl.DateTimeFormat("vi-VN", {
         month: "short",
         day: "numeric",
         year: "numeric",

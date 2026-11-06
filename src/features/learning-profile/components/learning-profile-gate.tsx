@@ -40,7 +40,7 @@ export function LearningProfileGate({
       {state.status === "error" ? (
         <>
           <h1 className="mb-3 text-lg font-semibold">
-            We couldn&apos;t load your learning profile
+            Không tải được hồ sơ học
           </h1>
           <LearningFeedback
             error={state.error}
@@ -51,7 +51,7 @@ export function LearningProfileGate({
         </>
       ) : (
         <p role="status" className="text-sm text-muted-foreground">
-          Checking your learning profile...
+          Đang kiểm tra hồ sơ học…
         </p>
       )}
     </div>

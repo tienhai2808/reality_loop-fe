@@ -1,6 +1,15 @@
-import { HandwritingWorkspace } from "@/features/handwriting/components/handwriting-workspace"
+import { redirect } from "next/navigation"
+import { handwritingWorkspaceHref } from "@/features/handwriting/lib/handwriting-labels"
 
-export const metadata = { title: "Handwriting practice" }
-export default function HandwritingPage() {
-  return <HandwritingWorkspace />
+export default async function HandwritingPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ system?: string }>
+}) {
+  const { system } = await searchParams
+  redirect(
+    typeof system === "string" && system
+      ? handwritingWorkspaceHref(system)
+      : "/learn/writing-systems"
+  )
 }

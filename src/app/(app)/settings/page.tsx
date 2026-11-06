@@ -7,9 +7,9 @@ export default function SettingsPage() {
   return (
     <div className="max-w-3xl space-y-8">
       <PageHeader>
-        <PageHeader.Title>Settings</PageHeader.Title>
+        <PageHeader.Title>Cài đặt</PageHeader.Title>
         <PageHeader.Description>
-          Learning, audio, language display, appearance, privacy, and account settings.
+          Quản lý hồ sơ học, kết nối và tài khoản.
         </PageHeader.Description>
       </PageHeader>
       <div className="divide-y divide-border rounded-lg border border-border bg-surface">
@@ -17,7 +17,7 @@ export default function SettingsPage() {
           href="/settings/learning"
           className="flex items-center justify-between gap-4 px-5 py-4 outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
         >
-          <span className="text-sm font-medium">Learning</span>
+          <span className="text-sm font-medium">Đang học</span>
           <ChevronRight
             className="size-4 text-muted-foreground"
             aria-hidden="true"
@@ -33,11 +33,11 @@ export default function SettingsPage() {
             aria-hidden="true"
           />
         </Link>
-        {["Audio & microphone", "Language display", "Appearance"].map(
+        {["Âm thanh và micrô", "Hiển thị ngôn ngữ", "Giao diện"].map(
           (section) => (
             <div key={section} className="flex items-center justify-between px-5 py-4">
               <span className="text-sm font-medium">{section}</span>
-              <span className="text-sm text-muted-foreground">Coming soon</span>
+              <span className="text-sm text-muted-foreground">Sắp có</span>
             </div>
           )
         )}

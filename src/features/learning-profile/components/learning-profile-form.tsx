@@ -60,7 +60,7 @@ export function LearningProfileForm({
     defaultValues: {
       targetLanguage: profile?.targetLanguage ?? "",
       nativeLanguage: profile?.nativeLanguage ?? "",
-      explanationLanguage: profile?.explanationLanguage ?? "",
+      explanationLanguage: profile?.explanationLanguage ?? "vi",
       proficiencyLevel:
         profile?.proficiencyLevel ?? options.proficiencyLevels[0],
       primaryGoal: profile?.primaryGoal ?? options.learningGoals[0],
@@ -109,9 +109,9 @@ export function LearningProfileForm({
           control={control}
           render={({ field }) => (
             <TargetLanguageField
-              locale={explanationLanguage || "en"}
+              locale={explanationLanguage || "vi"}
               id="learning-target"
-              label="Language to learn"
+              label="Ngôn ngữ muốn học"
               {...field}
               inputRef={field.ref}
               disabled={request.pending}
@@ -127,7 +127,7 @@ export function LearningProfileForm({
           render={({ field }) => (
             <LanguageField
               id="learning-native"
-              label="Your native language"
+              label="Tiếng mẹ đẻ"
               {...field}
               inputRef={field.ref}
               disabled={request.pending}
@@ -141,7 +141,7 @@ export function LearningProfileForm({
           render={({ field }) => (
             <LanguageField
               id="learning-explanation"
-              label="Language for explanations"
+              label="Ngôn ngữ giải thích"
               {...field}
               inputRef={field.ref}
               disabled={request.pending}
@@ -152,7 +152,7 @@ export function LearningProfileForm({
       </div>
       <div className="space-y-2">
         <label htmlFor="learning-level" className="text-sm font-medium">
-          How comfortable are you right now?
+          Trình độ hiện tại
         </label>
         <Controller
           name="proficiencyLevel"
@@ -170,7 +170,7 @@ export function LearningProfileForm({
                   errors.proficiencyLevel ? "learning-level-error" : undefined
                 }
               >
-                <SelectValue placeholder="Select proficiency level" />
+                <SelectValue placeholder="Chọn trình độ" />
               </SelectTrigger>
               <SelectContent>
                 {options.proficiencyLevels.map((level) => (
@@ -190,7 +190,7 @@ export function LearningProfileForm({
       </div>
       <div className="space-y-2">
         <label htmlFor="learning-goal" className="text-sm font-medium">
-          What do you mainly want to use it for?
+          Mục đích học
         </label>
         <Controller
           name="primaryGoal"
@@ -208,7 +208,7 @@ export function LearningProfileForm({
                   errors.primaryGoal ? "learning-goal-error" : undefined
                 }
               >
-                <SelectValue placeholder="Select primary goal" />
+                <SelectValue placeholder="Chọn mục đích" />
               </SelectTrigger>
               <SelectContent>
                 {options.learningGoals.map((value) => (
@@ -228,7 +228,7 @@ export function LearningProfileForm({
       </div>
       <div className="space-y-2">
         <label htmlFor="learning-note" className="text-sm font-medium">
-          {goal === "Other" ? "Tell us about your goal" : "Anything specific?"}{" "}
+          {goal === "Other" ? "Mục tiêu cụ thể" : "Ví dụ gọi món khi du lịch"}{" "}
           <span className="font-normal text-muted-foreground">(optional)</span>
         </label>
         <Textarea
@@ -255,7 +255,7 @@ export function LearningProfileForm({
             disabled={request.pending}
             onClick={onCancel}
           >
-            Cancel
+            Hủy
           </Button>
         ) : null}
         <Button
@@ -269,7 +269,7 @@ export function LearningProfileForm({
           aria-busy={request.pending}
         >
           <Save aria-hidden="true" />
-          {request.pending ? "Saving..." : submitLabel}
+          {request.pending ? "Đang lưu…" : submitLabel}
         </Button>
       </div>
       {footer ? (

@@ -76,7 +76,7 @@ export function LearningProfilesManager({
         const selected = await selectCurrent(profile.id, signal)
         if (!signal.aborted) replaceProfile(selected.profile)
         if (!signal.aborted && !onboarding)
-          toast.success(`Now learning ${languageLabel(profile.targetLanguage)}`)
+          toast.success(`Đang học ${languageLabel(profile.targetLanguage)}`)
       } catch (value) {
         if (
           !signal.aborted &&
@@ -101,7 +101,7 @@ export function LearningProfilesManager({
   function created() {
     setDialog(null)
     void reload()
-    toast.success("Learning profile created")
+    toast.success("Đã tạo hồ sơ học")
   }
 
   async function removed(missing = false) {
@@ -109,8 +109,8 @@ export function LearningProfilesManager({
     await Promise.allSettled([reload(), refreshCurrent()])
     toast(
       missing
-        ? "This learning profile is no longer available."
-        : "Learning profile deleted"
+        ? "Hồ sơ học này hiện không có."
+        : "Đã xóa hồ sơ học"
     )
   }
 
@@ -125,7 +125,7 @@ export function LearningProfilesManager({
   if (onboarding && current.status === "ready" && current.current)
     return (
       <p role="status" className="text-sm text-muted-foreground">
-        Opening Reality Loop...
+        Đang mở Reality Loop…
       </p>
     )
 
@@ -139,32 +139,31 @@ export function LearningProfilesManager({
       <div className="space-y-6">
         {current.status === "loading" ? (
           <p role="status" className="text-sm text-muted-foreground">
-            Checking your current learning profile...
+            Đang kiểm tra hồ sơ hiện tại…
           </p>
         ) : null}
         {current.status === "error" ? (
           <LearningFeedback
             error={current.error}
             onRetry={() => void refreshCurrent().catch(() => undefined)}
-            retryLabel="Refresh current profile"
+            retryLabel="Tải lại hồ sơ hiện tại"
           />
         ) : null}
         {!onboarding && current.status === "ready" && !current.current ? (
           <p role="status" className="text-sm leading-6 text-muted-foreground">
-            No current learning profile. Choose an existing profile or add a
-            language to continue.
+            Chọn một hồ sơ hoặc thêm ngôn ngữ để bắt đầu.
           </p>
         ) : null}
         {options.status === "loading" ? (
           <p role="status" className="text-sm text-muted-foreground">
-            Loading learning preferences...
+            Đang tải tùy chọn học…
           </p>
         ) : null}
         {options.status === "error" ? (
           <LearningFeedback
             error={options.error}
             onRetry={() => void reloadOptions()}
-            retryLabel="Retry preferences"
+            retryLabel="Tải lại tùy chọn"
           />
         ) : null}
         {options.status === "ready" &&
@@ -172,8 +171,7 @@ export function LearningProfilesManager({
         (!options.data.learningGoals.length ||
           !options.data.proficiencyLevels.length) ? (
           <p className="text-sm text-muted-foreground">
-            Learning preferences are currently unavailable. Please try again
-            later.
+            Chưa tải được tùy chọn học. Hãy thử lại sau.
           </p>
         ) : null}
         {profiles.status === "loading" ? (
@@ -181,7 +179,7 @@ export function LearningProfilesManager({
             role="status"
             className="space-y-3 border-y border-border py-5 animate-pulse"
           >
-            <span className="sr-only">Loading learning profiles...</span>
+            <span className="sr-only">Đang tải hồ sơ học…</span>
             <div className="h-4 w-1/3 rounded-sm bg-muted" />
             <div className="h-3 w-1/2 rounded-sm bg-muted" />
           </div>
@@ -190,7 +188,7 @@ export function LearningProfilesManager({
           <LearningFeedback
             error={profiles.error}
             onRetry={() => void reload()}
-            retryLabel="Refresh profiles"
+            retryLabel="Tải lại hồ sơ"
           />
         ) : null}
 
@@ -210,14 +208,14 @@ export function LearningProfilesManager({
                     {learningGoalLabels[profile.primaryGoal]}
                   </p>
                   <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                    Explanations in {languageLabel(profile.explanationLanguage)}
+                    Giải thích bằng {languageLabel(profile.explanationLanguage)}
                   </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                   {selectedId === profile.id ? (
                     <span className="inline-flex items-center gap-1 text-xs font-medium text-success">
                       <Check className="size-3.5" aria-hidden="true" />
-                      Current
+                      Đang dùng
                     </span>
                   ) : (
                     <Button
@@ -231,10 +229,10 @@ export function LearningProfilesManager({
                         listWaiting
                       }
                       aria-busy={selectingId === profile.id}
-                      aria-label={`Use ${languageLabel(profile.targetLanguage)} profile`}
+                      aria-label={`Dùng ${languageLabel(profile.targetLanguage)} profile`}
                       onClick={() => void activate(profile)}
                     >
-                      {selectingId === profile.id ? "Selecting..." : "Use this"}
+                      {selectingId === profile.id ? "Đang chọn…" : "Dùng hồ sơ này"}
                     </Button>
                   )}
                   {!onboarding ? (
@@ -248,13 +246,13 @@ export function LearningProfilesManager({
                             profiles.status !== "ready" ||
                             loadingMore
                           }
-                          aria-label={`Edit ${languageLabel(profile.targetLanguage)} profile`}
+                          aria-label={`Sửa ${languageLabel(profile.targetLanguage)} profile`}
                         />
                       }
                       onClick={() => setDialog({ kind: "edit", profile })}
                     >
                       <Pencil aria-hidden="true" />
-                      Edit
+                      Sửa
                     </DialogTrigger>
                   ) : null}
                 </div>
@@ -270,7 +268,7 @@ export function LearningProfilesManager({
             aria-busy={loadingMore}
             onClick={() => void loadMore()}
           >
-            {loadingMore ? "Loading more..." : "Load more"}
+            {loadingMore ? "Đang tải thêm…" : "Xem thêm"}
           </Button>
         ) : null}
 
@@ -278,7 +276,7 @@ export function LearningProfilesManager({
         profiles.status === "ready" &&
         !profiles.data.items.length ? (
           <p className="text-sm text-muted-foreground">
-            No learning profiles yet. Add a language to get started.
+            Thêm một ngôn ngữ để tạo hồ sơ học đầu tiên.
           </p>
         ) : null}
         {inlineCreate && options.data ? (
@@ -294,7 +292,7 @@ export function LearningProfilesManager({
             onClick={() => setDialog({ kind: "create" })}
           >
             <Plus aria-hidden="true" />
-            Add language
+            Thêm ngôn ngữ
           </DialogTrigger>
         )}
       </div>
@@ -303,13 +301,13 @@ export function LearningProfilesManager({
         <div>
           <DialogTitle className="text-lg font-semibold">
             {dialog?.kind === "edit"
-              ? "Edit learning profile"
-              : "Add a language"}
+              ? "Sửa hồ sơ học"
+              : "Thêm ngôn ngữ"}
           </DialogTitle>
           <DialogDescription className="mt-1 text-sm leading-6 text-muted-foreground">
             {dialog?.kind === "edit"
-              ? "Update your preferences. The target language stays the same."
-              : "Choose a language and how you want to learn it."}
+              ? "Chỉnh tùy chọn cho hồ sơ này."
+              : "Chọn ngôn ngữ và cách bạn muốn học."}
           </DialogDescription>
         </div>
         {dialog?.kind === "create" && options.data ? (
@@ -330,7 +328,7 @@ export function LearningProfilesManager({
             onSaved={(profile) => {
               replace(profile)
               setDialog(null)
-              toast.success("Learning preferences saved")
+              toast.success("Đã lưu tùy chọn học")
             }}
             onRemoved={() => removed()}
             onMissing={() => removed(true)}

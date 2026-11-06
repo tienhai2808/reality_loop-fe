@@ -69,7 +69,7 @@ export function OAuthSignInButton({
             aria-hidden="true"
           />
         ) : null}
-        <span>{pending ? "Connecting..." : `Continue with ${providerConfig.displayName}`}</span>
+        <span>{pending ? "Đang kết nối…" : `Tiếp tục với ${providerConfig.displayName}`}</span>
       </Button>
       {error ? (
         <p

@@ -18,7 +18,7 @@ export default async function MissionFocusPage({
         <header className="grid grid-cols-3 items-center text-sm">
           <Button render={<Link href="/" />} variant="ghost" nativeButton={false}>
             <ArrowLeft data-icon="inline-start" aria-hidden="true" />
-            Exit
+            Thoát
           </Button>
           <div className="text-center font-medium tracking-normal">{title}</div>
           <div className="justify-self-end text-xs font-medium text-success">LIVE</div>
@@ -29,15 +29,15 @@ export default async function MissionFocusPage({
             <JapaneseText className="block text-[1.65rem] leading-[1.65]">
               ご注文はお決まりですか？
             </JapaneseText>
-            <p className="text-sm text-muted-foreground">Ready when you are.</p>
+            <p className="text-sm text-muted-foreground">Bạn có thể bắt đầu.</p>
           </div>
           <div className="space-y-3">
             <div className="mx-auto size-16 rounded-full border border-primary bg-surface" />
-            <p className="text-sm font-medium">Listening</p>
+            <p className="text-sm font-medium">Đang nghe</p>
           </div>
           <div className="flex flex-wrap justify-center gap-2">
-            <Button variant="outline">I did not understand</Button>
-            <Button variant="ghost">Give me a hint</Button>
+            <Button variant="outline">Mình chưa hiểu</Button>
+            <Button variant="ghost">Cho mình gợi ý</Button>
           </div>
         </section>
       </div>

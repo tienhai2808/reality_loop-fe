@@ -22,7 +22,7 @@ export function HandwritingSourceCredit({
   return (
     <div className="space-y-1 break-words text-xs leading-5 text-muted-foreground">
       <p>
-        Stroke data:{" "}
+        Nguồn nét:{" "}
         {sourceUrl ? (
           <a
             href={sourceUrl}
@@ -37,7 +37,7 @@ export function HandwritingSourceCredit({
         )}
       </p>
       <p>
-        License:{" "}
+        Giấy phép:{" "}
         {licenseUrl ? (
           <a
             href={licenseUrl}
@@ -53,7 +53,7 @@ export function HandwritingSourceCredit({
       </p>
       <details>
         <summary className="cursor-pointer rounded-sm outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring">
-          Source revision
+          Phiên bản nguồn
         </summary>
         <p className="pt-1">{source.revision}</p>
       </details>

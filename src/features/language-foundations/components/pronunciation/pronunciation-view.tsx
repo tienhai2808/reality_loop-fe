@@ -5,6 +5,8 @@ import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { useCurrentLearningProfile } from "@/features/learning-profile/hooks/use-current-learning-profile"
+import { useLearnWideLayout } from "@/features/learn/hooks/use-learn-wide-layout"
+import { LearnDetailPane } from "@/features/learn/components/learn-detail-pane"
 import { cn } from "@/lib/utils"
 import { listPronunciationRules } from "../../api/pronunciation-api"
 import { useCatalogPage } from "../../hooks/use-catalog"
@@ -54,32 +56,54 @@ function LanguagePronunciation({
     loader
   )
 
+  const wide = useLearnWideLayout()
+  const selectedCode =
+    ruleCode ?? (wide ? rules.data?.items[0]?.code : undefined)
+  const selectedInList = rules.data?.items.some(
+    (rule) => rule.code === selectedCode
+  )
+  const listHref = `/learn/pronunciation${browsingCatalog ? `?${new URLSearchParams({ language: languageCode })}` : ""}`
+
+  const detail = selectedCode ? (
+    <LearnDetailPane
+      label="Cách phát âm"
+      selection={ruleCode ?? ""}
+      closeHref={ruleCode ? listHref : undefined}
+      triggerId={`pronunciation-${selectedCode}`}
+    >
+      <PronunciationRuleDetail
+        key={selectedCode}
+        languageCode={languageCode}
+        ruleCode={selectedCode}
+        locale={locale}
+      />
+    </LearnDetailPane>
+  ) : null
+
   return (
     <FoundationsLanguageShell
       languageCode={languageCode}
       locale={locale}
       browsingCatalog={browsingCatalog}
-      section="pronunciation"
     >
-      <h2 className="text-lg font-semibold">Pronunciation</h2>
-      <div className="grid min-w-0 items-start gap-6 lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-8">
+      <div className="grid min-w-0 items-start gap-3 lg:grid-cols-[minmax(14rem,0.55fr)_minmax(0,1fr)]">
         <section
-          className="min-w-0 space-y-3"
+          className="min-w-0 space-y-2"
           aria-labelledby="pronunciation-rules-heading"
         >
           <h3
             id="pronunciation-rules-heading"
             className="text-sm font-medium text-muted-foreground"
           >
-            Reading rules
+            Quy tắc phát âm
           </h3>
           {rules.status === "loading" ? (
-            <CatalogLoading label="Loading pronunciation rules..." />
+            <CatalogLoading label="Đang tải quy tắc phát âm…" />
           ) : null}
           {rules.error?.status === 404 ||
           (rules.status === "ready" && !rules.data.items.length) ? (
-            <ContentUnavailable title="Pronunciation is on its way">
-              Pronunciation lessons aren&apos;t available for this language yet.
+            <ContentUnavailable title="Chưa có nội dung phát âm">
+              Ngôn ngữ này chưa có quy tắc phát âm được xuất bản.
             </ContentUnavailable>
           ) : (
             <CatalogFeedback
@@ -90,17 +114,20 @@ function LanguagePronunciation({
             />
           )}
           {rules.data?.items.length ? (
-            <nav aria-label="Pronunciation rules">
+            <nav aria-label="Quy tắc phát âm">
               <ul className="space-y-1">
                 {rules.data.items.map((rule) => (
                   <li key={rule.id}>
                     <Link
+                      id={`pronunciation-${rule.code}`}
                       href={`/learn/pronunciation?${new URLSearchParams({ ...(browsingCatalog ? { language: languageCode } : {}), rule: rule.code })}`}
                       scroll={false}
-                      aria-current={ruleCode === rule.code ? "page" : undefined}
+                      aria-current={
+                        selectedCode === rule.code ? "page" : undefined
+                      }
                       className={cn(
-                        "flex min-h-12 items-center justify-between gap-2 rounded-sm border px-3 py-2.5 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring",
-                        ruleCode === rule.code
+                        "flex min-h-11 items-center justify-between gap-2 rounded-sm border px-2 py-1.5 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring",
+                        selectedCode === rule.code
                           ? "border-border bg-surface font-medium text-foreground shadow-xs"
                           : "border-transparent text-muted-foreground hover:bg-muted hover:text-foreground"
                       )}
@@ -122,6 +149,7 @@ function LanguagePronunciation({
                         ) : null}
                       </span>
                     </Link>
+                    {!wide && selectedCode === rule.code ? detail : null}
                   </li>
                 ))}
               </ul>
@@ -134,24 +162,13 @@ function LanguagePronunciation({
               aria-busy={rules.loadingMore}
               onClick={() => void rules.loadMore()}
             >
-              {rules.loadingMore ? "Loading rules..." : "Load more rules"}
+              {rules.loadingMore ? "Đang tải quy tắc…" : "Xem thêm quy tắc"}
             </Button>
           ) : null}
         </section>
-        {ruleCode ? (
-          <PronunciationRuleDetail
-            key={ruleCode}
-            languageCode={languageCode}
-            ruleCode={ruleCode}
-            locale={locale}
-          />
-        ) : (
-          <div className="border-t border-border py-6 text-sm leading-6 text-muted-foreground lg:border-t-0 lg:border-l lg:px-6">
-            {rules.data?.items.length
-              ? "Choose a reading rule to explore its explanation and examples."
-              : "Published reading rules and examples will appear here."}
-          </div>
-        )}
+        {wide || (!selectedInList && rules.status !== "loading")
+          ? detail
+          : null}
       </div>
     </FoundationsLanguageShell>
   )

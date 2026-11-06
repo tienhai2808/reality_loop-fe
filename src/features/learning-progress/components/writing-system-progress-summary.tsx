@@ -6,19 +6,18 @@ export function WritingSystemProgressSummaryView({
   summary: WritingSystemProgressSummary
 }) {
   return (
-    <div className="space-y-2" lang="en">
+    <div className="flex max-w-sm items-center gap-2">
       <p className="text-xs font-normal text-muted-foreground">
-        {summary.completedItems} of {summary.totalItems} learned through ·{" "}
-        {summary.completionPercentage}%
+        {summary.completedItems}/{summary.totalItems} chữ đã học
       </p>
       <div
         role="progressbar"
-        aria-label="Characters learned through"
+        aria-label="Số chữ đã học"
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={summary.completionPercentage}
-        aria-valuetext={`${summary.completedItems} of ${summary.totalItems} characters learned through`}
-        className="h-1.5 w-full overflow-hidden rounded-full bg-muted"
+        aria-valuetext={`Đã học ${summary.completedItems}/${summary.totalItems} chữ`}
+        className="h-1.5 min-w-12 flex-1 overflow-hidden rounded-full bg-muted"
       >
         <div
           className="h-full rounded-full bg-primary transition-[width] duration-300 ease-out"

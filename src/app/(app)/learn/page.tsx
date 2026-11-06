@@ -1,18 +1,14 @@
-import { PageHeader } from "@/components/shared/page-header"
+import { redirect } from "next/navigation"
 import { LanguageCatalog } from "@/features/language-foundations/components/language-catalog"
 
-export const metadata = { title: "Language Foundations" }
+export const metadata = { title: "Học" }
 
-export default function LearnPage() {
-  return (
-    <div className="max-w-5xl space-y-8">
-      <PageHeader>
-        <PageHeader.Title>Language Foundations</PageHeader.Title>
-        <PageHeader.Description>
-          Explore the characters, sounds, and words behind a language.
-        </PageHeader.Description>
-      </PageHeader>
-      <LanguageCatalog />
-    </div>
-  )
+export default async function LearnPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ view?: string }>
+}) {
+  if ((await searchParams).view !== "languages")
+    redirect("/learn/writing-systems")
+  return <LanguageCatalog />
 }

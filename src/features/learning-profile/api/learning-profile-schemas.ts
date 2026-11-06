@@ -21,8 +21,8 @@ const versionSchema = z.number().int().positive()
 const languageTagSchema = z
   .string()
   .trim()
-  .min(1, "Choose a language.")
-  .max(35, "Use a language tag of 35 characters or fewer.")
+  .min(1, "Hãy chọn một ngôn ngữ.")
+  .max(35, "Mã ngôn ngữ tối đa 35 ký tự.")
 
 export const learningProfileSchema = z.object({
   id: z.string().min(1),
@@ -54,7 +54,7 @@ export const learningProfileFormSchema = z.object({
   explanationLanguage: languageTagSchema,
   proficiencyLevel: proficiencyLevelSchema,
   primaryGoal: learningGoalSchema,
-  goalNote: z.string().trim().max(500, "Use 500 characters or fewer."),
+  goalNote: z.string().trim().max(500, "Dùng tối đa 500 ký tự."),
 })
 
 export type ProficiencyLevel = z.infer<typeof proficiencyLevelSchema>

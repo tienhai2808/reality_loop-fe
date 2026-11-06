@@ -30,7 +30,7 @@ export function AuthGate({ children }: Readonly<{ children: React.ReactNode }>) 
   if (state.status === "error") {
     return (
       <div className="mx-auto max-w-md py-16 text-center">
-        <h1 className="text-lg font-semibold">We could not check your session</h1>
+        <h1 className="text-lg font-semibold">Không kiểm tra được phiên đăng nhập</h1>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">
           {state.error.message}
         </p>

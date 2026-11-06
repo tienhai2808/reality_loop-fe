@@ -61,6 +61,6 @@ function withBearer(init: RequestInit, accessToken: string): RequestInit {
 
 const sessionExpiredError: AppAuthError = {
   kind: "unauthorized",
-  message: "Your session expired. Please sign in again.",
+  message: "Phiên đã hết hạn. Hãy đăng nhập lại.",
 }
 

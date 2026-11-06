@@ -99,7 +99,7 @@ export function useHandwritingDrawing({
       ) {
         draft.current.failed = true
         setMessage(
-          "The drawing area resized. The unfinished stroke wasn't added; draw it again."
+          "Ô viết vừa đổi kích thước. Hãy viết lại nét đang dở."
         )
       }
       paint()
@@ -136,7 +136,7 @@ export function useHandwritingDrawing({
     ) {
       current.failed = true
       setMessage(
-        "The drawing area resized. The unfinished stroke wasn't added; draw it again."
+        "Ô viết vừa đổi kích thước. Hãy viết lại nét đang dở."
       )
       return
     }
@@ -176,7 +176,7 @@ export function useHandwritingDrawing({
       return
     if (drawing.length >= policy.maximumStrokesPerCharacter) {
       setMessage(
-        `This character allows at most ${policy.maximumStrokesPerCharacter} strokes. Undo or clear a stroke first.`
+        `Chữ này cho phép tối đa ${policy.maximumStrokesPerCharacter} strokes. Undo or clear a stroke first.`
       )
       return
     }
@@ -184,7 +184,7 @@ export function useHandwritingDrawing({
       drawing.reduce((total, stroke) => total + stroke.length, 0) >= pointBudget
     ) {
       setMessage(
-        "The attempt's point limit has been reached. Undo or clear strokes before drawing again."
+        "Đã đến giới hạn điểm vẽ. Hãy hoàn tác hoặc xóa nét trước khi viết tiếp."
       )
       return
     }
@@ -226,7 +226,7 @@ export function useHandwritingDrawing({
     if (!cancelled && !current.failed && current.points.length)
       onChange([...drawing, current.points])
     else if (cancelled)
-      setMessage("The unfinished stroke wasn't added. You can draw it again.")
+      setMessage("Nét đang dở chưa được lưu. Bạn có thể viết lại.")
     onActive(false)
     if (cancelled || current.failed) paint()
   }

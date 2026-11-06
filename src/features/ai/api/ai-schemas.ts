@@ -47,26 +47,26 @@ export const aiConnectionPageSchema = z.object({
 
 export const aiKeySchema = z
   .string()
-  .min(8, "Enter an API key of at least 8 characters.")
-  .max(8192, "The API key is too long.")
+  .min(8, "Nhập khóa API có ít nhất 8 ký tự.")
+  .max(8192, "Khóa API quá dài.")
 export const aiDisplayNameSchema = z
   .string()
   .trim()
-  .max(150, "Use 150 characters or fewer.")
+  .max(150, "Dùng tối đa 150 ký tự.")
 export const connectAiFormSchema = z.object({
   provider: aiProviderSchema,
   apiKey: aiKeySchema,
   modelId: z
     .string()
-    .min(1, "Choose a model.")
-    .max(200, "The model ID is too long."),
+    .min(1, "Chọn một mô hình.")
+    .max(200, "Mã mô hình quá dài."),
   displayName: aiDisplayNameSchema,
 })
 export const manageAiFormSchema = z.object({
   displayName: aiDisplayNameSchema,
   isEnabled: z.boolean(),
   apiKey: z.union([z.literal(""), aiKeySchema]),
-  modelId: z.string().max(200, "The model ID is too long."),
+  modelId: z.string().max(200, "Mã mô hình quá dài."),
 })
 
 export type AiProvider = z.infer<typeof aiProviderSchema>

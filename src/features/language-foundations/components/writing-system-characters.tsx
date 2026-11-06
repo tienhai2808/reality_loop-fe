@@ -3,7 +3,9 @@
 import { useCallback, useState } from "react"
 import { Circle, CircleDot, CircleCheck } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent } from "@/components/ui/dialog"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import { useLearnWideLayout } from "@/features/learn/hooks/use-learn-wide-layout"
+import { LearnDetailPane } from "@/features/learn/components/learn-detail-pane"
 import { listWritingSystemItems } from "../api/language-foundations-api"
 import type {
   WritingSystemItemDto,
@@ -41,28 +43,67 @@ export function WritingSystemCharacters({
   const page = useCatalogPage(`items:${languageCode}:${systemCode}`, loader)
   // Catalog and progress requests start independently in the same mount.
   const progress = useWritingProgress(profileId, systemCode, onProgressChanged)
-  const [selected, setSelected] = useState<WritingSystemItemDto | null>(null)
+  const pathname = usePathname()
+  const router = useRouter()
+  const search = useSearchParams()
+  const selectedCode = search.get("character")
+  function selectionHref(code?: string) {
+    const query = new URLSearchParams(search)
+    if (code) query.set("character", code)
+    else query.delete("character")
+    return `${pathname}${query.size ? `?${query}` : ""}`
+  }
+  function setSelected(item: WritingSystemItemDto) {
+    router.push(selectionHref(item.code), { scroll: false })
+  }
   const [readingsCache] = useState<CatalogCache<WritingSystemItemReadingDto>>(
     () => new Map()
   )
   const items = page.data?.items ?? []
-  const selectedIndex = items.findIndex((item) => item.id === selected?.id)
+  const selectedIndex = items.findIndex((item) => item.code === selectedCode)
+  const selected = items[selectedIndex]
+  const wide = useLearnWideLayout()
+  const detail = selected ? (
+    <LearnDetailPane
+      label="Chi tiết chữ"
+      selection={selected.code}
+      closeHref={selectionHref()}
+      triggerId={`character-${selected.id}`}
+    >
+      <CharacterDetailPanel
+        item={selected}
+        languageCode={languageCode}
+        systemCode={systemCode}
+        systemName={systemName}
+        cache={readingsCache}
+        previous={items[selectedIndex - 1] ?? null}
+        next={items[selectedIndex + 1] ?? null}
+        onNavigate={setSelected}
+        progressControls={
+          profileId ? (
+            <CharacterProgressActions
+              key={selected.id}
+              itemId={selected.id}
+              progress={progress.entries.get(selected.id)}
+              operation={progress.operations.get(selected.id)}
+              loadItem={progress.loadItem}
+              onAction={progress.record}
+            />
+          ) : undefined
+        }
+      />
+    </LearnDetailPane>
+  ) : null
 
   return (
-    <Dialog
-      open={selected !== null}
-      onOpenChange={(open) => {
-        if (!open) setSelected(null)
-      }}
-    >
-      <div className="min-w-0 space-y-4">
+    <div className="grid min-w-0 items-start gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(16rem,0.55fr)]">
+      <div className="min-w-0 space-y-3">
         {page.status === "loading" ? (
-          <CatalogLoading label="Loading characters..." />
+          <CatalogLoading label="Đang tải chữ…" />
         ) : null}
         {page.error?.status === 404 ? (
-          <ContentUnavailable title="Characters aren't available yet">
-            This writing system has no published characters to explore right
-            now.
+          <ContentUnavailable title="Chưa có chữ">
+            Bảng chữ này chưa có chữ được xuất bản.
           </ContentUnavailable>
         ) : (
           <CatalogFeedback
@@ -71,8 +112,8 @@ export function WritingSystemCharacters({
           />
         )}
         {page.status === "ready" && !items.length ? (
-          <ContentUnavailable title="Characters are on their way">
-            No characters have been published for this writing system yet.
+          <ContentUnavailable title="Chưa có chữ">
+            Bảng chữ này chưa có chữ được xuất bản.
           </ContentUnavailable>
         ) : null}
         {items.length ? (
@@ -81,7 +122,7 @@ export function WritingSystemCharacters({
               <>
                 {progress.page.status === "loading" ? (
                   <p role="status" className="text-xs text-muted-foreground">
-                    Loading character progress...
+                    Đang tải tiến độ…
                   </p>
                 ) : null}
                 <CatalogFeedback
@@ -94,19 +135,28 @@ export function WritingSystemCharacters({
                 />
                 <div
                   className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-muted-foreground"
-                  aria-label="Character progress key"
+                  aria-label="Chú giải tiến độ"
                 >
                   <span className="inline-flex items-center gap-1.5">
-                    <Circle className="size-3.5 text-muted-foreground/60" aria-hidden="true" />
-                    Not started
+                    <Circle
+                      className="size-3.5 text-muted-foreground/60"
+                      aria-hidden="true"
+                    />
+                    Chưa học
                   </span>
                   <span className="inline-flex items-center gap-1.5">
-                    <CircleDot className="size-3.5 text-primary" aria-hidden="true" />
-                    Learning
+                    <CircleDot
+                      className="size-3.5 text-primary"
+                      aria-hidden="true"
+                    />
+                    Đang học
                   </span>
                   <span className="inline-flex items-center gap-1.5">
-                    <CircleCheck className="size-3.5 text-success" aria-hidden="true" />
-                    Learned through
+                    <CircleCheck
+                      className="size-3.5 text-success"
+                      aria-hidden="true"
+                    />
+                    Đã học
                   </span>
                 </div>
               </>
@@ -118,6 +168,7 @@ export function WritingSystemCharacters({
               onSelect={setSelected}
               progress={profileId ? progress.entries : undefined}
               operations={profileId ? progress.operations : undefined}
+              inlineDetail={wide ? undefined : detail}
             />
           </>
         ) : null}
@@ -128,9 +179,7 @@ export function WritingSystemCharacters({
             aria-busy={page.loadingMore}
             onClick={() => void page.loadMore()}
           >
-            {page.loadingMore
-              ? "Loading characters..."
-              : "Load more characters"}
+            {page.loadingMore ? "Đang tải chữ…" : "Xem thêm chữ"}
           </Button>
         ) : null}
         {profileId && progress.page.nextCursor && !progress.page.error ? (
@@ -141,37 +190,18 @@ export function WritingSystemCharacters({
             onClick={() => void progress.loadMore()}
           >
             {progress.page.loadingMore
-              ? "Loading progress..."
-              : "Load more character progress"}
+              ? "Đang tải tiến độ…"
+              : "Xem thêm tiến độ"}
           </Button>
         ) : null}
       </div>
-      <DialogContent className="max-h-[calc(100dvh-2rem)] max-w-md overflow-y-auto p-5 sm:p-6">
-        {selected ? (
-          <CharacterDetailPanel
-            item={selected}
-            languageCode={languageCode}
-            systemCode={systemCode}
-            systemName={systemName}
-            cache={readingsCache}
-            previous={items[selectedIndex - 1] ?? null}
-            next={items[selectedIndex + 1] ?? null}
-            onNavigate={setSelected}
-            progressControls={
-              profileId ? (
-                <CharacterProgressActions
-                  key={selected.id}
-                  itemId={selected.id}
-                  progress={progress.entries.get(selected.id)}
-                  operation={progress.operations.get(selected.id)}
-                  loadItem={progress.loadItem}
-                  onAction={progress.record}
-                />
-              ) : undefined
-            }
-          />
-        ) : null}
-      </DialogContent>
-    </Dialog>
+      {wide
+        ? (detail ?? (
+            <p className="border-l border-border pl-5 text-sm text-muted-foreground">
+              Chọn một chữ để xem cách đọc và nghe phát âm.
+            </p>
+          ))
+        : null}
+    </div>
   )
 }

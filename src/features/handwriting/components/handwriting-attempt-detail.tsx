@@ -64,38 +64,34 @@ function AttemptContent({
     <div className="min-w-0 max-w-4xl space-y-6">
       <nav
         className="flex flex-wrap items-center justify-between gap-3"
-        aria-label="Saved handwriting navigation"
+        aria-label="Điều hướng bài viết đã lưu"
       >
         <Link
           href={`/learn/handwriting/${encodeURIComponent(profileId)}/history`}
           className="inline-flex min-h-8 items-center gap-1.5 rounded-sm text-sm text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
         >
           <ArrowLeft className="size-4" aria-hidden="true" />
-          Handwriting history
+          Lịch sử luyện viết
         </Link>
         <Link
           href="/learn/writing-systems"
           className="inline-flex min-h-8 items-center gap-1.5 rounded-sm text-sm text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
         >
-          Writing Systems
+          Bảng chữ
         </Link>
       </nav>
-      <h1 className="text-2xl font-semibold tracking-tight">
-        Saved handwriting attempt
-      </h1>
+      <h1 className="text-2xl font-semibold tracking-tight">Bài viết đã lưu</h1>
       {current.current?.profile.id !== profileId ? (
         <p className="text-sm leading-6 text-muted-foreground">
-          This attempt is saved under another learning profile. Viewing it
-          won&apos;t change your selection.
+          Bài viết này thuộc hồ sơ học khác.
         </p>
       ) : null}
       {attempt.status === "loading" ? (
-        <CatalogLoading label="Loading saved drawing and feedback..." />
+        <CatalogLoading label="Đang tải bài viết và nhận xét…" />
       ) : null}
       {attempt.error?.status === 404 ? (
-        <ContentUnavailable title="Attempt unavailable">
-          This saved attempt could not be found. Choose another attempt from
-          history.
+        <ContentUnavailable title="Không tìm thấy bài viết">
+          Hãy chọn bài khác trong lịch sử.
         </ContentUnavailable>
       ) : (
         <CatalogFeedback
@@ -121,19 +117,18 @@ function AttemptContent({
                     : "bg-warning-subtle text-warning"
                 )}
               >
-                {attempt.data.attempt.passed ? "Passed" : "Needs improvement"}
+                {attempt.data.attempt.passed ? "Đạt" : "Cần sửa"}
               </span>
               <span className="text-sm text-muted-foreground">
-                Shape match {attempt.data.attempt.matchScore} / 100
+                Độ giống mẫu {attempt.data.attempt.matchScore} / 100
               </span>
             </div>
             <p className="text-sm leading-6 text-muted-foreground">
-              A geometry similarity result, including stroke order and direction
-              feedback.
+              Xem độ giống mẫu, thứ tự và hướng nét.
             </p>
             <p className="text-xs text-muted-foreground">
               <time dateTime={attempt.data.attempt.createdAt}>
-                {new Intl.DateTimeFormat("en", {
+                {new Intl.DateTimeFormat("vi-VN", {
                   dateStyle: "medium",
                   timeStyle: "short",
                 }).format(new Date(attempt.data.attempt.createdAt))}
@@ -157,26 +152,24 @@ function AttemptContent({
                 href={handwritingWorkspaceHref(system.code)}
                 className={buttonVariants({ variant: "outline" })}
               >
-                Practice again with a fresh drawing
+                Luyện viết lại
               </Link>
             ) : (
               <p className="text-sm text-muted-foreground">
-                Choose this learning profile in Settings to start a fresh
-                drawing for the same language.
+                Chọn hồ sơ này trong Cài đặt để luyện viết cùng ngôn ngữ.
               </p>
             )
           ) : (
             <p className="text-sm text-muted-foreground">
-              This attempt remains available even when its writing system is no
-              longer published.
+              Bạn vẫn có thể xem bài đã lưu khi bảng chữ này ngừng phát hành.
             </p>
           )}
           <details className="text-xs text-muted-foreground">
-            <summary className="cursor-pointer rounded-sm focus-visible:outline-2 focus-visible:outline-ring">
-              Evaluation details
+            <summary className="cursor-pointer rounded-sm outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring">
+              Nhận xét chi tiết
             </summary>
             <p className="pt-2">
-              Algorithm: {attempt.data.attempt.algorithmVersion}
+              Thuật toán: {attempt.data.attempt.algorithmVersion}
             </p>
           </details>
         </>
@@ -213,12 +206,11 @@ function SavedCharacter({
           />
           {systemCode ? (
             <Button variant="ghost" onClick={() => setShowReference(true)}>
-              Load reference for {character.template.symbol}
+              Tải mẫu cho chữ {character.template.symbol}
             </Button>
           ) : (
             <p className="text-xs text-muted-foreground">
-              A published reference isn&apos;t currently available. Your saved
-              drawing and feedback are preserved.
+              Mẫu hiện không có. Bài viết và nhận xét vẫn có thể xem.
             </p>
           )}
         </>
@@ -259,11 +251,10 @@ function SavedReference({
         reference={reference.data ?? undefined}
       />
       {reference.status === "loading" ? (
-        <CatalogLoading label="Loading reference strokes..." />
+        <CatalogLoading label="Đang tải nét mẫu…" />
       ) : reference.error?.status === 404 ? (
         <p className="text-xs text-muted-foreground">
-          This reference is no longer published. The saved drawing and feedback
-          can still be reviewed.
+          Mẫu đã ngừng phát hành. Bạn vẫn có thể xem bài viết và nhận xét.
         </p>
       ) : (
         <CatalogFeedback

@@ -20,14 +20,14 @@ const refreshCookieOptions = {
 
 export async function persistRefreshTokenHandler(request: NextRequest) {
   if (!isAllowedOrigin(request)) {
-    return problemResponse(403, "Forbidden", "The request origin is not allowed.")
+    return problemResponse(403, "Forbidden", "Nguồn yêu cầu không hợp lệ.")
   }
 
   const body = await readJson(request)
   const parsed = persistSessionBodySchema.safeParse(body)
 
   if (!parsed.success) {
-    return problemResponse(400, "Invalid request", "A refresh token is required.")
+    return problemResponse(400, "Yêu cầu không hợp lệ", "Thiếu mã làm mới phiên.")
   }
 
   const response = NextResponse.json({ ok: true })
@@ -37,13 +37,13 @@ export async function persistRefreshTokenHandler(request: NextRequest) {
 
 export async function refreshSessionHandler(request: NextRequest) {
   if (!isAllowedOrigin(request)) {
-    return problemResponse(403, "Forbidden", "The request origin is not allowed.")
+    return problemResponse(403, "Forbidden", "Nguồn yêu cầu không hợp lệ.")
   }
 
   const refreshToken = request.cookies.get(refreshCookieName)?.value
 
   if (!refreshToken) {
-    return problemResponse(401, "Session unavailable", "No browser session is available.")
+    return problemResponse(401, "Phiên không khả dụng", "Không có phiên trình duyệt.")
   }
 
   const backendResponse = await fetch(`${env.NEXT_PUBLIC_API_BASE_URL}/auth/refresh`, {
@@ -70,7 +70,7 @@ export async function refreshSessionHandler(request: NextRequest) {
 
 export async function logoutSessionHandler(request: NextRequest) {
   if (!isAllowedOrigin(request)) {
-    return problemResponse(403, "Forbidden", "The request origin is not allowed.")
+    return problemResponse(403, "Forbidden", "Nguồn yêu cầu không hợp lệ.")
   }
 
   const refreshToken = request.cookies.get(refreshCookieName)?.value
@@ -100,7 +100,7 @@ export async function logoutSessionHandler(request: NextRequest) {
 
 export async function clearBrowserSessionHandler(request: NextRequest) {
   if (!isAllowedOrigin(request)) {
-    return problemResponse(403, "Forbidden", "The request origin is not allowed.")
+    return problemResponse(403, "Forbidden", "Nguồn yêu cầu không hợp lệ.")
   }
 
   return clearRefreshCookieResponse()
@@ -160,7 +160,7 @@ async function backendProblemResponse(response: Response) {
     return NextResponse.json(value, { status: response.status })
   }
 
-  return problemResponse(response.status, "Authentication failed", "Your session is no longer valid.")
+  return problemResponse(response.status, "Không thể xác thực", "Phiên đã hết hạn.")
 }
 
 function problemResponse(status: number, title: string, detail: string) {

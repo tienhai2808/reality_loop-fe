@@ -24,13 +24,13 @@ export function MissionCard({
           <div>
             <h2 className="text-lg font-semibold leading-6">{title}</h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              {context} · {bugs} language bugs
+              {context} · {bugs} lỗi ngôn ngữ
             </p>
           </div>
-          <CapabilityBar label="Mission progress" value={progress} />
+          <CapabilityBar label="Tiến độ tình huống" value={progress} />
         </div>
         <Button render={<Link href={href} />} nativeButton={false}>
-          Continue
+          Tiếp tục
           <ArrowRight data-icon="inline-end" aria-hidden="true" />
         </Button>
       </div>

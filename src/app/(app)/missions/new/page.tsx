@@ -7,27 +7,27 @@ export default async function NewMissionPage({
   searchParams: Promise<{ intent?: string }>
 }) {
   const { intent } = await searchParams
-  const missionIntent = intent?.trim() || "Practice a real situation in Japanese."
+  const missionIntent = intent?.trim() || "Luyện một tình huống thực tế bằng tiếng Nhật."
 
   return (
     <div className="max-w-3xl space-y-8">
       <PageHeader>
-        <PageHeader.Title>Mission briefing</PageHeader.Title>
+        <PageHeader.Title>Chuẩn bị luyện tình huống</PageHeader.Title>
         <PageHeader.Description>{missionIntent}</PageHeader.Description>
       </PageHeader>
       <section className="space-y-5 rounded-lg border border-border bg-surface p-5">
         <div>
-          <h2 className="text-lg font-semibold">Tokyo everyday context</h2>
+          <h2 className="text-lg font-semibold">Bối cảnh thường ngày ở Tokyo</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            A short speaking mission will be generated from this intent.
+            Bài hội thoại ngắn sẽ dựa trên tình huống bạn đã nhập.
           </p>
         </div>
         <div className="grid gap-3 text-sm sm:grid-cols-3">
-          <span className="rounded-sm bg-muted px-3 py-2">Hints available</span>
-          <span className="rounded-sm bg-muted px-3 py-2">Voice first</span>
-          <span className="rounded-sm bg-muted px-3 py-2">Text fallback</span>
+          <span className="rounded-sm bg-muted px-3 py-2">Có gợi ý</span>
+          <span className="rounded-sm bg-muted px-3 py-2">Luyện nói</span>
+          <span className="rounded-sm bg-muted px-3 py-2">Có thể nhập chữ</span>
         </div>
-        <Button>Start mission</Button>
+        <Button>Bắt đầu luyện</Button>
       </section>
     </div>
   )

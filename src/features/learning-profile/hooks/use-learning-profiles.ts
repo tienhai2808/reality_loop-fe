@@ -150,7 +150,7 @@ export function useLearningProfiles() {
     do {
       const page = await listLearningProfiles(cursor, signal)
       if (signal.aborted)
-        throw new LearningProfileError("The profile refresh was cancelled.")
+        throw new LearningProfileError("Đã hủy tải lại hồ sơ.")
       items.push(...page.items)
       cursor = page.nextCursor
       const found = items.find(
@@ -164,7 +164,7 @@ export function useLearningProfiles() {
       }
       if (seen.has(cursor))
         throw new LearningProfileError(
-          "We couldn't finish refreshing your profiles. Please try again."
+          "Không tải lại được hồ sơ. Hãy thử lại."
         )
       seen.add(cursor)
     } while (cursor)

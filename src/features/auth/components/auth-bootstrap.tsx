@@ -1,4 +1,4 @@
-export function AuthBootstrap({ label = "Checking your session" }: { label?: string }) {
+export function AuthBootstrap({ label = "Đang kiểm tra phiên đăng nhập" }: { label?: string }) {
   return (
     <div className="flex min-h-[18rem] items-center justify-center">
       <div className="space-y-3 text-center" role="status" aria-live="polite">

@@ -23,52 +23,52 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 const commands = [
   {
     href: "/learn",
-    label: "Language Foundations",
-    description: "Explore languages and writing systems",
+    label: "Học",
+    description: "Mở bảng chữ, phát âm, từ vựng và ngữ pháp",
     icon: BookOpen,
-    group: "Navigate",
+    group: "Điều hướng",
   },
   {
     href: "/missions/new?intent=Order%20ramen",
-    label: "Order ramen",
-    description: "Start a restaurant mission",
+    label: "Gọi mì ramen",
+    description: "Luyện tình huống nhà hàng",
     icon: Target,
-    group: "Suggested",
+    group: "Gợi ý",
   },
   {
     href: "/missions/new?intent=Ask%20for%20directions",
-    label: "Ask for directions",
-    description: "Practice transportation Japanese",
+    label: "Hỏi đường",
+    description: "Luyện tiếng Nhật khi di chuyển",
     icon: Target,
-    group: "Suggested",
+    group: "Gợi ý",
   },
   {
     href: "/missions",
-    label: "Start a mission",
-    description: "Review mission options",
+    label: "Bắt đầu tình huống",
+    description: "Xem tình huống có thể luyện",
     icon: ListChecks,
-    group: "Navigate",
+    group: "Điều hướng",
   },
   {
     href: "/bugs",
-    label: "Review Language Bugs",
-    description: "Open unresolved friction",
+    label: "Xem lỗi ngôn ngữ",
+    description: "Xem những chỗ còn vướng",
     icon: Bug,
-    group: "Navigate",
+    group: "Điều hướng",
   },
   {
     href: "/progress",
-    label: "View progress",
-    description: "See capability by context",
+    label: "Xem tiến độ",
+    description: "Xem khả năng theo tình huống",
     icon: LineChart,
-    group: "Navigate",
+    group: "Điều hướng",
   },
   {
     href: "/library",
-    label: "Open library",
-    description: "Browse saved phrases",
+    label: "Mở thư viện",
+    description: "Xem cụm từ đã lưu",
     icon: BookOpenText,
-    group: "Navigate",
+    group: "Điều hướng",
   },
 ] as const
 
@@ -102,7 +102,7 @@ export function CommandPalette() {
     )
   }, [query])
 
-  const groups = ["Suggested", "Navigate"] as const
+  const groups = ["Gợi ý", "Điều hướng"] as const
 
   return (
     <>
@@ -111,11 +111,11 @@ export function CommandPalette() {
         className="hidden h-9 min-w-32 justify-between gap-4 px-3 text-muted-foreground md:flex"
         onClick={() => setOpen(true)}
       >
-        <span>Search</span>
+        <span>Tìm</span>
         <span className="text-xs">⌘K</span>
       </Button>
       <Button
-        aria-label="Open command palette"
+        aria-label="Mở tìm nhanh"
         variant="ghost"
         size="icon"
         className="md:hidden"
@@ -126,11 +126,11 @@ export function CommandPalette() {
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="overflow-hidden p-0">
-          <DialogTitle className="sr-only">Command palette</DialogTitle>
+          <DialogTitle className="sr-only">Tìm nhanh</DialogTitle>
           <CommandInput
             autoFocus
-            aria-label="Search or start something"
-            placeholder="Search or start something..."
+            aria-label="Tìm trang hoặc thao tác"
+            placeholder="Tìm trang hoặc thao tác…"
             value={query}
             onValueChange={setQuery}
           />
@@ -173,7 +173,7 @@ export function CommandPalette() {
             })}
             {filteredCommands.length === 0 ? (
               <div className="px-2 py-8 text-center text-sm text-muted-foreground">
-                No matching command.
+                Không tìm thấy kết quả.
               </div>
             ) : null}
           </CommandList>

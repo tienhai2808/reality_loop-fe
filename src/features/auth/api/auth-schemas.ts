@@ -84,7 +84,7 @@ export const authSessionSchema = rawSessionSchema.transform((session, context) =
 
   return {
     id,
-    deviceName: session.deviceName ?? session.userAgent ?? "Unknown device",
+    deviceName: session.deviceName ?? session.userAgent ?? "Thiết bị không xác định",
     deviceType: session.deviceType ?? "Web",
     createdAt: session.createdAt ?? null,
     lastSeenAt: session.lastSeenAt ?? session.lastUsedAt ?? null,

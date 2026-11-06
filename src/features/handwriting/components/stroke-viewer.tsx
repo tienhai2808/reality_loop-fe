@@ -40,9 +40,7 @@ export function StrokeViewer({
     }
     if (!total) return
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setNotice(
-        "All saved strokes are shown. Animated replay is disabled by your reduced motion preference."
-      )
+      setNotice("Hiển thị tất cả nét đã lưu theo tùy chọn giảm chuyển động.")
       return
     }
     setNotice(null)
@@ -166,7 +164,7 @@ export function StrokeViewer({
           disabled={!total}
           onClick={play}
         >
-          {visible === null ? "Replay drawing" : "Stop replay"}
+          {visible === null ? "Phát lại nét" : "Dừng phát lại"}
         </Button>
       ) : null}
       {notice ? (

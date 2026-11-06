@@ -71,9 +71,9 @@ export function SessionsPageClient() {
 
       setSelectedSessionIds(new Set())
       await reload()
-      toast.success("Sessions signed out")
+      toast.success("Đã đăng xuất các phiên")
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Session sign out failed")
+      toast.error(error instanceof Error ? error.message : "Không thể đăng xuất phiên")
     } finally {
       setMutationPending(false)
     }
@@ -93,13 +93,13 @@ export function SessionsPageClient() {
       if (action === "others") {
         await revokeOtherSessions()
         await reload()
-        toast.success("Other sessions signed out")
+        toast.success("Đã đăng xuất các phiên khác")
       } else {
         await revokeAllSessions()
         await signOut()
       }
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Session sign out failed")
+      toast.error(error instanceof Error ? error.message : "Không thể đăng xuất phiên")
     } finally {
       setMutationPending(false)
     }
@@ -111,10 +111,10 @@ export function SessionsPageClient() {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h2 id="sessions-list-heading" className="text-sm font-semibold">
-              Signed-in devices
+              Thiết bị đã đăng nhập
             </h2>
             <p className="mt-1 text-sm leading-6 text-muted-foreground">
-              Review where your Reality Loop account is currently signed in.
+              Xem các thiết bị đang dùng tài khoản của bạn.
             </p>
           </div>
           {selectedIds.length > 0 ? (
@@ -123,7 +123,7 @@ export function SessionsPageClient() {
               disabled={mutationPending}
               onClick={() => void revokeSelected(selectedIds)}
             >
-              Sign out selected
+              Đăng xuất phiên đã chọn
             </Button>
           ) : null}
         </div>
@@ -140,14 +140,14 @@ export function SessionsPageClient() {
           <div className="rounded-lg border border-border bg-surface p-4">
             <p className="text-sm text-destructive">{state.error}</p>
             <Button className="mt-3" variant="outline" onClick={() => void reload()}>
-              Try again
+              Thử lại
             </Button>
           </div>
         ) : null}
 
         {state.status === "loaded" && state.items.length === 0 ? (
           <div className="rounded-lg border border-border bg-surface p-4 text-sm text-muted-foreground">
-            No active sessions were returned by the backend.
+            Không tìm thấy phiên đang hoạt động.
           </div>
         ) : null}
 
@@ -175,14 +175,14 @@ export function SessionsPageClient() {
             disabled={state.loadingMore || mutationPending}
             onClick={() => void loadMore()}
           >
-            {state.loadingMore ? "Loading..." : "Load more"}
+            {state.loadingMore ? "Đang tải…" : "Xem thêm"}
           </Button>
         ) : null}
       </section>
 
       <section className="space-y-3" aria-labelledby="bulk-sessions-heading">
         <h2 id="bulk-sessions-heading" className="text-sm font-semibold">
-          Session controls
+          Quản lý phiên
         </h2>
         <div className="flex flex-col gap-2 sm:flex-row">
           <Button
@@ -190,14 +190,14 @@ export function SessionsPageClient() {
             disabled={mutationPending}
             onClick={() => setConfirmationAction("others")}
           >
-            Sign out other sessions
+            Đăng xuất các phiên khác
           </Button>
           <Button
             variant="destructive"
             disabled={mutationPending}
             onClick={() => setConfirmationAction("all")}
           >
-            Sign out of all sessions
+            Đăng xuất mọi phiên
           </Button>
         </div>
       </section>
@@ -213,21 +213,21 @@ export function SessionsPageClient() {
         <DialogContent>
           <DialogTitle>
             {confirmationAction === "all"
-              ? "Sign out of all sessions?"
-              : "Sign out other sessions?"}
+              ? "Đăng xuất mọi phiên?"
+              : "Đăng xuất các phiên khác?"}
           </DialogTitle>
           <DialogDescription className="text-sm leading-6 text-muted-foreground">
             {confirmationAction === "all"
-              ? "This will revoke every active session, including this device. You will need to sign in again."
-              : "You'll stay signed in on this device. All other active sessions will be revoked."}
+              ? "Bạn sẽ cần đăng nhập lại trên thiết bị này."
+              : "Thiết bị này vẫn đăng nhập. Các thiết bị khác sẽ bị đăng xuất."}
           </DialogDescription>
           <div className="flex justify-end gap-2">
-            <DialogClose render={<Button variant="ghost" />}>Cancel</DialogClose>
+            <DialogClose render={<Button variant="ghost" />}>Hủy</DialogClose>
             <Button
               variant={confirmationAction === "all" ? "destructive" : "default"}
               onClick={() => void confirmBulkAction()}
             >
-              {confirmationAction === "all" ? "Sign out everywhere" : "Sign out others"}
+              {confirmationAction === "all" ? "Đăng xuất mọi nơi" : "Đăng xuất phiên khác"}
             </Button>
           </div>
         </DialogContent>

@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation"
 import { PracticeSessionView } from "@/features/writing-system-practice/components/practice-session-view"
 
-export const metadata = { title: "Writing system practice" }
+export const metadata = { title: "Luyện nhận diện chữ" }
 
 export default async function PracticeSessionPage({
   params,

@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useSearchParams } from "next/navigation"
-import { ArrowLeft, History } from "lucide-react"
+import { ArrowLeft } from "lucide-react"
 import { Button, buttonVariants } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/features/auth/hooks/use-auth"
@@ -35,6 +35,7 @@ import { useHandwritingTemplates } from "../hooks/use-handwriting-templates"
 import { handwritingAttemptHref } from "../lib/handwriting-labels"
 import { HandwritingCharacterEditor } from "./handwriting-character-editor"
 import { HandwritingResults } from "./handwriting-results"
+import { WritingHistoryPanel } from "@/features/learn/components/writing-history-panel"
 
 type Position = {
   key: string
@@ -42,24 +43,12 @@ type Position = {
   strokes: InkDrawing
   confirmed: boolean
 }
-export function HandwritingWorkspace() {
+export function HandwritingWorkspace({ systemCode }: { systemCode: string }) {
   const { state } = useCurrentLearningProfile()
   const { state: auth } = useAuth()
   const search = useSearchParams()
   const profile = state.current?.profile
-  const systemCode = search.get("system")
   if (!profile || auth.status !== "authenticated") return null
-  if (!systemCode)
-    return (
-      <ContentUnavailable title="Choose a writing system">
-        <Link
-          href="/learn/writing-systems"
-          className="rounded-sm underline underline-offset-4 outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          Open Writing Systems to choose where to practice.
-        </Link>
-      </ContentUnavailable>
-    )
   return (
     <WorkspaceContent
       key={`${auth.user.id}:${auth.sessionId}:${profile.id}:${systemCode}`}
@@ -67,6 +56,7 @@ export function HandwritingWorkspace() {
       systemCode={systemCode}
       languageCode={profile.targetLanguage}
       locale={profile.explanationLanguage}
+      characterCode={search.get("character")}
     />
   )
 }
@@ -75,11 +65,13 @@ function WorkspaceContent({
   systemCode,
   languageCode,
   locale,
+  characterCode,
 }: {
   profileId: string
   systemCode: string
   languageCode: string
   locale: string
+  characterCode: string | null
 }) {
   const templates = useHandwritingTemplates(profileId, systemCode)
   const metadataLoader = useCallback(
@@ -92,6 +84,12 @@ function WorkspaceContent({
     metadataLoader
   )
   const [positions, setPositions] = useState<Position[]>([])
+  const [activePosition, setActivePosition] = useState<string | null>(null)
+  const selectedIndex = positions.findIndex(
+    (position) => position.key === activePosition
+  )
+  const positionIndex = selectedIndex < 0 ? positions.length - 1 : selectedIndex
+  const currentPosition = positions[positionIndex]
   const [phase, setPhase] = useState<
     "idle" | "template" | "submitting" | "recovering" | "uncertain"
   >("idle")
@@ -114,6 +112,9 @@ function WorkspaceContent({
   useEffect(() => {
     if (result) resultRef.current?.focus()
   }, [result])
+  const preferred = templates.data?.items.find(
+    (item) => item.itemCode === characterCode
+  )
   const policy = templates.policy
   const busy =
     phase === "submitting" || phase === "template" || phase === "recovering"
@@ -155,9 +156,10 @@ function WorkspaceContent({
       if (controller.signal.aborted) return
       if (detail.drawingFormatVersion !== 1)
         throw new FoundationsError(
-          "This template uses a drawing format this version of the app cannot edit yet.",
+          "Phiên bản này chưa hỗ trợ chỉnh sửa mẫu nét này.",
           400
         )
+      const positionKey = key ?? crypto.randomUUID()
       setPositions((previous) =>
         key
           ? previous.map((position) =>
@@ -168,13 +170,14 @@ function WorkspaceContent({
           : [
               ...previous,
               {
-                key: crypto.randomUUID(),
+                key: positionKey,
                 detail,
                 strokes: [],
                 confirmed: true,
               },
             ]
       )
+      setActivePosition(positionKey)
       setResult(null)
     } catch (value) {
       if (!controller.signal.aborted) setError(normalizeFoundationsError(value))
@@ -253,7 +256,7 @@ function WorkspaceContent({
     ) {
       setError(
         new FoundationsError(
-          "This drawing exceeds the published input limits. Undo or clear strokes and try again.",
+          "Bài viết vượt giới hạn. Hãy hoàn tác hoặc xóa bớt nét rồi thử lại.",
           400
         )
       )
@@ -265,7 +268,7 @@ function WorkspaceContent({
     ) {
       setError(
         new FoundationsError(
-          "This drawing is too large to submit. Undo strokes or clear and redraw with fewer points.",
+          "Bài viết quá lớn. Hãy hoàn tác hoặc viết lại với ít nét hơn.",
           413
         )
       )
@@ -294,7 +297,7 @@ function WorkspaceContent({
       } else if (problem.status === null || problem.status >= 500) {
         setError(
           new FoundationsError(
-            "We couldn't confirm whether this attempt was saved. Check recent attempts before choosing to submit a new one.",
+            "Chưa xác nhận được bài đã lưu. Hãy kiểm tra các bài gần đây trước khi gửi lại.",
             problem.status,
             problem.retryAt,
             problem.traceId
@@ -310,271 +313,289 @@ function WorkspaceContent({
   }
 
   return (
-    <div className="min-w-0 max-w-4xl space-y-6">
-      <nav
-        className="flex flex-wrap items-center justify-between gap-3"
-        aria-label="Handwriting navigation"
-      >
-        <Link
-          href={`/learn/writing-systems?${new URLSearchParams({ system: systemCode })}`}
-          className="inline-flex min-h-8 items-center gap-1.5 rounded-sm text-sm text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          <ArrowLeft className="size-4" aria-hidden="true" />
-          Back to Writing Systems
-        </Link>
-        <Link
-          href={`/learn/handwriting/${encodeURIComponent(profileId)}/history`}
-          className="inline-flex min-h-8 items-center gap-1.5 rounded-sm text-sm text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          <History className="size-3.5" aria-hidden="true" />
-          Handwriting history
-        </Link>
-      </nav>
-      <header className="space-y-2">
-        <h1 className="text-2xl font-semibold tracking-tight">
-          Practice writing
-        </h1>
-        <p className="text-sm leading-6 text-muted-foreground">
-          {metadata.data?.name ?? "Writing system"} · Choose a character, study
-          its strokes, and try it yourself.
-        </p>
-      </header>
-      {templates.status === "loading" ? (
-        <CatalogLoading label="Loading handwriting templates..." />
-      ) : null}
-      {templates.error?.status === 404 ||
-      (templates.status === "ready" && !templates.data.items.length) ? (
-        <ContentUnavailable title="Handwriting is coming for this writing system">
-          No published handwriting templates are available here yet. You can
-          still explore its character chart.
-        </ContentUnavailable>
-      ) : (
-        <CatalogFeedback
-          error={templates.error}
-          onRetry={() =>
-            void (templates.data?.nextCursor && templates.error?.status !== 400
-              ? templates.loadMore()
-              : templates.reload())
-          }
-        />
+    <div
+      className={cn(
+        "grid min-w-0 items-start gap-4",
+        result && "lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]"
       )}
-      {templates.data?.items.length && templates.error?.status !== 404 ? (
-        <section
-          className="space-y-3"
-          aria-label="Choose handwriting characters"
+    >
+      <div className="min-w-0 space-y-3">
+        <nav
+          className="flex flex-wrap items-center justify-between gap-3"
+          aria-label="Điều hướng luyện viết"
         >
-          <h2 className="text-sm font-medium">
-            {positions.length ? "Add a character" : "Choose a character"}
-          </h2>
-          <div className="flex flex-wrap gap-2">
-            {templates.data.items.map((template) => (
+          <Link
+            href={`/learn/writing-systems?${new URLSearchParams({ system: systemCode, ...(characterCode ? { character: characterCode } : {}) })}`}
+            className="inline-flex min-h-8 items-center gap-1.5 rounded-sm text-sm text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <ArrowLeft className="size-4" aria-hidden="true" />
+            {metadata.data?.name ?? "Về bảng chữ"}
+          </Link>
+          <WritingHistoryPanel profileId={profileId} defaultKind="writing" />
+        </nav>
+        <h2 className="sr-only">Luyện viết {metadata.data?.name}</h2>
+        {templates.status === "loading" ? (
+          <CatalogLoading label="Đang tải chữ mẫu…" />
+        ) : null}
+        {templates.error?.status === 404 ||
+        (templates.status === "ready" && !templates.data.items.length) ? (
+          <ContentUnavailable title="Bảng chữ này chưa có mẫu luyện viết">
+            Bạn vẫn có thể xem và nghe cách đọc trong bảng chữ.
+          </ContentUnavailable>
+        ) : (
+          <CatalogFeedback
+            error={templates.error}
+            onRetry={() =>
+              void (templates.data?.nextCursor &&
+              templates.error?.status !== 400
+                ? templates.loadMore()
+                : templates.reload())
+            }
+          />
+        )}
+        {templates.data?.items.length && templates.error?.status !== 404 ? (
+          <section className="space-y-3" aria-label="Chọn chữ để luyện viết">
+            <div className="flex flex-wrap items-center gap-2">
+              <h3 className="mr-1 text-sm font-medium">
+                {positions.length ? "Thêm chữ" : "Chọn chữ"}
+              </h3>
+              {templates.data.items.map((template) => (
+                <Button
+                  key={template.reference.id}
+                  variant={
+                    !positions.length &&
+                    template.reference.id === preferred?.reference.id
+                      ? "default"
+                      : "outline"
+                  }
+                  className="font-ja h-11 min-w-11 text-xl"
+                  lang={languageCode}
+                  aria-label={`Thêm ${template.reference.symbol}`}
+                  disabled={
+                    busy ||
+                    activeStroke !== null ||
+                    !policy ||
+                    positions.length >= policy.maximumCharacters ||
+                    phase === "uncertain" ||
+                    error?.status === 429
+                  }
+                  onClick={() => void choose(template.reference.id)}
+                >
+                  {template.reference.symbol}
+                </Button>
+              ))}
+            </div>
+          </section>
+        ) : null}
+        {templates.data?.nextCursor && !templates.error ? (
+          <Button
+            variant="outline"
+            disabled={templates.loadingMore || busy}
+            onClick={() => void templates.loadMore()}
+          >
+            {templates.loadingMore ? "Đang tải mẫu chữ…" : "Thêm chữ mẫu"}
+          </Button>
+        ) : null}
+        {phase === "template" ? (
+          <p role="status" className="text-sm text-muted-foreground">
+            Đang tải nét mẫu…
+          </p>
+        ) : null}
+        {positions.length > 1 ? (
+          <div
+            className="flex flex-wrap items-center gap-2"
+            aria-label="Chữ đang luyện"
+          >
+            <span className="text-xs text-muted-foreground">
+              {positions.length}/{policy?.maximumCharacters} ô
+            </span>
+            {positions.map((position, index) => (
               <Button
-                key={template.reference.id}
-                variant="outline"
-                className="font-ja h-14 min-w-14 text-2xl"
-                lang={languageCode}
-                aria-label={`Add ${template.reference.symbol}`}
-                disabled={
-                  busy ||
-                  activeStroke !== null ||
-                  !policy ||
-                  positions.length >= policy.maximumCharacters ||
-                  phase === "uncertain" ||
-                  error?.status === 429
+                key={position.key}
+                type="button"
+                variant={
+                  position.key === currentPosition?.key ? "secondary" : "ghost"
                 }
-                onClick={() => void choose(template.reference.id)}
+                aria-pressed={position.key === currentPosition?.key}
+                aria-label={`Ô ${index + 1}, chữ ${position.detail.template.reference.symbol}`}
+                disabled={busy || activeStroke !== null}
+                onClick={() => setActivePosition(position.key)}
+                className="min-h-11 min-w-11"
               >
-                {template.reference.symbol}
+                <span lang={languageCode} className="font-ja text-lg">
+                  {position.detail.template.reference.symbol}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  {index + 1}
+                </span>
               </Button>
             ))}
           </div>
-          {policy ? (
-            <p className="text-xs text-muted-foreground">
-              Up to {policy.maximumCharacters} character positions. Repeating a
-              character is welcome.
-            </p>
-          ) : null}
-        </section>
-      ) : null}
-      {templates.data?.nextCursor && !templates.error ? (
-        <Button
-          variant="outline"
-          disabled={templates.loadingMore || busy}
-          onClick={() => void templates.loadMore()}
-        >
-          {templates.loadingMore ? "Loading templates..." : "More characters"}
-        </Button>
-      ) : null}
-      {phase === "template" ? (
-        <p role="status" className="text-sm text-muted-foreground">
-          Loading reference strokes...
-        </p>
-      ) : null}
-      {policy ? (
-        <div className="grid gap-8 md:grid-cols-2">
-          {positions.map((position, index) => (
-            <HandwritingCharacterEditor
-              key={position.key}
-              detail={position.detail}
-              languageCode={languageCode}
-              drawing={position.strokes}
-              position={index}
-              policy={policy}
-              templates={templates.data?.items ?? []}
-              pointBudget={
-                policy.maximumTotalPoints -
-                (totalPoints -
-                  position.strokes.reduce(
-                    (sum, stroke) => sum + stroke.length,
-                    0
-                  ))
-              }
-              disabled={
-                busy || (activeStroke !== null && activeStroke !== position.key)
-              }
-              editingStroke={activeStroke !== null}
-              confirmed={position.confirmed}
-              onConfirm={() =>
-                void choose(position.detail.template.reference.id, position.key)
-              }
-              onSelect={(templateId) => void choose(templateId, position.key)}
-              onChange={(strokes) => change(position.key, strokes)}
-              onStart={() => setResult(null)}
-              onActive={(value) => {
-                drawingActive.current = value ? position.key : null
-                setActiveStroke(value ? position.key : null)
-              }}
-              onRemove={() => {
-                setPositions((previous) =>
-                  previous.filter((item) => item.key !== position.key)
-                )
-                setResult(null)
-              }}
-            />
-          ))}
-        </div>
-      ) : null}
-      {phase === "uncertain" || phase === "recovering" ? (
-        <section
-          className="space-y-3 border-y border-border py-5"
-          aria-label="Check uncertain attempt"
-        >
-          <p role="alert" className="text-sm leading-6 text-muted-foreground">
-            {error?.message}
-          </p>
-          {phase === "recovering" ? (
-            <p role="status" className="text-sm text-muted-foreground">
-              Checking recent attempts...
-            </p>
-          ) : null}
-          <CatalogFeedback
-            error={historyError}
-            onRetry={() => void reloadRecent()}
-          />
-          {recent ? (
-            <ul className="divide-y divide-border border-y border-border">
-              {recent.map((attempt) => (
-                <li
-                  key={attempt.id}
-                  className="flex flex-wrap items-center justify-between gap-4 py-3"
-                >
-                  <div className="min-w-0 space-y-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span
-                        lang={languageCode}
-                        className="font-ja break-all text-xl font-medium leading-relaxed"
-                      >
-                        {attempt.targetText}
-                      </span>
-                      <span
-                        className={cn(
-                          "inline-flex items-center rounded-full px-2 py-0.5 text-[0.6875rem] font-medium",
-                          attempt.passed
-                            ? "bg-success-subtle text-success"
-                            : "bg-warning-subtle text-warning"
-                        )}
-                      >
-                        {attempt.passed ? "Passed" : "Needs improvement"}
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      <time dateTime={attempt.createdAt}>
-                        {new Intl.DateTimeFormat("en", {
-                          dateStyle: "medium",
-                          timeStyle: "short",
-                        }).format(new Date(attempt.createdAt))}
-                      </time>
-                    </p>
-                  </div>
-                  <Link
-                    href={handwritingAttemptHref(profileId, attempt.id)}
-                    className={buttonVariants({ variant: "outline", size: "sm" })}
-                  >
-                    View drawing
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          ) : null}
-          {recent && !recent.length ? (
-            <p className="text-sm text-muted-foreground">
-              No recent attempts have appeared yet. Check again before
-              submitting a fresh attempt.
-            </p>
-          ) : null}
-          <div className="flex flex-wrap gap-2">
-            {!historyError ? (
-              <Button
-                variant="outline"
-                disabled={busy}
-                onClick={() => void reloadRecent()}
-              >
-                Check recent attempts
-              </Button>
-            ) : null}
-            {recent ? (
-              <Button
-                variant="ghost"
-                disabled={busy}
-                onClick={() => {
-                  setPhase("idle")
-                  setError(null)
-                  setRecent(null)
-                }}
-              >
-                Choose to submit a fresh attempt
-              </Button>
-            ) : null}
-          </div>
-        </section>
-      ) : (
-        <CatalogFeedback error={error} onRetry={() => setError(null)} />
-      )}
-      {positions.length ? (
-        <div className="space-y-2">
-          <Button
+        ) : null}
+        {policy && currentPosition ? (
+          <HandwritingCharacterEditor
+            key={currentPosition.key}
+            detail={currentPosition.detail}
+            languageCode={languageCode}
+            drawing={currentPosition.strokes}
+            position={positionIndex}
+            policy={policy}
+            templates={templates.data?.items ?? []}
+            pointBudget={
+              policy.maximumTotalPoints -
+              (totalPoints -
+                currentPosition.strokes.reduce(
+                  (sum, stroke) => sum + stroke.length,
+                  0
+                ))
+            }
             disabled={
               busy ||
-              activeStroke !== null ||
-              !!error ||
-              !!result ||
-              templates.error?.status === 404 ||
-              phase !== "idle" ||
-              positions.some((position) => !position.confirmed)
+              (activeStroke !== null && activeStroke !== currentPosition.key)
             }
-            aria-busy={phase === "submitting"}
-            onClick={() => void submit()}
+            editingStroke={activeStroke !== null}
+            confirmed={currentPosition.confirmed}
+            onConfirm={() =>
+              void choose(
+                currentPosition.detail.template.reference.id,
+                currentPosition.key
+              )
+            }
+            onSelect={(templateId) =>
+              void choose(templateId, currentPosition.key)
+            }
+            onChange={(strokes) => change(currentPosition.key, strokes)}
+            onStart={() => setResult(null)}
+            onActive={(value) => {
+              drawingActive.current = value ? currentPosition.key : null
+              setActiveStroke(value ? currentPosition.key : null)
+            }}
+            onRemove={() => {
+              setPositions((previous) =>
+                previous.filter((item) => item.key !== currentPosition.key)
+              )
+              setResult(null)
+            }}
+          />
+        ) : null}
+        {phase === "uncertain" || phase === "recovering" ? (
+          <section
+            className="space-y-3 border-y border-border py-5"
+            aria-label="Kiểm tra bài đã gửi"
           >
-            {phase === "submitting"
-              ? "Checking handwriting..."
-              : "Check handwriting"}
-          </Button>
-          <p className="text-xs leading-5 text-muted-foreground">
-            Only Check handwriting sends your drawing. An empty drawing can be
-            checked too.
-          </p>
-        </div>
-      ) : null}
+            <p role="alert" className="text-sm leading-6 text-muted-foreground">
+              {error?.message}
+            </p>
+            {phase === "recovering" ? (
+              <p role="status" className="text-sm text-muted-foreground">
+                Đang kiểm tra các bài gần đây…
+              </p>
+            ) : null}
+            <CatalogFeedback
+              error={historyError}
+              onRetry={() => void reloadRecent()}
+            />
+            {recent ? (
+              <ul className="divide-y divide-border border-y border-border">
+                {recent.map((attempt) => (
+                  <li
+                    key={attempt.id}
+                    className="flex flex-wrap items-center justify-between gap-4 py-3"
+                  >
+                    <div className="min-w-0 space-y-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span
+                          lang={languageCode}
+                          className="font-ja break-all text-xl font-medium leading-relaxed"
+                        >
+                          {attempt.targetText}
+                        </span>
+                        <span
+                          className={cn(
+                            "inline-flex items-center rounded-full px-2 py-0.5 text-[0.6875rem] font-medium",
+                            attempt.passed
+                              ? "bg-success-subtle text-success"
+                              : "bg-warning-subtle text-warning"
+                          )}
+                        >
+                          {attempt.passed ? "Đạt" : "Cần sửa"}
+                        </span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        <time dateTime={attempt.createdAt}>
+                          {new Intl.DateTimeFormat("vi-VN", {
+                            dateStyle: "medium",
+                            timeStyle: "short",
+                          }).format(new Date(attempt.createdAt))}
+                        </time>
+                      </p>
+                    </div>
+                    <Link
+                      href={handwritingAttemptHref(profileId, attempt.id)}
+                      className={buttonVariants({
+                        variant: "outline",
+                        size: "sm",
+                      })}
+                    >
+                      Xem bài viết
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+            {recent && !recent.length ? (
+              <p className="text-sm text-muted-foreground">
+                Chưa thấy bài vừa gửi. Hãy kiểm tra lại trước khi gửi bài mới.
+              </p>
+            ) : null}
+            <div className="flex flex-wrap gap-2">
+              {!historyError ? (
+                <Button
+                  variant="outline"
+                  disabled={busy}
+                  onClick={() => void reloadRecent()}
+                >
+                  Kiểm tra bài gần đây
+                </Button>
+              ) : null}
+              {recent ? (
+                <Button
+                  variant="ghost"
+                  disabled={busy}
+                  onClick={() => {
+                    setPhase("idle")
+                    setError(null)
+                    setRecent(null)
+                  }}
+                >
+                  Gửi bài mới
+                </Button>
+              ) : null}
+            </div>
+          </section>
+        ) : (
+          <CatalogFeedback error={error} onRetry={() => setError(null)} />
+        )}
+        {positions.length ? (
+          <div className="sticky bottom-[calc(3.75rem+env(safe-area-inset-bottom))] z-10 border-t border-border bg-background py-2 lg:static">
+            <Button
+              disabled={
+                busy ||
+                activeStroke !== null ||
+                !!error ||
+                !!result ||
+                templates.error?.status === 404 ||
+                phase !== "idle" ||
+                positions.some((position) => !position.confirmed)
+              }
+              aria-busy={phase === "submitting"}
+              onClick={() => void submit()}
+            >
+              {phase === "submitting" ? "Đang chấm bài…" : "Chấm bài"}
+            </Button>
+          </div>
+        ) : null}
+      </div>
       {result ? (
         <div
           ref={resultRef}

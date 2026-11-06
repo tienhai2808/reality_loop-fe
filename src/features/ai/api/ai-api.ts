@@ -48,7 +48,7 @@ async function read<T>(response: Response, schema: z.ZodType<T>): Promise<T> {
     /* The response may have been interrupted. Never expose its body. */
   }
   throw new AiRequestError(
-    "The server response couldn't be confirmed. Please try again."
+    "Chưa xác nhận được phản hồi. Hãy thử lại."
   )
 }
 

@@ -29,7 +29,7 @@ export function HandwritingCharacterResult({
   return (
     <section
       className="space-y-4 border-t border-border pt-5"
-      aria-label={`Character ${character.position + 1}: ${character.template.symbol}`}
+      aria-label={`Chữ ${character.position + 1}: ${character.template.symbol}`}
     >
       <h3
         lang={languageCode}
@@ -44,21 +44,21 @@ export function HandwritingCharacterResult({
             character.template.revision &&
           reference.template.reference.id === character.template.id ? (
             <div className="space-y-2">
-              <p className="text-sm font-medium">Reference</p>
+              <p className="text-sm font-medium">Mẫu</p>
               <StrokeViewer
                 strokes={reference.strokes}
-                label={`Reference for ${character.template.symbol}`}
+                label={`Mẫu chữ ${character.template.symbol}`}
                 reference
                 highlight={highlight}
               />
             </div>
           ) : null}
           <div className="space-y-2">
-            <p className="text-sm font-medium">Your drawing</p>
+            <p className="text-sm font-medium">Bài viết của bạn</p>
             <StrokeViewer
               key={character.id}
               strokes={character.strokes}
-              label={`Submitted drawing of ${character.template.symbol}`}
+              label={`Bài viết đã gửi của chữ ${character.template.symbol}`}
               highlight={highlight}
               replay
             />
@@ -66,8 +66,7 @@ export function HandwritingCharacterResult({
         </div>
       ) : (
         <p className="text-sm text-muted-foreground">
-          This saved drawing uses a format this version of the app cannot replay
-          yet.
+          Phiên bản này chưa phát lại được bài viết đã lưu.
         </p>
       )}
       {character.feedbackFormatVersion === 1 ? (
@@ -81,15 +80,15 @@ export function HandwritingCharacterResult({
                   : "bg-warning-subtle text-warning"
               )}
             >
-              {character.feedback.passed ? "Passed" : "Needs improvement"}
+              {character.feedback.passed ? "Đạt" : "Cần sửa"}
             </span>
             <span className="text-sm text-muted-foreground">
-              Shape match {character.feedback.matchScore} / 100
+              Độ giống mẫu {character.feedback.matchScore} / 100
             </span>
           </div>
           <p className="text-xs text-muted-foreground">
-            {character.feedback.actualStrokeCount} strokes drawn ·{" "}
-            {character.feedback.expectedStrokeCount} expected
+            {character.feedback.actualStrokeCount} nét đã viết ·{" "}
+            {character.feedback.expectedStrokeCount} nét mẫu
           </p>
           {character.feedback.issues.length ? (
             <ul className="list-disc space-y-1 pl-5 text-sm leading-6 text-muted-foreground">
@@ -103,7 +102,7 @@ export function HandwritingCharacterResult({
           {character.feedback.strokes.length ? (
             <div className="space-y-2">
               <p className="text-xs text-muted-foreground">
-                Select a stroke to highlight the same index in each drawing.
+                Chọn một nét để đối chiếu với nét mẫu cùng số.
               </p>
               <ul className="divide-y divide-border">
                 {[...character.feedback.strokes]
@@ -123,7 +122,7 @@ export function HandwritingCharacterResult({
                         className="flex w-full flex-wrap items-center justify-between gap-x-3 gap-y-1 rounded-sm py-3 text-left text-sm outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring"
                       >
                         <span className="font-medium">
-                          Stroke {stroke.index + 1}
+                          Nét {stroke.index + 1}
                         </span>
                         <span
                           className={cn(
@@ -137,7 +136,7 @@ export function HandwritingCharacterResult({
                             ? "Good"
                             : stroke.issues
                                 .map((issue) => handwritingIssueLabels[issue])
-                                .join(", ") || "Needs improvement"}
+                                .join(", ") || "Cần sửa"}
                         </span>
                       </button>
                     </li>
@@ -148,8 +147,7 @@ export function HandwritingCharacterResult({
         </div>
       ) : (
         <p className="text-sm text-muted-foreground">
-          Detailed feedback uses a newer format. The saved result summary is
-          still available.
+          Bạn có thể xem kết quả tóm tắt của bài này.
         </p>
       )}
       <HandwritingSourceCredit source={character.template.source} />
@@ -169,9 +167,9 @@ export function HandwritingResults({
   languageCode?: string
 }) {
   return (
-    <section className="space-y-5" aria-label="Handwriting result">
+    <section className="space-y-5" aria-label="Kết quả luyện viết">
       <header className="space-y-2">
-        <h2 className="text-xl font-semibold">Handwriting result</h2>
+        <h2 className="text-xl font-semibold">Kết quả luyện viết</h2>
         <div className="flex flex-wrap items-center gap-2">
           <span
             className={cn(
@@ -181,15 +179,15 @@ export function HandwritingResults({
                 : "bg-warning-subtle text-warning"
             )}
           >
-            {detail.attempt.passed ? "Passed" : "Needs improvement"}
+            {detail.attempt.passed ? "Đạt" : "Cần sửa"}
           </span>
           <span className="text-sm text-muted-foreground">
-            Shape match {detail.attempt.matchScore} / 100
+            Độ giống mẫu {detail.attempt.matchScore} / 100
           </span>
         </div>
         <p className="text-sm leading-6 text-muted-foreground">
-          This measures drawing similarity. Stroke order and direction can still
-          need work even with a high match score.
+          Điểm thể hiện độ giống hình dáng. Xem từng nét để kiểm tra thứ tự và
+          hướng viết.
         </p>
       </header>
       {[...detail.characters]
@@ -210,7 +208,7 @@ export function HandwritingResults({
       <div className="flex flex-wrap items-center gap-3">
         {onPracticeAgain ? (
           <Button variant="outline" onClick={onPracticeAgain}>
-            Practice again
+            Luyện lại
           </Button>
         ) : null}
         <Link
@@ -220,13 +218,13 @@ export function HandwritingResults({
           )}
           className={buttonVariants({ variant: "outline" })}
         >
-          Open saved attempt
+          Mở bài đã lưu
         </Link>
         <Link
           href={`/learn/handwriting/${encodeURIComponent(detail.attempt.learningProfileId)}/history`}
           className={buttonVariants({ variant: "ghost" })}
         >
-          View handwriting history
+          Xem lịch sử luyện viết
         </Link>
       </div>
     </section>

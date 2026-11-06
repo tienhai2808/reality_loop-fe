@@ -21,7 +21,7 @@ export function normalizeFoundationsError(error: unknown): FoundationsError {
   if (isAuthRequestError(error))
     return new FoundationsError(error.authError.message, 401)
   return new FoundationsError(
-    "We couldn't load this content. Check your connection and try again."
+    "Không tải được nội dung. Hãy kiểm tra kết nối rồi thử lại."
   )
 }
 
@@ -29,15 +29,15 @@ export async function foundationsErrorFromResponse(response: Response) {
   const problem = await readProblemDetails(response)
   const retry = parseRetryAfter(response.headers.get("retry-after"))
   const messages: Record<number, string> = {
-    400: "This content link or page is invalid. Open it again from Language Foundations.",
-    401: "Your session expired. Please sign in again.",
-    403: "This content isn't accessible right now. Please try again later.",
-    404: "This content hasn't been published or is no longer available.",
-    429: "Too many requests. Please wait before loading more content.",
+    400: "Đường dẫn này không hợp lệ. Hãy mở lại từ khu Học.",
+    401: "Phiên đã hết hạn. Hãy đăng nhập lại.",
+    403: "Hiện không thể mở nội dung này. Hãy thử lại sau.",
+    404: "Nội dung này hiện chưa có hoặc đã ngừng phát hành.",
+    429: "Bạn đã thao tác quá nhanh. Hãy đợi rồi tải thêm nội dung.",
   }
   return new FoundationsError(
     messages[response.status] ??
-      "We couldn't load this content. Please try again.",
+      "Không tải được nội dung. Hãy thử lại.",
     response.status,
     retry === undefined
       ? response.status === 429

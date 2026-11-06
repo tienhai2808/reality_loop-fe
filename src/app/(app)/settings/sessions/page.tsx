@@ -5,9 +5,9 @@ export default function SessionsPage() {
   return (
     <div className="max-w-4xl space-y-8">
       <PageHeader>
-        <PageHeader.Title>Active sessions</PageHeader.Title>
+        <PageHeader.Title>Phiên đăng nhập</PageHeader.Title>
         <PageHeader.Description>
-          Manage the browsers and devices that can access your account.
+          Quản lý thiết bị và trình duyệt đang dùng tài khoản của bạn.
         </PageHeader.Description>
       </PageHeader>
       <SessionsPageClient />

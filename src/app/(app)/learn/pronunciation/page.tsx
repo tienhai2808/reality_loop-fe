@@ -1,6 +1,6 @@
 import { PronunciationView } from "@/features/language-foundations/components/pronunciation/pronunciation-view"
 
-export const metadata = { title: "Pronunciation" }
+export const metadata = { title: "Phát âm" }
 
 export default function PronunciationPage() {
   return (

@@ -1,9 +1,11 @@
 "use client"
 
 import Link from "next/link"
-import { useCallback } from "react"
+import { useCallback, useState, type ReactNode } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { ArrowLeft } from "lucide-react"
+import { useLearnWideLayout } from "@/features/learn/hooks/use-learn-wide-layout"
+import { LearnDetailPane } from "@/features/learn/components/learn-detail-pane"
+import { VocabularyDetailContent } from "./vocabulary-detail"
 import { Button } from "@/components/ui/button"
 import {
   Select,
@@ -14,8 +16,10 @@ import {
 } from "@/components/ui/select"
 import { useAuth } from "@/features/auth/hooks/use-auth"
 import { useCurrentLearningProfile } from "@/features/learning-profile/hooks/use-current-learning-profile"
-import { languageLabel } from "@/features/learning-profile/lib/language-options"
-import { useCatalogPage } from "@/features/language-foundations/hooks/use-catalog"
+import {
+  useCatalogPage,
+  type CatalogCache,
+} from "@/features/language-foundations/hooks/use-catalog"
 import {
   CatalogFeedback,
   CatalogLoading,
@@ -25,6 +29,7 @@ import { listVocabulary } from "../api/vocabulary-api"
 import {
   partOfSpeechSchema,
   type PartOfSpeech,
+  type VocabularyEntrySummaryDto,
 } from "../api/vocabulary-schemas"
 import {
   partOfSpeechLabels,
@@ -38,33 +43,34 @@ export function VocabularyList() {
   const search = useSearchParams()
   const profile = state.current?.profile
   if (!profile || auth.status !== "authenticated") return null
+  const selectedCode = search.get("entry")
   const rawFilter = search.get("partOfSpeech")
   const parsed = partOfSpeechSchema.safeParse(rawFilter)
+  const detail = selectedCode ? (
+    <LearnDetailPane
+      label="Chi tiết từ"
+      selection={selectedCode}
+      closeHref={vocabularyListHref(parsed.success ? parsed.data : undefined)}
+      triggerId={`word-${selectedCode}`}
+    >
+      <VocabularyDetailContent
+        key={`${auth.user.id}:${auth.sessionId}:${profile.id}:${profile.targetLanguage}:${selectedCode}`}
+        profileId={profile.id}
+        languageCode={profile.targetLanguage}
+        locale={profile.explanationLanguage}
+        entryCode={selectedCode}
+      />
+    </LearnDetailPane>
+  ) : null
   return (
-    <div className="min-w-0 max-w-3xl space-y-6">
-      <Link
-        href="/learn"
-        className="inline-flex min-h-8 items-center gap-1.5 rounded-sm text-sm text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
-      >
-        <ArrowLeft className="size-4" aria-hidden="true" />
-        Language Foundations
-      </Link>
-      <header className="space-y-2">
-        <p className="text-sm text-muted-foreground">
-          {languageLabel(profile.targetLanguage)}
-        </p>
-        <h1 className="text-2xl font-semibold tracking-tight">Vocabulary</h1>
-        <p className="text-sm leading-6 text-muted-foreground">
-          Explore words, their readings, and the meanings they carry.
-        </p>
-      </header>
+    <>
       {rawFilter && !parsed.success ? (
-        <ContentUnavailable title="This filter isn't available">
+        <ContentUnavailable title="Bộ lọc này không hợp lệ">
           <Link
             href={vocabularyListHref()}
-            className="rounded-sm underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-ring"
+            className="rounded-sm underline underline-offset-4 outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
           >
-            Show all words
+            Xem tất cả từ
           </Link>
         </ContentUnavailable>
       ) : (
@@ -73,14 +79,16 @@ export function VocabularyList() {
           languageCode={profile.targetLanguage}
           locale={profile.explanationLanguage}
           partOfSpeech={parsed.success ? parsed.data : undefined}
+          selectedCode={selectedCode}
+          detail={detail}
         />
       )}
-    </div>
+    </>
   )
 }
 
 const PART_OF_SPEECH_OPTIONS = [
-  { value: "all", label: "All parts of speech" },
+  { value: "all", label: "Tất cả loại từ" },
   ...partOfSpeechSchema.options.map((value) => ({
     value,
     label: partOfSpeechLabels[value],
@@ -91,10 +99,14 @@ function VocabularyListContent({
   languageCode,
   locale,
   partOfSpeech,
+  selectedCode,
+  detail,
 }: {
   languageCode: string
   locale: string
   partOfSpeech?: PartOfSpeech
+  selectedCode: string | null
+  detail: ReactNode
 }) {
   const router = useRouter()
   const loader = useCallback(
@@ -102,98 +114,113 @@ function VocabularyListContent({
       listVocabulary(languageCode, locale, partOfSpeech, after, signal),
     [languageCode, locale, partOfSpeech]
   )
+  const [cache] = useState<CatalogCache<VocabularyEntrySummaryDto>>(
+    () => new Map()
+  )
   const page = useCatalogPage(
     `vocabulary:${languageCode}:${locale}:${partOfSpeech ?? "all"}:20`,
-    loader
+    loader,
+    cache
+  )
+  const wide = useLearnWideLayout()
+  const selectedInList = page.data?.items.some(
+    (entry) => entry.code === selectedCode
   )
   return (
-    <div className="space-y-5">
-      <div className="max-w-xs space-y-2">
-        <label
-          htmlFor="vocabulary-part-of-speech"
-          className="text-sm font-medium"
-        >
-          Part of speech
-        </label>
-        <Select
-          items={PART_OF_SPEECH_OPTIONS}
-          value={partOfSpeech ?? "all"}
-          onValueChange={(val) => {
-            const parsed = partOfSpeechSchema.safeParse(val)
-            router.push(
-              vocabularyListHref(parsed.success ? parsed.data : undefined),
-              { scroll: false }
-            )
-          }}
-        >
-          <SelectTrigger id="vocabulary-part-of-speech">
-            <SelectValue placeholder="All parts of speech" />
-          </SelectTrigger>
-          <SelectContent>
-            {PART_OF_SPEECH_OPTIONS.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      {page.status === "loading" ? (
-        <CatalogLoading label="Loading vocabulary..." />
-      ) : null}
-      {page.error?.status === 404 ? (
-        <ContentUnavailable title="Vocabulary is coming for this language">
-          Vocabulary content isn&apos;t available for this language yet. Check
-          back later.
-        </ContentUnavailable>
-      ) : (
-        <CatalogFeedback
-          error={page.error}
-          onRetry={() =>
-            void (page.data?.nextCursor && page.error?.status !== 400
-              ? page.loadMore()
-              : page.reload())
-          }
-        />
-      )}
-      {page.status === "ready" && !page.data.items.length ? (
-        partOfSpeech ? (
-          <ContentUnavailable title="No words found for this part of speech">
-            <Link
-              href={vocabularyListHref()}
-              className="rounded-sm underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-ring"
+    <div className="grid min-w-0 items-start gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)]">
+      <div className="min-w-0 space-y-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <label
+            htmlFor="vocabulary-part-of-speech"
+            className="text-sm font-medium"
+          >
+            Loại từ
+          </label>
+          <Select
+            items={PART_OF_SPEECH_OPTIONS}
+            value={partOfSpeech ?? "all"}
+            onValueChange={(val) => {
+              const parsed = partOfSpeechSchema.safeParse(val)
+              router.push(
+                vocabularyListHref(parsed.success ? parsed.data : undefined),
+                { scroll: false }
+              )
+            }}
+          >
+            <SelectTrigger
+              id="vocabulary-part-of-speech"
+              className="w-auto min-w-40"
             >
-              Show all words
-            </Link>
+              <SelectValue placeholder="Tất cả loại từ" />
+            </SelectTrigger>
+            <SelectContent>
+              {PART_OF_SPEECH_OPTIONS.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        {page.status === "loading" ? (
+          <CatalogLoading label="Đang tải từ vựng…" />
+        ) : null}
+        {page.error?.status === 404 ? (
+          <ContentUnavailable title="Chưa có từ vựng cho ngôn ngữ này">
+            Bạn có thể quay lại khi có từ mới.
           </ContentUnavailable>
         ) : (
-          <ContentUnavailable title="No vocabulary available yet">
-            Vocabulary content isn&apos;t available for this language yet. Check
-            back later.
-          </ContentUnavailable>
-        )
-      ) : null}
-      {page.data?.items.length && page.error?.status !== 404 ? (
-        <ul className="divide-y divide-border border-y border-border">
-          {page.data.items.map((entry) => (
-            <VocabularyRow
-              key={entry.id}
-              entry={entry}
-              partOfSpeech={partOfSpeech}
-            />
-          ))}
-        </ul>
-      ) : null}
-      {page.data?.nextCursor && !page.error ? (
-        <Button
-          variant="outline"
-          disabled={page.loadingMore}
-          aria-busy={page.loadingMore}
-          onClick={() => void page.loadMore()}
-        >
-          {page.loadingMore ? "Loading words..." : "Load more words"}
-        </Button>
-      ) : null}
+          <CatalogFeedback
+            error={page.error}
+            onRetry={() =>
+              void (page.data?.nextCursor && page.error?.status !== 400
+                ? page.loadMore()
+                : page.reload())
+            }
+          />
+        )}
+        {page.status === "ready" && !page.data.items.length ? (
+          partOfSpeech ? (
+            <ContentUnavailable title="Không có từ thuộc loại này">
+              <Link
+                href={vocabularyListHref()}
+                className="rounded-sm underline underline-offset-4 outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                Xem tất cả từ
+              </Link>
+            </ContentUnavailable>
+          ) : (
+            <ContentUnavailable title="Chưa có từ vựng">
+              Bạn có thể quay lại khi có từ mới.
+            </ContentUnavailable>
+          )
+        ) : null}
+        {page.data?.items.length && page.error?.status !== 404 ? (
+          <ul className="divide-y divide-border border-y border-border">
+            {page.data.items.map((entry) => (
+              <li key={entry.id}>
+                <VocabularyRow
+                  entry={entry}
+                  partOfSpeech={partOfSpeech}
+                  selected={selectedCode === entry.code}
+                />
+                {!wide && selectedCode === entry.code ? detail : null}
+              </li>
+            ))}
+          </ul>
+        ) : null}
+        {page.data?.nextCursor && !page.error ? (
+          <Button
+            variant="outline"
+            disabled={page.loadingMore}
+            aria-busy={page.loadingMore}
+            onClick={() => void page.loadMore()}
+          >
+            {page.loadingMore ? "Đang tải từ…" : "Xem thêm từ"}
+          </Button>
+        ) : null}
+      </div>
+      {wide || (!selectedInList && page.status !== "loading") ? detail : null}
     </div>
   )
 }

@@ -22,7 +22,7 @@ export function AiRequestFeedback({ error }: { error: AiRequestError | null }) {
     <div role="alert" className="space-y-1 text-sm leading-6 text-destructive">
       <p>{error.message}</p>
       {error.retryAt ? (
-        <p>Try again after {formatAiTime(error.retryAt)}.</p>
+        <p>Thử lại sau {formatAiTime(error.retryAt)}.</p>
       ) : null}
     </div>
   )
@@ -57,7 +57,7 @@ export function AiCredentialFields({
     <>
       <div className="space-y-2">
         <label htmlFor={`${prefix}-key`} className="text-sm font-medium">
-          API key
+          Khóa API
         </label>
         <Input
           id={`${prefix}-key`}
@@ -85,10 +85,10 @@ export function AiCredentialFields({
           className="h-auto min-h-10 whitespace-normal py-2"
         >
           <KeyRound aria-hidden="true" />
-          {loading ? "Loading models..." : "Check key & load models"}
+          {loading ? "Đang tải mô hình…" : "Kiểm tra khóa và tải mô hình"}
         </Button>
         <p className="text-xs leading-5 text-muted-foreground">
-          Checking models and connecting may use your provider quota.
+          Kiểm tra mô hình và kết nối có thể dùng hạn mức của nhà cung cấp.
         </p>
       </div>
       {catalog ? (
@@ -99,7 +99,7 @@ export function AiCredentialFields({
                 htmlFor={`${prefix}-model`}
                 className="text-sm font-medium"
               >
-                Model
+                Mô hình
               </label>
               <Select
                 value={modelValue || null}
@@ -113,7 +113,7 @@ export function AiCredentialFields({
                     modelError ? `${prefix}-model-error` : undefined
                   }
                 >
-                  <SelectValue placeholder="Choose a model" />
+                  <SelectValue placeholder="Chọn mô hình" />
                 </SelectTrigger>
                 <SelectContent>
                   {catalog.items.map((model) => (
@@ -128,8 +128,7 @@ export function AiCredentialFields({
             </>
           ) : (
             <p className="text-sm leading-6 text-muted-foreground">
-              No compatible models were returned for this API key. Check the
-              key, provider permissions, and account model access.
+              Không có mô hình tương thích. Hãy kiểm tra khóa và quyền sử dụng mô hình.
             </p>
           )}
           {modelError ? (
@@ -142,8 +141,7 @@ export function AiCredentialFields({
           ) : null}
           {catalog.isFallback ? (
             <p className="text-xs leading-5 text-muted-foreground">
-              Model availability couldn&apos;t be confirmed from the provider
-              catalog. The selected model will still be checked when you save.
+              Chưa xác nhận được mô hình từ danh mục. Mô hình sẽ được kiểm tra khi lưu.
             </p>
           ) : null}
         </div>

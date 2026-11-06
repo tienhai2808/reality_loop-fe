@@ -4,27 +4,31 @@ import type {
   PartOfSpeech,
   VocabularyEntrySummaryDto,
 } from "../api/vocabulary-schemas"
-import { partOfSpeechLabels } from "../lib/vocabulary-labels"
+import { vocabularyListHref } from "../lib/vocabulary-labels"
 import { VocabularyMeaning } from "./vocabulary-sense"
 
 export function VocabularyRow({
   entry,
   partOfSpeech,
+  selected,
 }: {
   entry: VocabularyEntrySummaryDto
   partOfSpeech?: PartOfSpeech
+  selected: boolean
 }) {
-  const query = partOfSpeech ? `?${new URLSearchParams({ partOfSpeech })}` : ""
   return (
-    <li className="flex min-w-0 items-start justify-between gap-4 py-5">
+    <div className="flex min-w-0 items-start justify-between gap-2">
       <Link
-        href={`/learn/vocabulary/${encodeURIComponent(entry.code)}${query}`}
-        className="min-w-0 flex-1 space-y-2.5 rounded-sm outline-none hover:text-primary focus-visible:ring-2 focus-visible:ring-ring"
+        id={`word-${entry.code}`}
+        href={vocabularyListHref(partOfSpeech, entry.code)}
+        scroll={false}
+        aria-current={selected ? "page" : undefined}
+        className="flex min-h-11 min-w-0 flex-1 flex-wrap items-baseline gap-x-3 gap-y-0.5 rounded-sm px-2 py-1.5 outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring aria-[current=page]:bg-muted"
       >
-        <div className="space-y-1">
+        <div className="flex min-w-28 flex-wrap items-baseline gap-x-2">
           <h2
             lang={entry.languageCode}
-            className="font-ja break-words text-2xl font-medium leading-relaxed"
+            className="font-ja break-words text-xl font-medium leading-relaxed"
           >
             {entry.term}
           </h2>
@@ -38,17 +42,12 @@ export function VocabularyRow({
           ) : null}
         </div>
         {entry.primarySense ? (
-          <div className="space-y-1.5 text-foreground">
-            <div>
-              <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-[0.6875rem] font-medium text-muted-foreground">
-                {partOfSpeechLabels[entry.primarySense.partOfSpeech]}
-              </span>
-            </div>
+          <div className="min-w-0 flex-1 basis-32 text-foreground">
             <VocabularyMeaning sense={entry.primarySense} />
           </div>
         ) : (
           <p className="text-sm text-muted-foreground">
-            Meaning preview isn&apos;t available yet.
+            Chưa có nghĩa tóm tắt.
           </p>
         )}
       </Link>
@@ -62,6 +61,6 @@ export function VocabularyRow({
           />
         </div>
       ) : null}
-    </li>
+    </div>
   )
 }

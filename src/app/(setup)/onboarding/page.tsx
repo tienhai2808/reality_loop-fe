@@ -2,7 +2,7 @@ import Image from "next/image"
 import { LearningProfilesManager } from "@/features/learning-profile/components/learning-profiles-manager"
 import { UserMenu } from "@/features/auth/components/user-menu"
 
-export const metadata = { title: "Your learning profile" }
+export const metadata = { title: "Hồ sơ học" }
 
 export default function OnboardingPage() {
   return (
@@ -23,11 +23,10 @@ export default function OnboardingPage() {
       <main className="mx-auto max-w-2xl space-y-8 px-4 pb-12 pt-6 sm:px-6 sm:pt-10">
         <div className="space-y-2">
           <h1 className="text-2xl font-semibold sm:text-3xl">
-            Your learning profile
+            Hồ sơ học
           </h1>
           <p className="text-sm leading-6 text-muted-foreground">
-            Choose a language and a goal that matters to you. You can change
-            your preferences later.
+            Chọn ngôn ngữ và mục tiêu để bắt đầu. Bạn có thể chỉnh lại sau.
           </p>
         </div>
         <LearningProfilesManager onboarding />

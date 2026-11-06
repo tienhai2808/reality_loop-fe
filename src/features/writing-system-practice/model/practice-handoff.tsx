@@ -41,8 +41,9 @@ export function usePracticeHandoff() {
   return context
 }
 
-export function practiceSessionHref(profileId: string, sessionId: string) {
-  return `/learn/practice/${encodeURIComponent(profileId)}/${encodeURIComponent(sessionId)}`
+export function practiceSessionHref(profileId: string, sessionId: string, character?: string | null) {
+  const query = character ? `?${new URLSearchParams({ character })}` : ""
+  return `/learn/practice/${encodeURIComponent(profileId)}/${encodeURIComponent(sessionId)}${query}`
 }
 export function practiceHistoryHref(systemCode?: string) {
   return `/learn/practice/history${systemCode ? `?${new URLSearchParams({ system: systemCode })}` : ""}`

@@ -125,14 +125,14 @@ export function OAuthCallbackClient({
             <h1 className="text-2xl font-semibold">
               {capturedCallback.kind === "cancelled"
                 ? `${providerConfig.displayName} sign-in was cancelled`
-                : "We could not sign you in"}
+                : "Không thể đăng nhập"}
             </h1>
             <p className="text-sm leading-6 text-muted-foreground" aria-live="polite">
               {capturedCallback.message}
             </p>
           </div>
           <Button onClick={() => router.replace("/sign-in")} className="w-full">
-            {capturedCallback.kind === "cancelled" ? "Back to sign in" : "Try again"}
+            {capturedCallback.kind === "cancelled" ? "Về trang đăng nhập" : "Thử lại"}
           </Button>
         </div>
       </div>
@@ -140,11 +140,11 @@ export function OAuthCallbackClient({
   }
 
   if (callbackState.status === "exchanging") {
-    return <AuthBootstrap label="Establishing your session" />
+    return <AuthBootstrap label="Đang tạo phiên đăng nhập" />
   }
 
   if (callbackState.status === "redirecting") {
-    return <AuthBootstrap label="Opening Reality Loop" />
+    return <AuthBootstrap label="Đang mở Reality Loop" />
   }
 
   return (
@@ -160,14 +160,14 @@ export function OAuthCallbackClient({
         />
         <div className="space-y-2">
           <h1 className="text-2xl font-semibold">
-            We could not sign you in
+            Không thể đăng nhập
           </h1>
           <p className="text-sm leading-6 text-muted-foreground" aria-live="polite">
             {callbackState.message}
           </p>
         </div>
         <Button onClick={() => router.replace("/sign-in")} className="w-full">
-          Try again
+          Thử lại
         </Button>
       </div>
     </div>

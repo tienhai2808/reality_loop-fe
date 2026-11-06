@@ -98,7 +98,7 @@ export function CurrentLearningProfileProvider({
     if (!owner)
       return Promise.reject(
         new LearningProfileError(
-          "Please sign in to load your learning profile.",
+          "Đăng nhập để mở hồ sơ học.",
           401
         )
       )
@@ -166,7 +166,7 @@ export function CurrentLearningProfileProvider({
     async (id: string, signal?: AbortSignal) => {
       if (selection.current)
         throw new LearningProfileError(
-          "A profile selection is already being saved."
+          "Đang lưu hồ sơ đã chọn."
         )
       invalidateQuery()
       const controller = new AbortController()

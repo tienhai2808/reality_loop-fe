@@ -137,7 +137,7 @@ export function useCatalogPage<T extends { id: string }>(
         if (controller.signal.aborted) return
         if (page.nextCursor && previous?.nextCursor === page.nextCursor)
           throw new FoundationsError(
-            "The next page couldn't be loaded. Please refresh this content."
+            "Không tải được trang kế tiếp. Hãy tải lại nội dung."
           )
         const items = new Map(
           (previous?.items ?? []).map((item) => [item.id, item])

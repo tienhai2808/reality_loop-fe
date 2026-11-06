@@ -1,7 +1,7 @@
-import { VocabularyList } from "@/features/vocabulary/components/vocabulary-list"
+import { VocabularyWorkspace } from "@/features/vocabulary/components/vocabulary-workspace"
 
-export const metadata = { title: "Vocabulary" }
+export const metadata = { title: "Từ vựng" }
 
 export default function VocabularyPage() {
-  return <VocabularyList />
+  return <VocabularyWorkspace />
 }

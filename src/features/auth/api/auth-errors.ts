@@ -64,19 +64,19 @@ export function getAuthErrorMessage(error: unknown): string {
     return error.message
   }
 
-  return "Something went wrong."
+  return "Đã xảy ra lỗi."
 }
 
 export function networkAuthError(): AppAuthError {
   return {
     kind: "network",
-    message: "We could not reach the authentication server. Check your connection and try again.",
+    message: "Không kết nối được máy chủ đăng nhập. Hãy kiểm tra kết nối rồi thử lại.",
   }
 }
 
 export async function authErrorFromResponse(
   response: Response,
-  fallbackMessage = "The authentication request could not be completed."
+  fallbackMessage = "Không hoàn tất được yêu cầu đăng nhập."
 ): Promise<AppAuthError> {
   const retryAfter = parseRetryAfter(response.headers.get("retry-after"))
   const problem = await readProblemDetails(response)
@@ -93,44 +93,44 @@ export async function authErrorFromResponse(
     case 401:
       return {
         kind: "unauthorized",
-        message: "Your session is no longer valid. Please sign in again.",
+        message: "Phiên đã hết hạn. Hãy đăng nhập lại.",
       }
     case 403:
       return {
         kind: "forbidden",
-        message: "You do not have access to perform this action.",
+        message: "Bạn không có quyền thực hiện thao tác này.",
       }
     case 404:
       return {
         kind: "not-found",
-        message: "The requested session could not be found.",
+        message: "Không tìm thấy phiên đăng nhập.",
       }
     case 409:
       return {
         kind: "conflict",
         message:
-          "This email is already associated with another account. Account linking is not available yet.",
+          "Email này đã thuộc một tài khoản khác.",
       }
     case 429:
       return {
         kind: "rate-limit",
         message: retryAfter
-          ? `Too many attempts. Try again in ${retryAfter} seconds.`
-          : "Too many attempts. Please wait a moment and try again.",
+          ? `Bạn đã thử quá nhiều lần. Thử lại sau ${retryAfter} seconds.`
+          : "Bạn đã thử quá nhiều lần. Hãy đợi một lúc rồi thử lại.",
         retryAfter,
       }
     case 502:
       return {
         kind: "provider-unavailable",
         message:
-          "The sign-in provider is temporarily unavailable. Please try again in a moment.",
+          "Nhà cung cấp đăng nhập đang gián đoạn. Hãy thử lại sau.",
       }
     default:
       return {
         kind: "server",
         message:
           response.status >= 500
-            ? "The authentication server had a problem. Please try again."
+            ? "Máy chủ đăng nhập gặp lỗi. Hãy thử lại."
             : message,
         traceId: problem?.traceId,
       }
@@ -181,7 +181,7 @@ function flattenFieldErrors(
   return Object.fromEntries(
     Object.entries(errors).map(([field, messages]) => [
       field,
-      messages[0] ?? "Invalid value.",
+      messages[0] ?? "Giá trị không hợp lệ.",
     ])
   )
 }

@@ -24,7 +24,7 @@ export function normalizeLearningProfileError(
   if (isAuthRequestError(error))
     return new LearningProfileError(error.authError.message, 401)
   return new LearningProfileError(
-    "We couldn't confirm the request. Check your connection and try again."
+    "Chưa xác nhận được yêu cầu. Hãy kiểm tra kết nối rồi thử lại."
   )
 }
 
@@ -38,13 +38,13 @@ export async function learningProfileErrorFromResponse(response: Response) {
         : undefined
       : Date.now() + seconds * 1000
   const messages: Record<number, string> = {
-    400: "Check your learning preferences and try again.",
-    401: "Your session expired. Please sign in again.",
-    403: "You don't have permission to manage these learning profiles.",
-    404: "This learning profile is no longer available. Refresh your profiles.",
-    409: "A profile for this language already exists, or the profile changed elsewhere. Review the latest profiles before trying again.",
-    413: "The submitted content is too large. Shorten your goal note and try again.",
-    429: "Too many requests. Please wait before trying again.",
+    400: "Kiểm tra tùy chọn học rồi thử lại.",
+    401: "Phiên đã hết hạn. Hãy đăng nhập lại.",
+    403: "Bạn không có quyền quản lý các hồ sơ này.",
+    404: "Hồ sơ này hiện không có. Hãy tải lại danh sách.",
+    409: "Ngôn ngữ này đã có hồ sơ hoặc hồ sơ vừa thay đổi. Hãy tải danh sách mới nhất.",
+    413: "Nội dung quá dài. Hãy rút gọn mục tiêu rồi thử lại.",
+    429: "Bạn đã thao tác quá nhanh. Hãy đợi rồi thử lại.",
   }
   const fieldErrors: Record<string, string> = {}
   const fields = [
@@ -59,11 +59,11 @@ export async function learningProfileErrorFromResponse(response: Response) {
     const field = fields.find(
       (field) => field.toLowerCase() === key.replace(/^\$\./, "").toLowerCase()
     )
-    if (field) fieldErrors[field] = errors[0] ?? "Check this value."
+    if (field) fieldErrors[field] = errors[0] ?? "Kiểm tra lại giá trị này."
   }
   return new LearningProfileError(
     messages[response.status] ??
-      "We couldn't save your learning preferences. Please try again.",
+      "Không lưu được tùy chọn học. Hãy thử lại.",
     response.status,
     retryAt,
     fieldErrors,

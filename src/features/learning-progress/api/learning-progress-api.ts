@@ -43,17 +43,17 @@ async function request<T>(
       const problem = await readProblemDetails(response)
       const retry = parseRetryAfter(response.headers.get("retry-after"))
       const messages: Record<number, string> = {
-        400: "Progress couldn't be loaded or saved. Reopen this writing system to refresh it and try again.",
-        401: "Your session expired. Please sign in again.",
-        403: "You don't have permission to access this learning progress.",
-        404: "Progress isn't available for this profile or character. Reopen Writing Systems to refresh the content.",
-        409: "This character's progress changed elsewhere. Please review its latest state.",
-        413: "This request is too large. Please reopen the character and try again.",
-        429: "Too many learning actions. Please wait before trying again.",
+        400: "Không tải hoặc lưu được tiến độ. Hãy mở lại bảng chữ rồi thử lại.",
+        401: "Phiên đã hết hạn. Hãy đăng nhập lại.",
+        403: "Bạn không có quyền xem tiến độ này.",
+        404: "Không tìm thấy tiến độ của hồ sơ hoặc chữ này. Hãy mở lại Bảng chữ.",
+        409: "Tiến độ của chữ đã thay đổi. Hãy xem trạng thái mới nhất.",
+        413: "Yêu cầu quá lớn. Hãy mở lại chữ rồi thử lại.",
+        429: "Bạn đã thao tác quá nhanh. Hãy đợi rồi thử lại.",
       }
       throw new FoundationsError(
         messages[response.status] ??
-          "We couldn't confirm your learning progress. Please try again later.",
+          "Chưa xác nhận được tiến độ. Hãy thử lại sau.",
         response.status,
         retry !== undefined
           ? Date.now() + retry * 1000
@@ -67,7 +67,7 @@ async function request<T>(
     const parsed = schema.safeParse(value)
     if (!parsed.success)
       throw new FoundationsError(
-        "The progress response couldn't be read. Please refresh it."
+        "Không đọc được tiến độ. Hãy tải lại."
       )
     return parsed.data
   } catch (error) {

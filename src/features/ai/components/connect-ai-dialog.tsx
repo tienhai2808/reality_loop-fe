@@ -124,7 +124,7 @@ export function ConnectAiDialog({
   async function connect(values: ConnectAiForm) {
     if (!catalog?.items.some((model) => model.id === values.modelId)) {
       setError("modelId", {
-        message: "Load models with this key and choose one.",
+        message: "Tải danh sách mô hình bằng khóa này rồi chọn một mô hình.",
       })
       return
     }
@@ -159,9 +159,9 @@ export function ConnectAiDialog({
   return (
     <>
       <div>
-        <DialogTitle className="text-lg font-semibold">Connect AI</DialogTitle>
+        <DialogTitle className="text-lg font-semibold">Kết nối AI</DialogTitle>
         <DialogDescription className="mt-1 text-sm leading-6 text-muted-foreground">
-          Choose a provider and one model for this connection.
+          Chọn nhà cung cấp và mô hình cho kết nối.
         </DialogDescription>
       </div>
       <form
@@ -177,7 +177,7 @@ export function ConnectAiDialog({
       >
         <div className="space-y-2">
           <label htmlFor="connect-provider" className="text-sm font-medium">
-            Provider
+            Nhà cung cấp
           </label>
           <Controller
             name="provider"
@@ -200,7 +200,7 @@ export function ConnectAiDialog({
                     errors.provider ? "connect-provider-error" : undefined
                   }
                 >
-                  <SelectValue placeholder="Choose a provider" />
+                  <SelectValue placeholder="Chọn nhà cung cấp" />
                 </SelectTrigger>
                 <SelectContent>
                   {providers.map((provider) => (
@@ -240,7 +240,7 @@ export function ConnectAiDialog({
         {catalog?.items.length ? (
           <div className="space-y-2">
             <label htmlFor="connect-name" className="text-sm font-medium">
-              Display name{" "}
+              Tên hiển thị{" "}
               <span className="font-normal text-muted-foreground">
                 (optional)
               </span>
@@ -266,13 +266,12 @@ export function ConnectAiDialog({
         <AiRequestFeedback error={request.error} />
         {recoverable ? (
           <p className="text-sm leading-6 text-muted-foreground">
-            The save hasn&apos;t been confirmed. Retry to check the same
-            connection. Editing the details starts a new connection request.
+            Chưa xác nhận được kết nối. Thử lại để kiểm tra yêu cầu vừa gửi. Sửa thông tin sẽ tạo yêu cầu mới.
           </p>
         ) : null}
         <div className="flex flex-wrap justify-end gap-2 border-t border-border pt-4">
           <Button type="button" variant="ghost" onClick={onClose}>
-            Cancel
+            Hủy
           </Button>
           <Button
             type="submit"
@@ -283,9 +282,9 @@ export function ConnectAiDialog({
           >
             <Plug aria-hidden="true" />
             {request.pending && action === "create"
-              ? "Connecting..."
+              ? "Đang kết nối…"
               : recoverable
-                ? "Retry connection"
+                ? "Thử kết nối lại"
                 : "Connect"}
           </Button>
         </div>

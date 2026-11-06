@@ -31,18 +31,17 @@ export function PronunciationRuleDetail({
 
   if (rule.error?.status === 404)
     return (
-      <ContentUnavailable title="Rule unavailable">
-        This pronunciation rule hasn&apos;t been published or is no longer
-        available. Choose another rule to continue.
+      <ContentUnavailable title="Không tìm thấy quy tắc">
+        Quy tắc này hiện không có. Hãy chọn mục khác.
       </ContentUnavailable>
     )
   return (
     <article
-      className="min-w-0 max-w-2xl space-y-6 border-t border-border pt-6 lg:border-t-0 lg:pt-0"
-      aria-label={rule.data?.name ?? "Pronunciation rule"}
+      className="min-w-0 max-w-2xl space-y-3"
+      aria-label={rule.data?.name ?? "Quy tắc phát âm"}
     >
       {rule.status === "loading" ? (
-        <CatalogLoading label="Loading rule explanation..." />
+        <CatalogLoading label="Đang tải giải thích…" />
       ) : null}
       <CatalogFeedback error={rule.error} onRetry={() => void rule.reload()} />
       {rule.data ? (
@@ -63,11 +62,15 @@ export function PronunciationRuleDetail({
               </p>
             ) : null}
           </header>
-          <section className="space-y-2" aria-label="Explanation">
-            <h4 className="text-sm font-medium">Explanation</h4>
+          <PronunciationExamples
+            languageCode={languageCode}
+            ruleCode={ruleCode}
+          />
+          <section className="space-y-2" aria-label="Giải thích">
+            <h4 className="text-sm font-medium">Giải thích</h4>
             {rule.data.explanation === null ? (
               <p className="text-sm leading-6 text-muted-foreground">
-                An explanation is not available for this rule yet.
+                Quy tắc này chưa có giải thích.
               </p>
             ) : (
               <p
@@ -81,11 +84,9 @@ export function PronunciationRuleDetail({
           {rule.data.usageNote !== null ? (
             <section
               className="space-y-1.5 rounded-r-md border-l-2 border-primary/60 bg-surface-subtle p-3.5"
-              aria-label="Important to remember"
+              aria-label="Lưu ý"
             >
-              <h4 className="text-xs font-semibold text-foreground">
-                Important to remember
-              </h4>
+              <h4 className="text-xs font-semibold text-foreground">Lưu ý</h4>
               <p
                 lang={rule.data.translationLocale ?? languageCode}
                 className="whitespace-pre-line break-words text-sm leading-6 text-muted-foreground"
@@ -96,8 +97,6 @@ export function PronunciationRuleDetail({
           ) : null}
         </>
       ) : null}
-      {/* Examples start alongside detail; locale changes refresh only the explanation. */}
-      <PronunciationExamples languageCode={languageCode} ruleCode={ruleCode} />
     </article>
   )
 }
