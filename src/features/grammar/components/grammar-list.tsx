@@ -1,6 +1,8 @@
 "use client"
 
 import Link from "next/link"
+import { GrammarPracticeHistoryDrawer } from "@/features/grammar-practice/components/grammar-practice-history"
+import { GrammarPracticeActions } from "@/features/grammar-practice/components/grammar-practice-setup"
 import { useCallback, useState, type ReactNode } from "react"
 import { useSearchParams } from "next/navigation"
 import { ArrowRight, TextQuote } from "lucide-react"
@@ -49,13 +51,16 @@ export function GrammarList() {
     </LearnDetailPane>
   ) : null
   return (
-    <GrammarListContent
-      key={`${auth.user.id}:${auth.sessionId}:${profile.id}:${languageCode}:${profile.explanationLanguage}`}
-      languageCode={languageCode}
-      locale={profile.explanationLanguage}
-      selectedCode={selectedCode}
-      detail={detail}
-    />
+    <>
+      <GrammarListContent
+        key={`${auth.user.id}:${auth.sessionId}:${profile.id}:${languageCode}:${profile.explanationLanguage}`}
+        languageCode={languageCode}
+        locale={profile.explanationLanguage}
+        selectedCode={selectedCode}
+        detail={detail}
+      />
+      <GrammarPracticeHistoryDrawer />
+    </>
   )
 }
 
@@ -88,6 +93,7 @@ function GrammarListContent({
   return (
     <div className="grid min-w-0 items-start gap-3 lg:grid-cols-[minmax(0,0.65fr)_minmax(0,1fr)]">
       <div className="min-w-0 space-y-3">
+        <GrammarPracticeActions languageCode={languageCode} />
         {page.status === "loading" ? (
           <CatalogLoading label="Đang tải ngữ pháp…" />
         ) : null}
@@ -184,7 +190,8 @@ function EmptyGrammarSelection() {
         Chưa chọn mẫu câu
       </p>
       <p className="mt-1 max-w-xs text-xs leading-relaxed text-muted-foreground">
-        Chọn một mẫu ngữ pháp từ danh sách bên trái để xem cấu trúc và cách dùng chi tiết.
+        Chọn một mẫu ngữ pháp từ danh sách bên trái để xem cấu trúc và cách dùng
+        chi tiết.
       </p>
     </div>
   )

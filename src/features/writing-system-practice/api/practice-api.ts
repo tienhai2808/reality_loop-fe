@@ -21,7 +21,7 @@ import {
   type WritingPracticeStatus,
 } from "./practice-schemas"
 
-async function request<T>(
+export async function requestPracticeContent<T>(
   path: string,
   schema: z.ZodType<T>,
   signal: AbortSignal,
@@ -47,11 +47,10 @@ async function request<T>(
       const retry = parseRetryAfter(response.headers.get("retry-after"))
       const messages: Record<number, string> = {
         400:
-          problem?.detail ??
-          "Kiểm tra bảng chữ đã chọn hoặc giảm số câu rồi thử lại.",
+          problem?.detail ?? "Kiểm tra lựa chọn hoặc giảm số câu rồi thử lại.",
         401: "Phiên đã hết hạn. Hãy đăng nhập lại.",
         403: "Hiện không thể mở bài luyện. Hãy thử lại sau.",
-        404: "Không tìm thấy bài luyện hoặc bảng chữ.",
+        404: "Không tìm thấy bài luyện hoặc nội dung.",
         409: "Bài luyện đã thay đổi. Hãy xem bản đã lưu mới nhất.",
         413: "Yêu cầu quá lớn. Hãy mở lại bài luyện rồi thử lại.",
         429: "Bạn đã thao tác quá nhanh. Hãy đợi rồi thử lại.",
@@ -71,9 +70,7 @@ async function request<T>(
     const value: unknown = await response.json()
     const parsed = schema.safeParse(value)
     if (!parsed.success)
-      throw new FoundationsError(
-        "Chưa xác nhận được bài đã lưu. Hãy tải lại."
-      )
+      throw new FoundationsError("Chưa xác nhận được bài đã lưu. Hãy tải lại.")
     return parsed.data
   } catch (error) {
     throw normalizeFoundationsError(error)
@@ -95,7 +92,7 @@ export function startWritingPractice(
   body: StartWritingPracticeRequest,
   signal: AbortSignal
 ) {
-  return request(
+  return requestPracticeContent(
     `${profilePath(profileId)}/writing-systems/${encodeURIComponent(systemCode)}/practice-sessions`,
     detailSchema(profileId),
     signal,
@@ -112,7 +109,7 @@ export function listWritingPractice(
   if (before) query.set("before", before)
   if (filters.status) query.set("status", filters.status)
   if (filters.systemCode) query.set("systemCode", filters.systemCode)
-  return request(
+  return requestPracticeContent(
     `${profilePath(profileId)}/practice-sessions?${query}`,
     writingPracticePageSchema.refine((page) =>
       page.items.every((item) => item.learningProfileId === profileId)
@@ -125,7 +122,7 @@ export function getWritingPractice(
   sessionId: string,
   signal: AbortSignal
 ) {
-  return request(
+  return requestPracticeContent(
     sessionPath(profileId, sessionId),
     detailSchema(profileId, sessionId),
     signal
@@ -138,7 +135,7 @@ export function submitWritingPracticeAnswer(
   body: SubmitWritingPracticeAnswerRequest,
   signal: AbortSignal
 ) {
-  return request(
+  return requestPracticeContent(
     `${sessionPath(profileId, sessionId)}/items/${encodeURIComponent(sessionItemId)}/answer`,
     detailSchema(profileId, sessionId),
     signal,
@@ -151,7 +148,7 @@ export function abandonWritingPractice(
   body: AbandonWritingPracticeRequest,
   signal: AbortSignal
 ) {
-  return request(
+  return requestPracticeContent(
     `${sessionPath(profileId, sessionId)}/abandon`,
     detailSchema(profileId, sessionId),
     signal,

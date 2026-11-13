@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useId, useRef, useState } from "react"
+import { useEffect, useId, useRef, useState, type ReactNode } from "react"
 import { Check, Minus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -14,8 +14,26 @@ export function PracticeQuestion({
   onSubmit,
   onNext,
   onPrevious,
+  presentation,
+  reviewOnly = false,
 }: {
-  question: WritingPracticeQuestion
+  question: Pick<
+    WritingPracticeQuestion,
+    | "id"
+    | "position"
+    | "answeredAt"
+    | "options"
+    | "selectedOptionIndex"
+    | "correctOptionIndex"
+    | "isCorrect"
+  > & { symbol?: string }
+  presentation?: {
+    prompt: ReactNode
+    instruction: ReactNode
+    explanation?: ReactNode
+    optionLanguage?: string
+  }
+  reviewOnly?: boolean
   languageCode?: string
   questionCount: number
   disabled: boolean
@@ -29,9 +47,10 @@ export function PracticeQuestion({
   const feedback = useRef<HTMLParagraphElement | null>(null)
   const answered = question.answeredAt !== null
   useEffect(() => {
+    if (reviewOnly) return
     if (answered) feedback.current?.focus()
     else heading.current?.focus()
-  }, [answered, question.id])
+  }, [answered, question.id, reviewOnly])
   return (
     <div className="space-y-3">
       <h2
@@ -41,12 +60,16 @@ export function PracticeQuestion({
       >
         Câu {question.position + 1}/{questionCount}
       </h2>
-      <p
-        lang={languageCode}
-        className="font-ja break-all py-1 text-center text-7xl leading-relaxed sm:text-8xl"
-      >
-        {question.symbol}
-      </p>
+      {presentation ? (
+        presentation.prompt
+      ) : (
+        <p
+          lang={languageCode}
+          className="font-ja break-all py-1 text-center text-7xl leading-relaxed sm:text-8xl"
+        >
+          {question.symbol}
+        </p>
+      )}
       <form
         className="space-y-3"
         onSubmit={(event) => {
@@ -54,9 +77,12 @@ export function PracticeQuestion({
           if (!answered && selected !== null && !disabled) onSubmit(selected)
         }}
       >
-        <fieldset disabled={disabled || answered} className="space-y-2">
+        <fieldset
+          disabled={disabled || answered || reviewOnly}
+          className="space-y-2"
+        >
           <legend className="mb-2 text-base font-medium">
-            Chữ này đọc thế nào?
+            {presentation ? presentation.instruction : "Chữ này đọc thế nào?"}
           </legend>
           {question.options.map((option, index) => {
             const chosen = answered
@@ -94,7 +120,10 @@ export function PracticeQuestion({
                   checked={chosen}
                   onChange={() => setSelected(index)}
                 />
-                <span className="min-w-0 flex-1 break-words font-medium">
+                <span
+                  lang={presentation?.optionLanguage}
+                  className="min-w-0 flex-1 break-words font-medium"
+                >
                   {option}
                 </span>
                 {isCorrectOption ? (
@@ -123,32 +152,38 @@ export function PracticeQuestion({
               ? "Đúng"
               : question.correctOptionIndex === null
                 ? "Chưa đúng"
-                : `Chưa đúng. Cách đọc: ${question.options[question.correctOptionIndex]}`}
+                : `Chưa đúng. ${presentation ? "Đáp án" : "Cách đọc"}: ${question.options[question.correctOptionIndex]}`}
           </p>
         ) : null}
-        <div className="flex flex-wrap justify-between gap-3">
-          {onPrevious ? (
-            <Button
-              type="button"
-              variant="ghost"
-              disabled={disabled}
-              onClick={onPrevious}
-            >
-              Câu trước
-            </Button>
-          ) : (
-            <span />
-          )}
-          {answered ? (
-            <Button type="button" disabled={disabled} onClick={onNext}>
-              Câu tiếp
-            </Button>
-          ) : (
-            <Button type="submit" disabled={disabled || selected === null}>
-              Kiểm tra
-            </Button>
-          )}
-        </div>
+        {answered && presentation?.explanation}
+        {reviewOnly && !answered ? (
+          <p className="text-sm text-muted-foreground">Chưa trả lời</p>
+        ) : null}
+        {!reviewOnly ? (
+          <div className="flex flex-wrap justify-between gap-3">
+            {onPrevious ? (
+              <Button
+                type="button"
+                variant="ghost"
+                disabled={disabled}
+                onClick={onPrevious}
+              >
+                Câu trước
+              </Button>
+            ) : (
+              <span />
+            )}
+            {answered ? (
+              <Button type="button" disabled={disabled} onClick={onNext}>
+                Câu tiếp
+              </Button>
+            ) : (
+              <Button type="submit" disabled={disabled || selected === null}>
+                Kiểm tra
+              </Button>
+            )}
+          </div>
+        ) : null}
       </form>
     </div>
   )

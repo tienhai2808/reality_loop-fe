@@ -11,6 +11,7 @@ import {
 } from "@/features/language-foundations/components/catalog-feedback"
 import { getGrammarPoint } from "../api/grammar-api"
 import { GrammarHeading } from "./grammar-content"
+import { GrammarPracticeActions } from "@/features/grammar-practice/components/grammar-practice-setup"
 
 export function GrammarDetailContent({
   languageCode,
@@ -50,6 +51,10 @@ export function GrammarDetailContent({
   return (
     <article className="space-y-6">
       <GrammarHeading point={point} />
+      <GrammarPracticeActions
+        languageCode={languageCode}
+        pointCode={pointCode}
+      />
       <section aria-labelledby="grammar-pattern" className="space-y-2.5">
         <h2
           id="grammar-pattern"

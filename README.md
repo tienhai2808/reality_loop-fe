@@ -185,7 +185,15 @@ Vocabulary learning is independent of Writing System Progress and Handwriting, a
 
 Open **Learn → Grammar** (`/learn/grammar`) to browse API-provided sentence patterns, then open `/learn/grammar/{pointCode}?language={languageCode}` for explanations and optional usage notes. Detail links retain their language context across profile changes.
 
-Requests use the current LearningProfile's target language by default and its exact explanation-language tag. Backend translation fallback is displayed as returned, including missing explanations. Lists preserve server ordering and use opaque `after` cursors with Load more. Grammar is read-only and independent of AI.
+Requests use the current LearningProfile's target language by default and its exact explanation-language tag. Backend translation fallback is displayed as returned, including missing explanations. Lists preserve server ordering and use opaque `after` cursors with Load more. Grammar catalog content is read-only and independent of AI.
+
+### Grammar Practice
+
+Choose **Luyện ngữ pháp** under Grammar (`/learn/grammar/practice`), or **Luyện mẫu câu này** from a grammar point. Available scopes, question limits, and counts come from the backend. Each answer is graded and saved by the server, including explanation-language snapshots.
+
+Sessions have stable original-profile URLs at `/learn/grammar/practice/{profileId}/{sessionId}`. Reload resumes saved state. History at `/learn/grammar/practice/history` supports status and grammar-point filters with opaque `before` cursors. Results retain separate correct, incorrect, and unanswered counts.
+
+Answers and explicit End practice share the existing practice session coordinator. Conflicts and uncertain mutations reload the saved session before another explicit action. Uncertain creation opens recent history instead of repeating POST. Leaving a session preserves it for later resume.
 
 ## Default Validation
 
